@@ -1,0 +1,30 @@
+{
+  "name": "chineseDuck",
+  "description": "The main web application for the Chinese Duck Bot",
+  "version": "1.0.0",
+  "author": "Mikhail Berdnikov (https://udd3r.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/northis/chineseDuck.git"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {},
+  "bin": {},
+  "dependencies": {
+    "bootstrap": "^4.0.0"
+  },
+  "devDependencies": {},
+  "files": [
+    "index.html",
+    "main.css"
+  ],
+  "bugs": {
+    "url": "https://github.com/northis/chineseDuck/issues"
+  },
+  "homepage": "https://github.com/northis/chineseDuck#readme",
+  "main": "index.js",
+  "keywords": []
+}
