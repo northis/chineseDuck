@@ -1,0 +1,62 @@
+{
+	"masterPicture": "TODO: Path to your master picture",
+	"iconsPath": "/",
+	"design": {
+		"ios": {
+			"pictureAspect": "backgroundAndMargin",
+			"backgroundColor": "#ffc40d",
+			"margin": "18%",
+			"assets": {
+				"ios6AndPriorIcons": false,
+				"ios7AndLaterIcons": false,
+				"precomposedIcons": false,
+				"declareOnlyDefaultIcon": true
+			},
+			"appName": "Chinese Duck"
+		},
+		"desktopBrowser": {},
+		"windows": {
+			"pictureAspect": "whiteSilhouette",
+			"backgroundColor": "#da532c",
+			"onConflict": "override",
+			"assets": {
+				"windows80Ie10Tile": false,
+				"windows10Ie11EdgeTiles": {
+					"small": false,
+					"medium": true,
+					"big": false,
+					"rectangle": false
+				}
+			},
+			"appName": "Chinese Duck"
+		},
+		"androidChrome": {
+			"pictureAspect": "backgroundAndMargin",
+			"margin": "17%",
+			"backgroundColor": "#ffc40d",
+			"themeColor": "#ffc40d",
+			"manifest": {
+				"name": "Chinese Duck",
+				"display": "standalone",
+				"orientation": "notSet",
+				"onConflict": "override",
+				"declared": true
+			},
+			"assets": {
+				"legacyIcon": false,
+				"lowResolutionIcons": false
+			}
+		},
+		"safariPinnedTab": {
+			"pictureAspect": "silhouette",
+			"themeColor": "#da532c"
+		}
+	},
+	"settings": {
+		"scalingAlgorithm": "Mitchell",
+		"errorOnImageTooSmall": false,
+		"readmeFile": true,
+		"htmlCodeFile": true,
+		"usePathAsIs": false
+	}
+}

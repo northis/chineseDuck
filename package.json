@@ -1,30 +1,80 @@
 {
-  "name": "chineseDuck",
-  "description": "The main web application for the Chinese Duck Bot",
-  "version": "1.0.0",
-  "author": "Mikhail Berdnikov (https://udd3r.com)",
-  "license": "MIT",
+  "name": "chinese_duck",
+  "version": "0.0.1",
+  "description": "Webpart of the Chinese Duck Bot system",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \\\"Error: no test specified\\\" && exit 1",
+    "build-prod": "node server.js --mode production",
+    "build-dev": "node server.js --mode development"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/northis/chineseDuck.git"
   },
-  "engines": {
-    "node": ">=0.10.0"
-  },
-  "scripts": {},
-  "bin": {},
-  "dependencies": {
-    "bootstrap": "^4.0.0"
-  },
-  "devDependencies": {},
-  "files": [
-    "index.html",
-    "main.css"
+  "keywords": [
+    "chinese",
+    "telegram",
+    "bot",
+    "web",
+    "pinyin",
+    "learning",
+    "language",
+    "rest",
+    "vue",
+    "vuex"
   ],
+  "author": "Mikhail Berdnikov",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/northis/chineseDuck/issues"
   },
   "homepage": "https://github.com/northis/chineseDuck#readme",
-  "main": "index.js",
-  "keywords": []
+  "devDependencies": {
+    "@types/node": "^9.4.7",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "clean-webpack-plugin": "^0.1.19",
+    "copy-webpack-plugin": "^4.5.1",
+    "css-loader": "^0.28.11",
+    "file-loader": "^1.1.11",
+    "html-webpack-plugin": "^3.0.6",
+    "jsxobj": "^1.1.0",
+    "less": "^3.0.1",
+    "less-loader": "^4.1.0",
+    "ts-loader": "^4.1.0",
+    "typescript": "^2.7.2",
+    "vue-class-component": "^6.2.0",
+    "vue-loader": "^14.2.1",
+    "vue-property-decorator": "^6.0.0",
+    "vue-router": "^3.0.1",
+    "vue-template-compiler": "^2.5.16",
+    "vuex-class": "^0.3.0",
+    "vuex-typescript": "^3.0.2",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.12",
+    "webpack-dev-server": "^3.1.1",
+    "webpack-hot-middleware": "^2.21.2",
+    "write-file-webpack-plugin": "^4.2.0"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "express": "^4.16.3",
+    "vue": "^2.5.16",
+    "vuex": "^3.0.1"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ],
+    "plugins": [
+      "transform-object-rest-spread"
+    ]
+  }
 }
