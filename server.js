@@ -1,8 +1,10 @@
 const express = require('express');
 const webpack = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
+var history = require('connect-history-api-fallback');
 
 const app = express();
+app.use(history());
 const config = require('./webpack.config.js');
 
 var indexModeArg = process.argv.indexOf('--mode');

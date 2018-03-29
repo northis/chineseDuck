@@ -1,5 +1,6 @@
 <template>
-  <div id="app">
+  <div>
+      <router-link to="/login">Login</router-link>
       <app-header></app-header>
       <app-main></app-main>
   </div>
@@ -28,12 +29,12 @@ export default class App extends Vue {
 @import '../../assets/mainStyles.less';
 
 body {
-    font-family: Ubuntu;
-    color: #555;
+    font-family: @mainFont;
+    color:@textColor;
     background-color: @backgroundColor,
 }
 
-@media screen and (max-width: 478px) {
+@media screen and (max-width: @mediaSmallWidth) {
     h1 { 
         font-size: 70px; 
         padding: 1px; 
@@ -49,7 +50,7 @@ body {
     }
 }
  
-@media screen and (max-width: 740px) {
+@media screen and (max-width: @mediaMediumWidth) {
     .left-col { 
         width: 100%; 
     }
