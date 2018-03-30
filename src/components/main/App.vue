@@ -28,12 +28,6 @@ export default class App extends Vue {
 
 @import '../../assets/mainStyles.less';
 
-body {
-    font-family: @mainFont;
-    color:@textColor;
-    background-color: @backgroundColor,
-}
-
 @media screen and (max-width: @mediaSmallWidth) {
     h1 { 
         font-size: 70px; 

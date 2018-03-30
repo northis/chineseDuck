@@ -1,6 +1,8 @@
 <template>
-  <div>
-    <h2>Login</h2>
+  <div class="grid">
+    <div class="login">
+      <h2>Login</h2>
+    </div>
     <!-- <p v-if="$route.query.redirect">
       You need to login first.
     </p>
@@ -17,7 +19,7 @@
 import Vue from "vue";
 import { State, Action, Getter } from "vuex-class";
 import Component from "vue-class-component";
-import * as T from '../store/auth/types';
+import * as T from "../store/auth/types";
 
 @Component
 export default class Login extends Vue {
@@ -29,23 +31,28 @@ export default class Login extends Vue {
     console.log(this.auth);
     //this.fetchData();
   }
-  created () {
-  }
+  created() {}
 }
 </script>
 
 <style lang="less">
-@import '../assets/mainStyles.less';
-body {
-    font-family: @mainFont;
-    color:@textColor;
-    background-color: @backgroundColor,
+@import "../assets/mainStyles.less";
+
+.login {
+  border: 1px solid black;
+  grid-column: 2;
+  grid-row: 2;
+  min-width: 30rem;
+  min-height: 30rem;
 }
 
 .grid {
+    .fullSize;
+  justify-items: center;
+  align-items:   center;
   display: grid;
-  grid-template-columns: 250px repeat(12, 1fr);
-  grid-column-gap: 10px;
+  grid-template-rows:  repeat(3, 1fr);
+  grid-template-columns:  repeat(3, 1fr);
 }
 
 .error {

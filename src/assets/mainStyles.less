@@ -1,6 +1,22 @@
 @backgroundColor : #ccc;
-@mainFont: Georgia;
+@mainFont: 'Aleo';
 @textColor: #333;
-
 @mediaSmallWidth : 478px;
 @mediaMediumWidth : 740px;
+.fullSize {
+    height: 100%;
+    width: 100%;
+}
+
+@import "./fontFaces.less";
+body,
+html {
+    font-family: @mainFont, Georgia, 'Times New Roman', Times, serif;
+    color: @textColor;
+    background-color: @backgroundColor;
+    .fullSize;
+}
+
+#app {
+    .fullSize;
+}

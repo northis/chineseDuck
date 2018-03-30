@@ -5,7 +5,23 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WriteFilePlugin = require('write-file-webpack-plugin');
 
+function getMode() {
+  var indexModeArg = process.argv.indexOf('--mode');
+  if (indexModeArg != -1) {
+    var mode = process.argv[indexModeArg + 1];
+    return mode == undefined ? 'development' : mode;
+  }
+}
+
+function getFontCopyPattern() {
+  if (getMode() === 'production')
+    return { from: './src/assets/fonts', to: './fonts/' }
+  else
+    return { from: './src/assets/fonts/aleo-regular-webfont.ttf', to: './fonts/aleo-regular-webfont.ttf' }
+}
+
 module.exports = {
+  mode: getMode(),
   entry: ['./src/index.ts', 'webpack-hot-middleware/client'],
   devtool: 'inline-source-map',
   output: {
@@ -17,8 +33,10 @@ module.exports = {
     rules: [{
       test: /\.less$/,
       use: [{
-        loader: "less-loader" // compiles Less to CSS
-      }]
+        loader: "css-loader"
+      }, {
+        loader: "less-loader"
+      }],
     },
     {
       test: /\.tsx?$/,
@@ -85,12 +103,13 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: 'src/index.html',
-      inject : true
+      inject: true
     }),
     new webpack.HotModuleReplacementPlugin(),
     new CopyWebpackPlugin([
       { from: './src/assets/favicon', to: './favicon/' },
       { from: './src/assets/favicon/favicon.ico', to: './favicon.ico' },
+      getFontCopyPattern(),
     ]),
     new WriteFilePlugin(),
   ],

@@ -7,11 +7,7 @@ const app = express();
 app.use(history());
 const config = require('./webpack.config.js');
 
-var indexModeArg = process.argv.indexOf('--mode');
-if (indexModeArg != -1) {
-  var mode = process.argv[indexModeArg + 1];
-  config.mode = mode == undefined ? 'development' : mode;
-}
+
 
 const compiler = webpack(config);
 
