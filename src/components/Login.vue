@@ -1,17 +1,17 @@
 <template>
-  <div class="grid">
-    <div class="login">
+  <div class="gridCenter">
+    <div class="loginBox">
       <h2>Login</h2>
+      <p>Please type your Telegram-bound phone number</p>
     </div>
-    <!-- <p v-if="$route.query.redirect">
-      You need to login first.
+    <p v-if="$route.query.redirect">
+      Nope, your number first, please.
     </p>
     <form @submit.prevent="login">
-      <label><input v-model="email" placeholder="email"></label>
-      <label><input v-model="pass" placeholder="password" type="password"></label> (hint: password1)<br>
+      <label><input v-model="email" type="tel" name="phone"  placeholder="+ (XXX) XXX-XXXX" pattern="\(\d{3}\) \d{3}\-\d{4}" class="masked" title="10-digit number"  @keyup.enter="login"></label>
       <button type="submit">login</button>
       <p v-if="error" class="error">Bad login information</p>
-    </form> -->
+    </form>
   </div>
 </template>
 
@@ -38,15 +38,16 @@ export default class Login extends Vue {
 <style lang="less">
 @import "../assets/mainStyles.less";
 
-.login {
+.loginBox {
   border: 1px solid black;
   grid-column: 2;
   grid-row: 2;
+  padding: 1rem;
   min-width: 30rem;
   min-height: 30rem;
 }
 
-.grid {
+.gridCenter {
     .fullSize;
   justify-items: center;
   align-items:   center;
