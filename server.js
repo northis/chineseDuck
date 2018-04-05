@@ -2,12 +2,13 @@ const express = require('express');
 const webpack = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 var history = require('connect-history-api-fallback');
+const helpers = require('./config/helpers');
 
 const app = express();
 app.use(history());
-const config = require('./webpack.config.js');
 
-
+const mode = helpers.getMode();
+const config = require(mode == helpers.ModeEnum.Production ? './config/webpack.prod.js' : './config/webpack.dev.js');
 
 const compiler = webpack(config);
 

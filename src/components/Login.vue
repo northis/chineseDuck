@@ -4,14 +4,14 @@
       <h2>Login</h2>
       <p>Please type your Telegram-bound phone number</p>
     </div>
-    <p v-if="$route.query.redirect">
+    <!-- <p v-if="$route.query.redirect">
       Nope, your number first, please.
     </p>
     <form @submit.prevent="login">
       <label><input v-model="email" type="tel" name="phone"  placeholder="+ (XXX) XXX-XXXX" pattern="\(\d{3}\) \d{3}\-\d{4}" class="masked" title="10-digit number"  @keyup.enter="login"></label>
       <button type="submit">login</button>
       <p v-if="error" class="error">Bad login information</p>
-    </form>
+    </form> -->
   </div>
 </template>
 
@@ -35,8 +35,8 @@ export default class Login extends Vue {
 }
 </script>
 
-<style lang="less">
-@import "../assets/mainStyles.less";
+<style lang="scss">
+@import "../assets/styles/mainStyles.scss";
 
 .loginBox {
   border: 1px solid black;
@@ -48,7 +48,7 @@ export default class Login extends Vue {
 }
 
 .gridCenter {
-    .fullSize;
+   @extend .fullSize;
   justify-items: center;
   align-items:   center;
   display: grid;

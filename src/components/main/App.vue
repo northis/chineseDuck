@@ -24,11 +24,11 @@ export default class App extends Vue {
 
 </script>
 
-<style lang="less">
+<style lang="scss">
 
-@import '../../assets/mainStyles.less';
+@import '../../assets/styles/mainStyles.scss';
 
-@media screen and (max-width: @mediaSmallWidth) {
+@media screen and (max-width: $mediaSmallWidth) {
     h1 { 
         font-size: 70px; 
         padding: 1px; 
@@ -44,7 +44,7 @@ export default class App extends Vue {
     }
 }
  
-@media screen and (max-width: @mediaMediumWidth) {
+@media screen and (max-width: $mediaMediumWidth) {
     .left-col { 
         width: 100%; 
     }
