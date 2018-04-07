@@ -1,6 +1,7 @@
 export interface IAuthState {
     user: IUser;
     stage: AuthStage;
+    saveAuth: boolean;
 }
 
 export interface IUser {

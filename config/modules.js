@@ -19,6 +19,16 @@ const moduleItem = {
         minimize: true
       }
     }, {
+      loader: 'postcss-loader',
+      options: {
+        plugins: () => {
+          [
+            require('precss'),
+            require('autoprefixer')
+          ]
+        }
+      }
+    }, {
       loader: 'sass-loader'
     }]
   },

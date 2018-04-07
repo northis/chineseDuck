@@ -26,31 +26,5 @@ export default class App extends Vue {
 
 <style lang="scss">
 
-@import '../../assets/styles/mainStyles.scss';
-
-@media screen and (max-width: $mediaSmallWidth) {
-    h1 { 
-        font-size: 70px; 
-        padding: 1px; 
-    }
- 
-    h2 { 
-        font-size: 13px; 
-        padding: 1px;
-    }
- 
-    body { 
-        font-size: 13px; 
-    }
-}
- 
-@media screen and (max-width: $mediaMediumWidth) {
-    .left-col { 
-        width: 100%; 
-    }
- 
-    .sidebar { 
-        width: 100%; 
-    }
-}
+//@import '../../assets/styles/mainStyles.scss';
 </style>

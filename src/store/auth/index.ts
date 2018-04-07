@@ -9,6 +9,7 @@ const state: T.IAuthState = {
         key: '',
     },
     stage : T.AuthStage.NoAuth,
+    saveAuth: false,
 };
 export const auth: Module<T.IAuthState, RootState> = {
     state,

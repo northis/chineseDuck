@@ -6,3 +6,14 @@ export interface IStorageService {
     SetValue(key: string, value: string): void;
     DeleteValue(key: string): void;
 }
+
+export interface IPhoneMaskService {
+    GetMainCountries(): IPhoneMask[];
+    GetOtherCountries(): IPhoneMask[];
+}
+
+export interface IPhoneMask {
+    m: string;
+    n: string;
+    fB64: string;
+}

@@ -1,6 +1,5 @@
-const path = require('path');
 const webpack = require('webpack');
-
+const path = require('path');
 const helpers = require('./helpers');
 const modules = require('./modules');
 const plugins = require('./plugins');
@@ -23,8 +22,5 @@ module.exports = {
     plugins: plugins.default,
     performance: {
         hints: false
-    },
-    optimization: {
-        minimize: true
     }
 };

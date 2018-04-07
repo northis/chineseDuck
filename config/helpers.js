@@ -16,7 +16,6 @@ export function getFontCopyPattern() {
   if (getMode() === ModeEnum.Production)
     return { from: './src/assets/fonts', to: './fonts/' }
   else
-
     return { from: './src/assets/fonts/aleo-regular-webfont.ttf', to: './fonts/aleo-regular-webfont.ttf' }
 }
 

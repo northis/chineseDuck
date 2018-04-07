@@ -1,3 +1,4 @@
+import 'bootstrap';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import './assets/styles/mainStyles.scss';
