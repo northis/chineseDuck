@@ -5,5 +5,8 @@ const base = require('./webpack.base.js');
 module.exports = merge(base, {
   plugins: [
     new UglifyJSPlugin()
-  ]
+  ],
+  optimization: {
+      minimize: true
+  }
 });

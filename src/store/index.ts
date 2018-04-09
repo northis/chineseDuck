@@ -1,8 +1,8 @@
 import Vue from 'vue';
-import Vuex, { StoreOptions  } from 'vuex';
-import {auth} from './auth/index';
+import Vuex, { StoreOptions } from 'vuex';
+import { auth } from './auth/index';
 import getters from './getters';
-import {RootState} from './types';
+import { RootState } from './types';
 
 Vue.use(Vuex);
 const store: StoreOptions<RootState> = {

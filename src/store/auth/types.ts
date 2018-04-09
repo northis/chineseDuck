@@ -1,7 +1,10 @@
+import { IPhoneMaskService } from '../../services/interfaces';
+
 export interface IAuthState {
     user: IUser;
     stage: AuthStage;
     saveAuth: boolean;
+    phoneMaskService: IPhoneMaskService;
 }
 
 export interface IUser {

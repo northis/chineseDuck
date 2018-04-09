@@ -3,13 +3,15 @@
     <form class="form-signin" @submit.prevent="login">
       <img class="mb-4" src="../assets/favicon/logo.svg" alt="" width="72" height="72">
       <p>Please type your Telegram-bound phone number</p>
-      <select id="inputState" class="form-control">
-        <option selected v-for="item in items" :key="item.id">{{item.n}}.</option>
-        <option disabled>──────────</option>
-      </select>
-      <input type="tel" class="form-control" v-mask="'(+\\971-59-999-9999)|(+\\971-#-###-####)'" required autofocus>
 
-      <app-checkBox class="mb-3 text-left" Message="Remember me 🇨🇳" v-bind:IsChecked=false></app-checkBox>
+      <app-comboBox :useFullList="true" @selectedChanged="selectedChanged">
+        <option v-for="item in mainCountries" :key="item.n" :value="item.m"> {{item.n}}</option>
+        <option slot="FullList" v-for="item in otherCountries" :key="item.n" :value="item.m"> {{item.n}}</option>
+        <span slot="Header">Select your country</span>
+      </app-comboBox>
+
+      <input type="tel" id="inputPhone" class="form-control" v-mask="CurrentMask" required autofocus data-inputmask-clearmaskonlostfocus="false" />
+      <app-checkBox class="mb-3 text-left" Message="Remember me" v-bind:IsChecked=false></app-checkBox>
       <button class="btn-block" type="submit">Send me code</button>
     </form>
   </div>
@@ -21,29 +23,42 @@ import { State, Action, Getter } from "vuex-class";
 import Component from "vue-class-component";
 import * as T from "../store/auth/types";
 import CheckBox from "./framework/CheckBox.vue";
-const VueInputMask = require("vue-inputmask").default;
+import ComboBox from "./framework/ComboBox.vue";
 
-Vue.use(VueInputMask);
+import { Emit, Provide } from "vue-property-decorator";
+
+const inputmaskPlugin = require("./directives/vueInputMask").default;
+Vue.use(inputmaskPlugin);
+
 @Component({
   components: {
-    "app-checkBox": CheckBox
+    "app-checkBox": CheckBox,
+    "app-comboBox": ComboBox
   }
 })
 export default class Login extends Vue {
   @State auth: T.IAuthState;
 
+  @Provide() CurrentMask = "";
+
   mounted() {
     console.log("Login mounted");
-
-    console.log(this.auth);
-    //this.fetchData();
+    //this.fetchData();"(+\\971-59-999-9999)|(+\\971-#-###-####)" ['+971-5#-###-####', '+971-#-###-####']
   }
 
-  // get countryMasks(){
-
-  // }
+  get mainCountries() {
+    return this.auth.phoneMaskService.GetMainCountries();
+  }
+  get otherCountries() {
+    return this.auth.phoneMaskService.GetOtherCountries();
+  }
 
   created() {}
+
+  @Emit()
+  selectedChanged(value: string) {
+    this.CurrentMask = value;
+  }
 }
 </script>
 
@@ -75,13 +90,13 @@ body {
     position: relative;
     box-sizing: border-box;
     height: auto;
-    padding: $xsBorderWidth;
   }
   .form-control:focus {
     z-index: 1;
   }
 
   input[type="tel"] {
+    margin-top: $mBorderWidth;
     margin-bottom: $mBorderWidth;
   }
 }

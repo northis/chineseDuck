@@ -6,11 +6,11 @@ const plugins = require('./plugins');
 
 module.exports = {
     mode: helpers.getMode(),
-    entry: ['./src/index.ts', 'webpack-hot-middleware/client'],
+    entry: [ './src/index.ts','webpack-hot-middleware/client'],
     output: {
         path: path.resolve(__dirname, '../dist'),
         publicPath: '/',
-        filename: 'build.[hash].js',
+        filename: '[name].js',
     },
     module: modules.default,
     resolve: {
@@ -22,5 +22,16 @@ module.exports = {
     plugins: plugins.default,
     performance: {
         hints: false
-    }
+    },
+    optimization: {
+        splitChunks: {
+            chunks: "async",
+            cacheGroups: {
+                commons: { test: /[\\/]node_modules[\\/]/, name: "vendors", chunks: "all" }
+            }
+        }
+    },
+    externals: {
+        jquery: 'jQuery'
+      }
 };

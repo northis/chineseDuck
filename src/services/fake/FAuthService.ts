@@ -10,7 +10,7 @@ export class FAuthService implements T.IAuthenticationService {
 
     constructor(@inject(Types.IStorageService)storage: T.IStorageService) {
         this.storage = storage;
-        this.storage.SetValue(FAuthService.StorageKey, '');
+        // this.storage.SetValue(FAuthService.StorageKey, '');
     }
 
     public IsAuthenticated(): boolean {

@@ -3,7 +3,7 @@ const common = require('./webpack.base.js');
 const path = require('path');
 
 module.exports = merge(common, {
-  devtool: 'inline-source-map',
+ devtool: 'source-map',
   devServer: {
       proxy: {
           '/api': 'http://localhost:3000'
@@ -16,6 +16,6 @@ module.exports = merge(common, {
       noInfo: true,
   },
   optimization: {
-      minimize: true
+      minimize: false
   }
 });

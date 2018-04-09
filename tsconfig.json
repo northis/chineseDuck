@@ -8,7 +8,9 @@
         "moduleResolution": "node",
         "target": "es5",
         "experimentalDecorators": true,
-        "lib": [ "es2015", "dom" ]
+        "lib": [ "es2015", "dom" ],
+        "sourceRoot": "src",
+        "allowJs": true
     },
     "include": [
         "./src/**/*"

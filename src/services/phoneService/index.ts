@@ -9,15 +9,15 @@ export class PhoneMaskService implements T.IPhoneMaskService {
     private otherItems: T.IPhoneMask[];
 
     constructor() {
-        this.mainItems = JSON.parse(require('./masksMain.json'));
-        this.otherItems = JSON.parse(require('./masksOther.json'));
+        this.mainItems = JSON.parse(JSON.stringify(require('./masksMain.json')));
+        this.otherItems = JSON.parse(JSON.stringify(require('./masksOther.json')));
     }
 
     public GetOtherCountries(): T.IPhoneMask[] {
-        return this.mainItems;
+        return this.otherItems;
     }
 
     public GetMainCountries(): T.IPhoneMask[] {
-        return this.otherItems;
+        return this.mainItems;
     }
 }

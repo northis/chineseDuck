@@ -15,5 +15,4 @@ export interface IPhoneMaskService {
 export interface IPhoneMask {
     m: string;
     n: string;
-    fB64: string;
 }

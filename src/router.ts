@@ -1,5 +1,4 @@
 import VueRouter, { Route } from 'vue-router';
-// import LoginModule from './components/Login.vue';
 import AppModule from './components/main/App.vue';
 import { authenticationService } from './di/compositionRoot';
 
