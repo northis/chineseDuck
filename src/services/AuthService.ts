@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify';
-import Types from '../di/types';
-import * as T from './interfaces';
+import RegDictionary from '../di/regDictionary';
+import * as E from '../types/enums';
+import * as T from '../types/interfaces';
 
 @injectable()
 export class AuthService implements T.IAuthenticationService {
@@ -8,7 +9,7 @@ export class AuthService implements T.IAuthenticationService {
     private userKey: string | null;
     private storage: T.IStorageService;
 
-    constructor(@inject(Types.IStorageService)storage: T.IStorageService) {
+    constructor(@inject(RegDictionary.IStorageService)storage: T.IStorageService) {
         this.storage = storage;
         this.UpdateStorageKey();
     }
@@ -19,5 +20,9 @@ export class AuthService implements T.IAuthenticationService {
 
     public IsAuthenticated(): boolean {
         return this.storage.GetValue(AuthService.StorageKey) != null;
+    }
+
+    public SendCode(code: string): Promise<E.EAuthStage> {
+        throw new Error('Method not implemented.');
     }
 }

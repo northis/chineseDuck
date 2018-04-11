@@ -1,7 +1,7 @@
-const Types = {
+const RegDictionary = {
     IStorageService: Symbol('IStorageService'),
     IAuthenticationService: Symbol('IAuthenticationService'),
     IPhoneMaskService: Symbol('IPhoneMaskService'),
 };
 
-export default Types;
+export default RegDictionary;

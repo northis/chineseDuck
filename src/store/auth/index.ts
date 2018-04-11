@@ -1,21 +1,21 @@
 import { Module } from 'vuex';
-import { phoneMaskService  } from '../../di/compositionRoot';
-import * as I from '../../services/interfaces';
-import { RootState } from '../types';
+import { authService, phoneMaskService } from '../../di/compositionRoot';
+import * as E from '../../types/enums';
+import * as T from '../../types/interfaces';
 import getters from './getters';
-import * as T from './types';
 
 const state: T.IAuthState = {
-    user : {
+    user: {
         id: 0,
         name: '',
         key: '',
     },
-    stage : T.AuthStage.NoAuth,
+    stage: E.EAuthStage.NoAuth,
     saveAuth: false,
     phoneMaskService,
+    authService,
 };
-export const auth: Module<T.IAuthState, RootState> = {
+export const auth: Module<T.IAuthState, T.IRootState> = {
     state,
     getters,
 };

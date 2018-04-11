@@ -1,6 +1,5 @@
 import { inject, injectable } from 'inversify';
-import Types from '../../di/types';
-import * as T from '../interfaces';
+import * as T from '../../types/interfaces';
 
 @injectable()
 export class PhoneMaskService implements T.IPhoneMaskService {

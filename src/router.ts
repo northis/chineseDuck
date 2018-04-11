@@ -1,6 +1,6 @@
 import VueRouter, { Route } from 'vue-router';
 import AppModule from './components/main/App.vue';
-import { authenticationService } from './di/compositionRoot';
+import { authService } from './di/compositionRoot';
 
 const LoginModule = () => import('./components/Login.vue');
 
@@ -19,7 +19,7 @@ router.beforeEach((to, from, next) => {
   if (to.path.toLocaleLowerCase().includes('/login')) {
     next();
   } else {
-    const isAuth = authenticationService.IsAuthenticated();
+    const isAuth = authService.IsAuthenticated();
     if (isAuth) {
       next();
     } else {

@@ -1,11 +1,11 @@
 import { Getter, GetterTree } from 'vuex';
-import { RootState } from './types';
+import { IRootState } from '../types/interfaces';
 
-const rs: Getter<RootState, RootState> = (state) => {
+const rs: Getter<IRootState, IRootState> = (state) => {
     return state;
 };
 
-const getterTree: GetterTree<RootState, RootState> = {
+const getterTree: GetterTree<IRootState, IRootState> = {
     getRootState : rs,
   };
 

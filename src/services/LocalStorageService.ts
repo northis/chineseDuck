@@ -1,5 +1,5 @@
 import { injectable } from 'inversify';
-import * as T from './interfaces';
+import * as T from '../types/interfaces';
 
 @injectable()
 export class LocalStorageService implements T.IStorageService {

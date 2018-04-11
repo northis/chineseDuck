@@ -1,11 +1,11 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
+import { IRootState } from '../types/interfaces';
 import { auth } from './auth/index';
 import getters from './getters';
-import { RootState } from './types';
 
 Vue.use(Vuex);
-const store: StoreOptions<RootState> = {
+const store: StoreOptions<IRootState> = {
     state: {
         version: '1.0.0',
         appName: 'Chinese Duck',
@@ -17,4 +17,4 @@ const store: StoreOptions<RootState> = {
 
 };
 
-export default new Vuex.Store<RootState>(store);
+export default new Vuex.Store<IRootState>(store);

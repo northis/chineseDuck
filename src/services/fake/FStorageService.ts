@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 import * as C from 'typescript-collections';
-import * as T from '../interfaces';
+import * as T from '../../types/interfaces';
 
 @injectable()
 export class FStorageService implements T.IStorageService {

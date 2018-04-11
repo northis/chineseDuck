@@ -1,8 +1,8 @@
-import * as I from '../services/interfaces';
+import * as T from '../types/interfaces';
 import container from './inversify.config';
-import Types from './types';
+import RegDictionary from './regDictionary';
 
-const authenticationService = container.get<I.IAuthenticationService>(Types.IAuthenticationService);
-const phoneMaskService = container.get<I.IPhoneMaskService>(Types.IPhoneMaskService);
+const authService = container.get<T.IAuthenticationService>(RegDictionary.IAuthenticationService);
+const phoneMaskService = container.get<T.IPhoneMaskService>(RegDictionary.IPhoneMaskService);
 
-export { authenticationService, phoneMaskService };
+export { authService, phoneMaskService };
