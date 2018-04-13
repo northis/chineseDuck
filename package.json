@@ -1,6 +1,6 @@
 {
   "name": "chinese_duck",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Webpart of the Chinese Duck Bot system",
   "main": "src/index.ts",
   "scripts": {

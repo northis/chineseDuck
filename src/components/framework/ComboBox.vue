@@ -1,5 +1,5 @@
 <template>
-  <select class="combobox form-control" v-model="selectedValue">
+  <select class="combobox form-control" v-model="selectedValue" @blur="focusLost">
     <slot />
     <template v-if="useFullList">
       <option disabled selected hidden value="">
@@ -24,6 +24,9 @@ export default {
   methods: {
     selectedChanged(val, oldVal) {
       this.$emit("selectedChanged", val);
+    },
+    focusLost(){
+      this.$emit("blur");
     }
   },
 

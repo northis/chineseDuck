@@ -9,7 +9,7 @@ export class FAuthService implements T.IAuthenticationService {
     private userKey: string | null;
     private storage: T.IStorageService;
 
-    constructor(@inject(RegDictionary.IStorageService)storage: T.IStorageService) {
+    constructor(@inject(RegDictionary.IStorageService) storage: T.IStorageService) {
         this.storage = storage;
         // this.storage.SetValue(FAuthService.StorageKey, '');
     }
@@ -18,12 +18,18 @@ export class FAuthService implements T.IAuthenticationService {
         return this.storage.GetValue(FAuthService.StorageKey) != null;
     }
 
-    public async SendCode(phone: string): Promise<E.EAuthStage> {
+    public async SendPhoneNumber(phone: string): Promise<E.EAuthStage> {
         await this.delay(1000);
-        return E.EAuthStage.CodeSent;
+        return E.EAuthStage.PhoneOk;
+    }
+
+    public async SendCode(code: string): Promise<E.EAuthStage> {
+        await this.delay(1000);
+        this.storage.SetValue(FAuthService.StorageKey, 'FakeKey');
+        return E.EAuthStage.Auth;
     }
 
     private delay(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
-       }
+    }
 }

@@ -22,6 +22,10 @@ export class AuthService implements T.IAuthenticationService {
         return this.storage.GetValue(AuthService.StorageKey) != null;
     }
 
+    public SendPhoneNumber(code: string): Promise<E.EAuthStage> {
+        throw new Error('Method not implemented.');
+    }
+
     public SendCode(code: string): Promise<E.EAuthStage> {
         throw new Error('Method not implemented.');
     }

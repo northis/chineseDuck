@@ -1,31 +1,32 @@
 <template>
   <div class="custom-control custom-checkbox">
     <input type="checkbox" class="custom-control-input" id="inputRemember" v-model="isChecked">
-    <label class="custom-control-label" for="inputRemember">{{Message}}</label>
+    <label class="custom-control-label" for="inputRemember">
+      <slot/>
+    </label>
   </div>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
+<script>
+export default {
+  watch: {
+    isChecked: {
+      handler: "isCheckedChanged",
+      immediate: true,
+      deep: false
+    }
+  },
 
-@Component
-export default class CheckBox extends Vue {
-  @Prop([Boolean])
-  public IsChecked: boolean;
+  methods: {
+    isCheckedChanged(val, oldVal) {
+      this.$emit("checkedChanged", val);
+    }
+  },
 
-  @Prop([String])
-  public Message: string;
-
-  get isChecked() {
-    return this.IsChecked;
+  data() {
+    return { isChecked: false };
   }
-
-  set isChecked(value: boolean) {
-    console.log(value);
-  }
-}
+};
 </script>
 
 <style lang="scss" scoped>

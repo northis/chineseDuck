@@ -16,10 +16,10 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.path.toLocaleLowerCase().includes('/login')) {
+    const isAuth = authService.IsAuthenticated();
+    if (to.path.toLocaleLowerCase().includes('/login') && !isAuth) {
     next();
   } else {
-    const isAuth = authService.IsAuthenticated();
     if (isAuth) {
       next();
     } else {

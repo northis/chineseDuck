@@ -16,6 +16,7 @@ export interface IUser {
 
 export interface IAuthenticationService {
     IsAuthenticated(): boolean;
+    SendPhoneNumber(phoneNumber: string): Promise<EAuthStage>;
     SendCode(code: string): Promise<EAuthStage>;
 }
 export interface IStorageService {
