@@ -1,6 +1,5 @@
 <template>
   <div>
-      <router-link to="/login">Login</router-link>
       <app-header></app-header>
       <app-main></app-main>
   </div>
@@ -26,5 +25,14 @@ export default class App extends Vue {
 
 <style lang="scss">
 
-//@import '../../assets/styles/mainStyles.scss';
+@import "../../assets/styles/mainStyles.scss";
+
+html,
+body {
+  height: unset;
+  width: unset;
+  display: unset;
+  align-items: unset;
+  justify-content: unset;
+}
 </style>

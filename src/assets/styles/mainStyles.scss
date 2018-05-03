@@ -18,7 +18,7 @@ button {
     @extend .btn-primary
 }
 
-$primary : $mainColor !default;
+$primary: $mainColor !default;
 @import "../../../node_modules/bootstrap/scss/bootstrap";
 body,
 html {
@@ -27,7 +27,16 @@ html {
     background-color: $backgroundColor; //@extend .fullSize;
 }
 
+.em1 {
+    width: 1em;
+    height: 1em;
+}
+
+.em2 {
+    width: 2em;
+    height: 2em;
+}
+
 a {
     color: $textColor;
-    text-decoration: underline;
 }

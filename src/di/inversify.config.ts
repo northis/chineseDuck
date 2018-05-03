@@ -1,16 +1,16 @@
 import { Container } from 'inversify';
 import 'reflect-metadata';
-import { AuthService } from '../services/AuthService';
-import { LocalStorageService } from '../services/LocalStorageService';
-import { PhoneMaskService } from '../services/phoneService';
+import * as C from '../types/classes';
 import * as I from '../types/interfaces';
-import RegDictionary from './regDictionary';
-
-import { FAuthService } from '../services/fake/FAuthService';
-import { FStorageService } from '../services/fake/FStorageService';
+import * as auth from './auth';
+import * as services from './services';
 
 const container = new Container();
-container.bind<I.IStorageService>(RegDictionary.IStorageService).to(FStorageService);
-container.bind<I.IAuthenticationService>(RegDictionary.IAuthenticationService).to(FAuthService);
-container.bind<I.IPhoneMaskService>(RegDictionary.IPhoneMaskService).to(PhoneMaskService);
+container.bind<I.IRootState>(I.Types.IRootState).to(C.RootState);
+auth.Bind(container);
+services.Bind(container);
+
+container.bind<string>(I.Types.TAppName).toConstantValue('Chinese Duck');
+container.bind<string>(I.Types.TVersion).toConstantValue('1.0.0');
+
 export default container;

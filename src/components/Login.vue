@@ -49,7 +49,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { State, Action, Getter } from "vuex-class";
+import { State, Action, Getter, Mutation, namespace } from "vuex-class";
 import Component from "vue-class-component";
 import * as T from "../types/interfaces";
 import * as E from "../types/enums";
@@ -57,11 +57,13 @@ import CheckBox from "./framework/CheckBox.vue";
 import ComboBox from "./framework/ComboBox.vue";
 import { Emit, Provide } from "vue-property-decorator";
 import { EAuthStage } from "../types/enums";
-import { triggerAsyncId } from "async_hooks";
 import { LoginVM } from "./viewModels/loginVM";
+import * as AuthTypes from "../store/auth/types";
 
 const mask = require("./directives/mask").default;
 Vue.use(mask);
+
+const AuthActions = namespace("auth", Action);
 
 @Component({
   components: {
@@ -73,6 +75,10 @@ export default class Login extends Vue {
   @State auth: T.IAuthState;
 
   @Provide() VM = new LoginVM();
+  @AuthActions fetchTelMasks: () => void;
+  // @Getter("authMethods", { namespace })
+  // authMethods: T.IAuthenticationService;
+  @Mutation("setAuthState") setAuthState: (st: E.EAuthStage) => void;
 
   @Emit()
   submit(e: Event) {
@@ -86,16 +92,16 @@ export default class Login extends Vue {
           return;
         }
 
-        this.auth.authService
+        this.authMethods
           .SendPhoneNumber(this.VM.UserTel)
           .then(
             ((st: E.EAuthStage) => {
-              this.updateStage(st);
+              this.setAuthState(st);
               setTimeout((() => this.setFocus("inputCode")).bind(this), 0);
             }).bind(this)
           )
           .catch(this.setError.bind(this));
-        this.auth.stage = E.EAuthStage.PhoneSent;
+        this.setAuthState(E.EAuthStage.PhoneSent);
         break;
 
       case E.EAuthStage.PhoneOk:
@@ -104,23 +110,24 @@ export default class Login extends Vue {
           return;
         }
 
-        this.auth.authService
+        this.authMethods
           .SendCode(this.VM.UserCode)
           .then(
-            ((st: E.EAuthStage) => {
-              this.updateStage(st);
+            ((st: T.IUser) => {
+              this.setAuthState(st);
 
               if (st != E.EAuthStage.Auth) {
                 e.preventDefault();
               } else {
                 const form = <HTMLFormElement>e.target;
                 if (form != null) {
-                  this.$router.push(form.action);}
+                  this.$router.push(form.action);
+                }
               }
             }).bind(this)
           )
           .catch(this.setError.bind(this));
-        this.auth.stage = E.EAuthStage.CodeSent;
+        this.setAuthState(E.EAuthStage.CodeSent);
         break;
 
       default:
@@ -129,9 +136,6 @@ export default class Login extends Vue {
     }
   }
 
-  updateStage(st: E.EAuthStage) {
-    this.auth.stage = st;
-  }
   setError(error: Error | null) {
     if (error == null) this.VM.CommonError = "";
     else this.VM.CommonError = error.message;
@@ -144,13 +148,20 @@ export default class Login extends Vue {
 
   mounted() {
     console.log("Login mounted");
+    this.fetchTelMasks();
   }
 
+  // get actions(){
+  //   return this.$store. as AuthTypes.IActions;
+  // }
+
   get mainCountries() {
-    return this.auth.phoneMaskService.GetMainCountries();
+    const masks = this.auth.telMasks;
+    return masks === null ? null : masks.mainCountriesMasks;
   }
   get otherCountries() {
-    return this.auth.phoneMaskService.GetOtherCountries();
+    const masks = this.auth.telMasks;
+    return masks === null ? null : masks.otherCountriesMasks;
   }
 
   get isPhoneInvalid() {
@@ -208,14 +219,5 @@ body {
   .form-control:focus {
     z-index: 1;
   }
-
-  // input[type="tel"] {
-  //   margin-top: $mBorderWidth;
-  //   margin-bottom: $mBorderWidth;
-  // }
-}
-
-.error {
-  color: red;
 }
 </style>

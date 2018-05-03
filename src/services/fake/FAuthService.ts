@@ -1,35 +1,28 @@
 import { inject, injectable } from 'inversify';
-import RegDictionary from '../../di/regDictionary';
+import Types from '../../di/types';
 import * as E from '../../types/enums';
 import * as T from '../../types/interfaces';
 
 @injectable()
 export class FAuthService implements T.IAuthenticationService {
-    public static StorageKey: string = 'UserKey';
-    private userKey: string | null;
-    private storage: T.IStorageService;
 
-    constructor(@inject(RegDictionary.IStorageService) storage: T.IStorageService) {
-        this.storage = storage;
-        // this.storage.SetValue(FAuthService.StorageKey, '');
-    }
-
-    public IsAuthenticated(): boolean {
-        return this.storage.GetValue(FAuthService.StorageKey) != null;
-    }
-
-    public async SendPhoneNumber(phone: string): Promise<E.EAuthStage> {
+    public async SendPhoneNumber(phone: string): Promise<boolean> {
         await this.delay(1000);
-        return E.EAuthStage.PhoneOk;
+        return true;
     }
 
-    public async SendCode(code: string): Promise<E.EAuthStage> {
+    public async SendCode(code: string): Promise<T.IUser | null> {
         await this.delay(1000);
-        this.storage.SetValue(FAuthService.StorageKey, 'FakeKey');
-        return E.EAuthStage.Auth;
+
+        return {
+            id: 1,
+            name: 'Mike',
+            key: '2',
+        };
     }
 
     private delay(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
+
 }

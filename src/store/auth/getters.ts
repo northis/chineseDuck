@@ -1,12 +1,14 @@
 import { Getter, GetterTree } from 'vuex';
-import * as T from '../../types/interfaces';
+import * as I from '../../types/interfaces';
+import * as T from './types';
+import { injectable } from 'inversify';
 
-const getPhoneMaskService: Getter<T.IAuthState, T.IRootState> = (state) => {
-    return state.phoneMaskService;
-};
+@injectable()
+export class Getters implements T.IGetters {
+    [key: string]: Getter<I.IAuthState, I.IRootState>;
 
-const getterTree: GetterTree<T.IAuthState, T.IRootState> = {
-    getPhoneMaskService,
-  };
+    public isAuthenticated(state: I.IAuthState): boolean {
+        return state.user != null;
+    }
+}
 
-export default getterTree;

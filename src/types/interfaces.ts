@@ -1,11 +1,19 @@
 import { EAuthStage } from './enums';
 
 export interface IAuthState {
-    user: IUser;
+    user: IUser | null;
     stage: EAuthStage;
     saveAuth: boolean;
-    phoneMaskService: IPhoneMaskService;
-    authService: IAuthenticationService;
+    telMasks: ITelMasks | null;
+}
+
+export interface ILocalizeService {
+  t(key: string): string;
+}
+
+export interface ITelMasks {
+    mainCountriesMasks: IPhoneMask[];
+    otherCountriesMasks: IPhoneMask[] | null;
 }
 
 export interface IUser {
@@ -15,9 +23,8 @@ export interface IUser {
 }
 
 export interface IAuthenticationService {
-    IsAuthenticated(): boolean;
-    SendPhoneNumber(phoneNumber: string): Promise<EAuthStage>;
-    SendCode(code: string): Promise<EAuthStage>;
+    SendPhoneNumber(phoneNumber: string): Promise<boolean>;
+    SendCode(code: string): Promise<IUser | null>;
 }
 export interface IStorageService {
     GetValue(key: string): string | null;
@@ -36,6 +43,20 @@ export interface IPhoneMask {
 }
 
 export interface IRootState {
-    version: string;
-    appName: string;
+    Version: string;
+    AppName: string;
+    AuthService: IAuthenticationService;
+    StorageService: IStorageService;
+    PhoneMaskService: IPhoneMaskService;
+    LocalizeService: ILocalizeService;
 }
+
+export const Types = {
+    IStorageService: Symbol('IStorageService'),
+    IAuthenticationService: Symbol('IAuthenticationService'),
+    IPhoneMaskService: Symbol('IPhoneMaskService'),
+    ILocalizeService: Symbol('ILocalizeService'),
+    IRootState: Symbol('IRootState'),
+    TVersion: Symbol('TVersion'),
+    TAppName: Symbol('TAppName'),
+};
