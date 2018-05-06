@@ -21,6 +21,10 @@ export interface IActions extends ActionTree<T.IAuthState, T.IRootState> {
 }
 
 export interface IAuthModule extends Module<T.IAuthState, T.IRootState> {
+    actions: IActions;
+    getters: IGetters;
+    mutations: IMutations;
+    state: T.IAuthState;
 }
 
 export const Types = {

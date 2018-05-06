@@ -45,10 +45,6 @@ export interface IPhoneMask {
 export interface IRootState {
     Version: string;
     AppName: string;
-    AuthService: IAuthenticationService;
-    StorageService: IStorageService;
-    PhoneMaskService: IPhoneMaskService;
-    LocalizeService: ILocalizeService;
 }
 
 export const Types = {

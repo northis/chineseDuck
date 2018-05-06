@@ -49,7 +49,8 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { State, Action, Getter, Mutation, namespace } from "vuex-class";
+import { Store } from "vuex";
+import { State } from "vuex-class";
 import Component from "vue-class-component";
 import * as T from "../types/interfaces";
 import * as E from "../types/enums";
@@ -59,11 +60,11 @@ import { Emit, Provide } from "vue-property-decorator";
 import { EAuthStage } from "../types/enums";
 import { LoginVM } from "./viewModels/loginVM";
 import * as AuthTypes from "../store/auth/types";
+import { AuthModule } from "../store/auth";
+import { getStoreAccessors, StoreAccessors } from "vuex-typescript";
 
 const mask = require("./directives/mask").default;
 Vue.use(mask);
-
-const AuthActions = namespace("auth", Action);
 
 @Component({
   components: {
@@ -73,12 +74,9 @@ const AuthActions = namespace("auth", Action);
 })
 export default class Login extends Vue {
   @State auth: T.IAuthState;
+  authStore: StoreAccessors<T.IAuthState, T.IRootState>;
 
   @Provide() VM = new LoginVM();
-  @AuthActions fetchTelMasks: () => void;
-  // @Getter("authMethods", { namespace })
-  // authMethods: T.IAuthenticationService;
-  @Mutation("setAuthState") setAuthState: (st: E.EAuthStage) => void;
 
   @Emit()
   submit(e: Event) {
@@ -92,8 +90,8 @@ export default class Login extends Vue {
           return;
         }
 
-        this.authMethods
-          .SendPhoneNumber(this.VM.UserTel)
+        this.$store..dispatch(this.authModule.actions.sendPhoneNumber.name)
+          .sendPhoneNumber(this.VM.UserTel)
           .then(
             ((st: E.EAuthStage) => {
               this.setAuthState(st);
@@ -147,13 +145,10 @@ export default class Login extends Vue {
   }
 
   mounted() {
+    this.authStore = getStoreAccessors<T.IAuthState, T.IRootState>("authModule");
+    (this.$store as Store<T.IRootState>).
     console.log("Login mounted");
-    this.fetchTelMasks();
   }
-
-  // get actions(){
-  //   return this.$store. as AuthTypes.IActions;
-  // }
 
   get mainCountries() {
     const masks = this.auth.telMasks;

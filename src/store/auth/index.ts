@@ -6,10 +6,11 @@ import * as T from './types';
 
 @injectable()
 export class AuthModule implements T.IAuthModule {
-
+    public namespaced: boolean;
     public actions: T.IActions;
     public getters: T.IGetters;
     public mutations: T.IMutations;
+    
     public state: I.IAuthState = {
         user: null,
         stage: E.EAuthStage.NoAuth,
@@ -23,5 +24,6 @@ export class AuthModule implements T.IAuthModule {
         this.actions = a;
         this.getters = g;
         this.mutations = m;
+        this.namespaced = true;
     }
 }

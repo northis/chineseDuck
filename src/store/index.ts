@@ -1,21 +1,30 @@
-import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
-import container from '../di/inversify.config';
 import { IRootState } from '../types/interfaces';
-import * as T from '../types/interfaces';
+import * as I from '../types/interfaces';
+import * as T from './types';
 import * as AuthTypes from './auth/types';
 import getters from './getters';
+import { inject, injectable } from 'inversify';
 
-const rState = container.get<T.IRootState>(T.Types.IRootState);
-const authModule = container.get<AuthTypes.IAuthModule>(AuthTypes.Types.IAuthModule);
+@injectable()
+export class RootStoreOptions implements T.IStoreOptions {
 
-Vue.use(Vuex);
-const store: StoreOptions<IRootState> = {
-    state: rState,
-    getters,
-    modules: {
-        authModule,
-    },
-};
+    public state: IRootState;
+    public getters: T.IGetters;
+    public modules: { authModule: AuthTypes.IAuthModule; };
 
-export default new Vuex.Store<IRootState>(store);
+    public constructor(
+        @inject(I.Types.IRootState) rs: IRootState,
+        @inject(T.Types.IGetters) gs: T.IGetters,
+        @inject(AuthTypes.Types.IAuthModule) authM: AuthTypes.IAuthModule) {
+        this.state = rs;
+        this.getters = gs;
+        this.modules.authModule = authM;
+    }
+}
+
+
+@injectable()
+export class RootStore implements Vuex.Store<I.IRootState>{
+
+}
