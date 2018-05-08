@@ -59,11 +59,9 @@ import ComboBox from "./framework/ComboBox.vue";
 import { Emit, Provide } from "vue-property-decorator";
 import { EAuthStage } from "../types/enums";
 import { LoginVM } from "./viewModels/loginVM";
-import * as AuthTypes from "../store/auth/types";
 import * as ST from "../store/types";
 import { getStoreAccessors, StoreAccessors } from "vuex-typescript";
-import { AuthModule } from "../store/auth/index";
-import lazyInject from '../di/decorators';
+import auth from '../store/auth';
 
 const mask = require("./directives/mask").default;
 Vue.use(mask);
@@ -77,7 +75,6 @@ Vue.use(mask);
 export default class Login extends Vue {
   @State auth: T.IAuthState;
   @Provide() VM = new LoginVM();
-  @lazyInject(AuthTypes.Types.IAuthModule) authM: AuthTypes.IAuthModule;
 
   @Emit()
   submit(e: Event) {
@@ -91,26 +88,15 @@ export default class Login extends Vue {
           return;
         }
 
-        this.store
-          .dispatch(this.authM.actions.sendPhoneNumber)(
-            this.$store,
-            this.VM.UserTel
-          )
+        this.store.dispatch(auth.actions.sendPhoneNumber)(this.$store, this.VM.UserTel)
           .then(
             ((st: E.EAuthStage) => {
-              this.store.commit(this.authM.mutations.onSetAuthState)(
-                this.$store,
-                st
-              );
               setTimeout((() => this.setFocus("inputCode")).bind(this), 0);
             }).bind(this)
           )
           .catch(this.setError.bind(this));
 
-        this.store.commit(this.authM.mutations.setAuthState)(
-          this.$store,
-          E.EAuthStage.PhoneSent
-        );
+        this.store.commit(auth.mutations.onSetAuthState)(this.$store, E.EAuthStage.PhoneSent);
         break;
 
       case E.EAuthStage.PhoneOk:
@@ -120,15 +106,10 @@ export default class Login extends Vue {
         }
 
         this.store
-          .dispatch(this.authM.actions.sendCode)(this.$store, this.VM.UserCode)
+          .dispatch(auth.actions.sendCode)(this.$store, this.VM.UserCode)
           .then(
             ((st: T.IUser) => {
               const userExists = st != null;
-              this.store.commit(this.authM.mutations.onSetAuthState)(
-                this.$store,
-                userExists ? E.EAuthStage.Auth : E.EAuthStage.NoAuth
-              );
-
               if (userExists) {
                 const form = <HTMLFormElement>e.target;
                 if (form != null) {
@@ -140,10 +121,7 @@ export default class Login extends Vue {
             }).bind(this)
           )
           .catch(this.setError.bind(this));
-        this.store.commit(this.authM.mutations.onSetAuthState)(
-          this.$store,
-          E.EAuthStage.CodeSent
-        );
+        this.store.commit(auth.mutations.onSetAuthState)(this.$store, E.EAuthStage.CodeSent);
         break;
 
       default:
@@ -164,17 +142,8 @@ export default class Login extends Vue {
 
   mounted() {
     console.log("Login mounted");
-
-    const g = this.store.dispatch(this.authM.actions.fetchTelMasks.handler);
-            // tslint:disable-next-line:no-debugger
-            debugger;
-const u = this.$store.dispatch('auth/fetchTelMasks');
-    g(this.$store).then(()=>{
-      
-            // tslint:disable-next-line:no-debugger
-            debugger;
-    });
-    this.store.dispatch(this.authM.actions.fetchUser)(this.$store);
+    this.store.dispatch(auth.actions.fetchTelMasks)(this.$store);
+    this.store.dispatch(auth.actions.fetchUser)(this.$store);
   }
 
   get store() {
@@ -197,12 +166,9 @@ const u = this.$store.dispatch('auth/fetchTelMasks');
     );
   }
 
-  created() {}
-
   @Emit()
   selectedChanged(value: string) {
     this.VM.CurrentMask = value;
-
     if (value != "") this.setFocus("inputPhone");
   }
 
