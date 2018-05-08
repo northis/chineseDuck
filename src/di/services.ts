@@ -1,7 +1,7 @@
 import { Container } from 'inversify';
+import { AuthService } from '../services/AuthService';
 import { FAuthService } from '../services/fake/FAuthService';
 import { FStorageService } from '../services/fake/FStorageService';
-import { AuthService } from '../services/AuthService';
 import { LocalizeService } from '../services/localizeService';
 import { LocalStorageService } from '../services/LocalStorageService';
 import { PhoneMaskService } from '../services/phoneService';

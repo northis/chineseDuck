@@ -3,7 +3,7 @@ import VueRouter, { Route } from 'vue-router';
 import LogoutModule from './components/Logout.vue';
 import AppModule from './components/main/App.vue';
 import container from './di/inversify.config';
-import * as storeItem from './store/instance';
+import store from './store';
 
 const LoginModule = () => import('./components/Login.vue');
 
@@ -21,7 +21,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const isAuth = storeItem.default.getters('auth/isAuthenticated') as boolean;
+  const isAuth = store.getters['auth/isAuthenticated'] as boolean;
   if (to.path.toLocaleLowerCase().includes('/login') && !isAuth) {
     next();
   } else {

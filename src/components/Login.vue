@@ -49,7 +49,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Store } from "vuex";
+import { Action,Store } from "vuex";
 import { State } from "vuex-class";
 import Component from "vue-class-component";
 import * as T from "../types/interfaces";
@@ -60,8 +60,10 @@ import { Emit, Provide } from "vue-property-decorator";
 import { EAuthStage } from "../types/enums";
 import { LoginVM } from "./viewModels/loginVM";
 import * as AuthTypes from "../store/auth/types";
-import { AuthModule } from "../store/auth";
+import * as ST from "../store/types";
 import { getStoreAccessors, StoreAccessors } from "vuex-typescript";
+import { AuthModule } from "../store/auth/index";
+import lazyInject from '../di/decorators';
 
 const mask = require("./directives/mask").default;
 Vue.use(mask);
@@ -74,9 +76,8 @@ Vue.use(mask);
 })
 export default class Login extends Vue {
   @State auth: T.IAuthState;
-  authStore: StoreAccessors<T.IAuthState, T.IRootState>;
-
   @Provide() VM = new LoginVM();
+  @lazyInject(AuthTypes.Types.IAuthModule) authM: AuthTypes.IAuthModule;
 
   @Emit()
   submit(e: Event) {
@@ -90,16 +91,26 @@ export default class Login extends Vue {
           return;
         }
 
-        this.$store..dispatch(this.authModule.actions.sendPhoneNumber.name)
-          .sendPhoneNumber(this.VM.UserTel)
+        this.store
+          .dispatch(this.authM.actions.sendPhoneNumber)(
+            this.$store,
+            this.VM.UserTel
+          )
           .then(
             ((st: E.EAuthStage) => {
-              this.setAuthState(st);
+              this.store.commit(this.authM.mutations.onSetAuthState)(
+                this.$store,
+                st
+              );
               setTimeout((() => this.setFocus("inputCode")).bind(this), 0);
             }).bind(this)
           )
           .catch(this.setError.bind(this));
-        this.setAuthState(E.EAuthStage.PhoneSent);
+
+        this.store.commit(this.authM.mutations.setAuthState)(
+          this.$store,
+          E.EAuthStage.PhoneSent
+        );
         break;
 
       case E.EAuthStage.PhoneOk:
@@ -108,24 +119,31 @@ export default class Login extends Vue {
           return;
         }
 
-        this.authMethods
-          .SendCode(this.VM.UserCode)
+        this.store
+          .dispatch(this.authM.actions.sendCode)(this.$store, this.VM.UserCode)
           .then(
             ((st: T.IUser) => {
-              this.setAuthState(st);
+              const userExists = st != null;
+              this.store.commit(this.authM.mutations.onSetAuthState)(
+                this.$store,
+                userExists ? E.EAuthStage.Auth : E.EAuthStage.NoAuth
+              );
 
-              if (st != E.EAuthStage.Auth) {
-                e.preventDefault();
-              } else {
+              if (userExists) {
                 const form = <HTMLFormElement>e.target;
                 if (form != null) {
                   this.$router.push(form.action);
                 }
+              } else {
+                e.preventDefault();
               }
             }).bind(this)
           )
           .catch(this.setError.bind(this));
-        this.setAuthState(E.EAuthStage.CodeSent);
+        this.store.commit(this.authM.mutations.onSetAuthState)(
+          this.$store,
+          E.EAuthStage.CodeSent
+        );
         break;
 
       default:
@@ -145,9 +163,22 @@ export default class Login extends Vue {
   }
 
   mounted() {
-    this.authStore = getStoreAccessors<T.IAuthState, T.IRootState>("authModule");
-    (this.$store as Store<T.IRootState>).
     console.log("Login mounted");
+
+    const g = this.store.dispatch(this.authM.actions.fetchTelMasks.handler);
+            // tslint:disable-next-line:no-debugger
+            debugger;
+const u = this.$store.dispatch('auth/fetchTelMasks');
+    g(this.$store).then(()=>{
+      
+            // tslint:disable-next-line:no-debugger
+            debugger;
+    });
+    this.store.dispatch(this.authM.actions.fetchUser)(this.$store);
+  }
+
+  get store() {
+    return getStoreAccessors<T.IAuthState, ST.IRootState>(ST.Modules.auth);
   }
 
   get mainCountries() {

@@ -1,21 +1,51 @@
 import { Container } from 'inversify';
 import 'reflect-metadata';
+import { Store } from 'vuex';
+import RootStore from '../store/rootStore';
+import RootStoreOptions from '../store/rootStoreOptions';
+import * as ST from '../store/types';
 import * as C from '../types/classes';
 import * as I from '../types/interfaces';
 import * as auth from './auth';
 import * as services from './services';
-import * as ST from '../store/types';
-import * as StoreClass from '../store';
 
-const container = new Container();
-container.bind<I.IRootState>(I.Types.IRootState).to(C.RootState);
+function configContainer() {
 
-container.bind<ST.IStoreOptions>(ST.Types.IStoreOptions).to(StoreClass.RootStoreOptions);
+    const container = new Container();
+    container.options.autoBindInjectable = true;
+    container.options.defaultScope = 'Singleton';
 
-auth.Bind(container);
-services.Bind(container);
+    container.bind<ST.IRootState>(ST.Types.IRootState).to(C.RootState);
 
-container.bind<string>(I.Types.TAppName).toConstantValue('Chinese Duck');
-container.bind<string>(I.Types.TVersion).toConstantValue('1.0.0');
+    container.bind<ST.IStoreOptions>(ST.Types.IStoreOptions).to(RootStoreOptions);
+    container.bind<Store<ST.IRootState>>(ST.Types.RootStore).to(RootStore);
 
-export default container;
+    auth.Bind(container);
+    services.Bind(container);
+
+    container.bind<string>(I.Types.TAppName).toConstantValue('Chinese Duck');
+    container.bind<string>(I.Types.TVersion).toConstantValue('1.0.0');
+
+    return container;
+}
+
+export class DI {
+
+    private static instance: DI;
+    private container: Container;
+
+    private constructor() {
+        this.container = configContainer();
+    }
+
+    public static get Instance() {
+        return this.instance || (this.instance = new this());
+    }
+
+    public get Container(): Container {
+        return DI.Instance.container;
+    }
+}
+
+const containerInstance = DI.Instance.Container;
+export default containerInstance;

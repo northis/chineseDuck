@@ -42,11 +42,6 @@ export interface IPhoneMask {
     n: string;
 }
 
-export interface IRootState {
-    Version: string;
-    AppName: string;
-}
-
 export const Types = {
     IStorageService: Symbol('IStorageService'),
     IAuthenticationService: Symbol('IAuthenticationService'),

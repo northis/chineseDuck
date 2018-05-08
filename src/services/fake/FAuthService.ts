@@ -1,5 +1,4 @@
 import { inject, injectable } from 'inversify';
-import Types from '../../di/types';
 import * as E from '../../types/enums';
 import * as T from '../../types/interfaces';
 

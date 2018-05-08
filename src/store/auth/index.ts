@@ -1,8 +1,11 @@
 import { inject, injectable } from 'inversify';
-import { Module } from 'vuex';
+import { ActionContext, Module } from 'vuex';
 import * as E from '../../types/enums';
 import * as I from '../../types/interfaces';
+import * as ST from '../types';
 import * as T from './types';
+
+type AuthContext = ActionContext<I.IAuthState, ST.IRootState>;
 
 @injectable()
 export class AuthModule implements T.IAuthModule {
@@ -10,7 +13,7 @@ export class AuthModule implements T.IAuthModule {
     public actions: T.IActions;
     public getters: T.IGetters;
     public mutations: T.IMutations;
-    
+
     public state: I.IAuthState = {
         user: null,
         stage: E.EAuthStage.NoAuth,

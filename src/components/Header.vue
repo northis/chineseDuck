@@ -32,14 +32,10 @@
 <script  lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { State, Action, Getter } from "vuex-class";
-import { IRootState } from "../types/interfaces";
 import * as T from "../types/interfaces";
 
 @Component
 export default class Header extends Vue {
-  @Getter getRootState: IRootState;
-  @State auth: T.IAuthState;
 
   mounted() {
     console.log("Header mounted");
