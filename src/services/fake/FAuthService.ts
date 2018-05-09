@@ -7,7 +7,13 @@ export class FAuthService implements T.IAuthenticationService {
 
     public async SendPhoneNumber(phone: string): Promise<boolean> {
         await this.delay(1000);
-        return true;
+        return new Promise<boolean>((resolve, reject) => {
+            try {
+                resolve(true);
+            } catch (e) {
+                reject(e);
+            }
+        });
     }
 
     public async SendCode(code: string): Promise<T.IUser | null> {

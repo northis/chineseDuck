@@ -11,42 +11,22 @@ const storageService = container.get<I.IStorageService>(I.Types.IStorageService)
 const authService = container.get<I.IAuthenticationService>(I.Types.IAuthenticationService);
 
 const mutations = {
-    onFetchTelMasks(state: I.IAuthState, payload: I.ITelMasks): void {
-        state.telMasks = payload;
-    },
-
-    onFetchUser(state: I.IAuthState, payload: I.IUser): void {
-        state.user = payload;
-    },
-    onLogOut(state: I.IAuthState): void {
+    logOut(state: I.IAuthState): void {
         state.user = null;
         state.stage = E.EAuthStage.NoAuth;
     },
-    onSetAuthState(state: I.IAuthState, payload: E.EAuthStage): void {
+    setAuthState(state: I.IAuthState, payload: E.EAuthStage): void {
         state.stage = payload;
     },
-    onSetUser(state: I.IAuthState, payload: I.IUser): void {
+    setUser(state: I.IAuthState, payload: I.IUser): void {
         state.user = payload;
     },
 };
 const actions = {
-    async fetchTelMasks(context: ActionContext<I.IAuthState, ST.IRootState>): Promise<I.ITelMasks> {
-        try {
-            const masksItem: I.ITelMasks = {
-                mainCountriesMasks: maskService.GetMainCountries(),
-                otherCountriesMasks: maskService.GetOtherCountries(),
-            };
-            context.commit(mutations.onFetchTelMasks.name, masksItem);
-            return Promise.resolve(masksItem);
-        } catch (e) {
-            return Promise.reject(e);
-        }
-    },
-
     async fetchUser(context: ActionContext<I.IAuthState, ST.IRootState>): Promise<I.IUser | null> {
         try {
             const user = storageService.GetValue(Consts.UserKeyString) as I.IUser | null;
-            context.commit(mutations.onFetchUser.name, user);
+            context.commit(mutations.setUser.name, user);
             return Promise.resolve(user);
         } catch (e) {
             return Promise.reject(e);
@@ -55,34 +35,49 @@ const actions = {
 
     async sendPhoneNumber(
         context: ActionContext<I.IAuthState, ST.IRootState>, phoneNumber: string): Promise<boolean> {
-        return new Promise<boolean>((resolve, reject) => {
-            authService.SendPhoneNumber(phoneNumber)
-                .then(res => {
-                    context.commit(mutations.onSetAuthState.name, res ? E.EAuthStage.PhoneOk : E.EAuthStage.NoAuth);
-                    resolve(res);
-                }, reject);
-        });
+        try {
+            const result = await authService.SendPhoneNumber(phoneNumber);
+            context.commit(mutations.setAuthState.name, result ? E.EAuthStage.PhoneOk : E.EAuthStage.NoAuth);
+
+            return result;
+        } catch (e) {
+            context.commit(mutations.setAuthState.name, E.EAuthStage.NoAuth);
+            return Promise.reject(e);
+        }
     },
 
     async sendCode(context: ActionContext<I.IAuthState, ST.IRootState>, code: string): Promise<I.IUser | null> {
-        return new Promise<I.IUser | null>((resolve, reject) => {
-            authService.SendCode(code)
-                .then(res => {
-                    const userExist = res != null;
-                    if (userExist) {
-                        context.commit(mutations.onSetUser.name, res);
-                    }
+        try {
+            const result = await authService.SendCode(code);
+            context.commit(mutations.setAuthState.name, result ? E.EAuthStage.PhoneOk : E.EAuthStage.NoAuth);
 
-                    context.commit(mutations.onSetAuthState.name, userExist
-                        ? E.EAuthStage.Auth : E.EAuthStage.NoAuth);
-                    resolve(res);
-                }, reject);
-        });
+            const userExist = result != null;
+            if (userExist) {
+                context.commit(mutations.setUser.name, result);
+            }
+
+            context.commit(mutations.setAuthState.name, userExist
+                ? E.EAuthStage.Auth : E.EAuthStage.NoAuth);
+            return result;
+
+        } catch (e) {
+            context.commit(mutations.setAuthState.name, E.EAuthStage.NoAuth);
+            return Promise.reject(e);
+        }
     },
 };
 const getters = {
     isAuthenticated(state: I.IAuthState): boolean {
         return state.user != null;
+    },
+
+    getTelMasks(): I.ITelMasks {
+        const masksItem  = {
+            mainCountriesMasks: maskService.GetMainCountries(),
+            otherCountriesMasks: maskService.GetOtherCountries(),
+        };
+
+        return masksItem;
     },
 };
 
@@ -93,7 +88,6 @@ const auth = {
         user: null,
         stage: E.EAuthStage.NoAuth,
         saveAuth: false,
-        telMasks: null,
     },
     getters,
     mutations,

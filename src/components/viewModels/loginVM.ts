@@ -1,3 +1,5 @@
+import { ITelMasks } from '../../types/interfaces';
+
 export class LoginVM {
     public CurrentMask: string = '';
     public IsPhoneReady: boolean = false;
@@ -9,4 +11,5 @@ export class LoginVM {
     public FirstFocusPhone: boolean = true;
     public FirstFocusCode: boolean = true;
     public CommonError: string = '';
+    public telMasks: ITelMasks | null;
 }

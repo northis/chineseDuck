@@ -40,3 +40,8 @@ html {
 a {
     color: $textColor;
 }
+
+.errorText {
+    @extend .invalid-feedback;
+    display: block;
+}

@@ -4,7 +4,6 @@ export interface IAuthState {
     user: IUser | null;
     stage: EAuthStage;
     saveAuth: boolean;
-    telMasks: ITelMasks | null;
 }
 
 export interface ILocalizeService {

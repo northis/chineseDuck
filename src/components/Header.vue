@@ -18,7 +18,9 @@
             </li>
           </ul>
           <div class="my-2 my-lg-0">
-            <span>{{this.auth.user.name}}</span>
+            <router-link class="nav-link" to="/user">
+              {{this.auth.user.name}}
+            </router-link>
             <router-link class="nav-link" to="/logout">
               Logout
             </router-link>
@@ -32,10 +34,12 @@
 <script  lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import { State } from "vuex-class";
 import * as T from "../types/interfaces";
 
 @Component
 export default class Header extends Vue {
+  @State auth: T.IAuthState;
 
   mounted() {
     console.log("Header mounted");

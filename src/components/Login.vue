@@ -14,11 +14,17 @@
         </div>
 
         <div class="form-group">
-          <input type="tel" id="inputPhone" class="form-control" @blur.once="VM.FirstFocusPhone = false" @invalid="VM.IsPhoneReady = false" @focus="VM.IsPhoneReady = true" v-mask="VM.CurrentMask" v-model="VM.UserTel" v-bind:class="{ 'is-invalid': isPhoneInvalid }" />
-          <div class="invalid-feedback">Invalid phone number.</div>
+          <input type="tel" id="inputPhone" class="form-control" @blur="VM.FirstFocusPhone = false" @invalid="VM.IsPhoneReady = false" @focus="VM.IsPhoneReady = true" v-mask="VM.CurrentMask" v-model="VM.UserTel" v-bind:class="{ 'is-invalid': isPhoneInvalid }" />
+          <div class="invalid-feedback">
+            Invalid phone number.
+          </div>
         </div>
 
         <app-checkBox class="mb-3 text-left" @checkedChanged="saveAuthChanged">Remember me</app-checkBox>
+
+        <div class="mb-3 text-left errorText" v-if="VM.CommonError != ''">
+          {{VM.CommonError}}
+        </div>
         <button class="btn-block" type="submit">Send SMS</button>
       </template>
 
@@ -39,17 +45,12 @@
       <div class="form-group" v-if="auth.stage == 3">
         Sending the code...
       </div>
-
-      <div class="invalid-feedback" v-bind:class="{ 'is-invalid': VM.CommonError!='' }">
-        {{VM.CommonError}}
-      </div>
     </form>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { Action,Store } from "vuex";
 import { State } from "vuex-class";
 import Component from "vue-class-component";
 import * as T from "../types/interfaces";
@@ -60,8 +61,8 @@ import { Emit, Provide } from "vue-property-decorator";
 import { EAuthStage } from "../types/enums";
 import { LoginVM } from "./viewModels/loginVM";
 import * as ST from "../store/types";
-import { getStoreAccessors, StoreAccessors } from "vuex-typescript";
-import auth from '../store/auth';
+import { getStoreAccessors } from "vuex-typescript";
+import auth from "../store/auth";
 
 const mask = require("./directives/mask").default;
 Vue.use(mask);
@@ -88,15 +89,19 @@ export default class Login extends Vue {
           return;
         }
 
-        this.store.dispatch(auth.actions.sendPhoneNumber)(this.$store, this.VM.UserTel)
+        this.store
+          .dispatch(auth.actions.sendPhoneNumber)(this.$store, this.VM.UserTel)
           .then(
             ((st: E.EAuthStage) => {
               setTimeout((() => this.setFocus("inputCode")).bind(this), 0);
             }).bind(this)
           )
-          .catch(this.setError.bind(this));
+          .catch(e => this.setError.bind(this, e)());
 
-        this.store.commit(auth.mutations.onSetAuthState)(this.$store, E.EAuthStage.PhoneSent);
+        this.store.commit(auth.mutations.setAuthState)(
+          this.$store,
+          E.EAuthStage.PhoneSent
+        );
         break;
 
       case E.EAuthStage.PhoneOk:
@@ -121,7 +126,10 @@ export default class Login extends Vue {
             }).bind(this)
           )
           .catch(this.setError.bind(this));
-        this.store.commit(auth.mutations.onSetAuthState)(this.$store, E.EAuthStage.CodeSent);
+        this.store.commit(auth.mutations.setAuthState)(
+          this.$store,
+          E.EAuthStage.CodeSent
+        );
         break;
 
       default:
@@ -130,9 +138,18 @@ export default class Login extends Vue {
     }
   }
 
-  setError(error: Error | null) {
-    if (error == null) this.VM.CommonError = "";
-    else this.VM.CommonError = error.message;
+  setError(e: Error | null) {
+    if (e == null) this.VM.CommonError = "";
+    else {
+      this.VM.CommonError = e.message;
+      this.restoreVM();
+    }
+  }
+
+  restoreVM(){
+      this.VM.UserTel = "";
+      this.VM.IsPhoneReady = this.VM.IsCodeReady = false;
+      this.VM.FirstFocusPhone = this.VM.FirstFocusCode = true;
   }
 
   setFocus(itemName: string) {
@@ -142,8 +159,11 @@ export default class Login extends Vue {
 
   mounted() {
     console.log("Login mounted");
-    this.store.dispatch(auth.actions.fetchTelMasks)(this.$store);
     this.store.dispatch(auth.actions.fetchUser)(this.$store);
+  }
+
+  created() {
+    this.VM.telMasks = this.store.read(auth.getters.getTelMasks)(this.$store);
   }
 
   get store() {
@@ -151,11 +171,11 @@ export default class Login extends Vue {
   }
 
   get mainCountries() {
-    const masks = this.auth.telMasks;
+    const masks = this.VM.telMasks;
     return masks === null ? null : masks.mainCountriesMasks;
   }
   get otherCountries() {
-    const masks = this.auth.telMasks;
+    const masks = this.VM.telMasks;
     return masks === null ? null : masks.otherCountriesMasks;
   }
 
