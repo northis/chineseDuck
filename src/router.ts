@@ -28,8 +28,8 @@ store.dispatch(`${ST.Modules.auth}/${auth.actions.fetchUser.name}`);
 
 const isAuthGetter = `${ST.Modules.auth}/${auth.getters.isAuthenticated.name}`;
 router.beforeEach((to, from, next) => {
-  const isAuth = store.getters[isAuthGetter] as boolean;
-  if (to.path.toLocaleLowerCase().includes('/login') && !isAuth) {
+const isAuth = store.getters[isAuthGetter] as boolean;
+if (to.path.toLocaleLowerCase().includes('/login') && !isAuth) {
     next();
   } else {
     if (isAuth) {

@@ -1,13 +1,14 @@
 const merge = require('webpack-merge');
 const common = require('./webpack.base.js');
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = merge(common, {
+    plugins: [
+      new webpack.HotModuleReplacementPlugin()
+    ],
  devtool: 'source-map',
   devServer: {
-      proxy: {
-          '/api': 'http://localhost:3000'
-      },
       contentBase: path.join(__dirname, 'public'),
       compress: true,
       historyApiFallback: true,
