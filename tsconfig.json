@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outDir": "./dist/",
+        "outDir": "./build/clientApp",
         "sourceMap": true,
         "strict": true,
         "strictPropertyInitialization": false,

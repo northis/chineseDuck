@@ -11,6 +11,17 @@ export function getMode() {
     return mode == undefined ? ModeEnum.Development : mode;
   }
 }
+export function isDebug() {
+  return getMode() !== ModeEnum.Production;
+}
+
+export function isVerbose() {
+  return process.argv.includes('--verbose');
+}
+
+export function isAnalyze() {
+  return process.argv.includes('--analyze') || process.argv.includes('--analyse');
+}
 
 export function getFontCopyPattern() {
   if (getMode() === ModeEnum.Production)
