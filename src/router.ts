@@ -14,7 +14,7 @@ const LoginModule = () => import('./components/Login.vue');
 Vue.use(VueRouter);
 const router = new VueRouter({
   mode: 'history',
-  base: '/',
+  base: '/client',
   routes: [
     { path: '/login', component: LoginModule/*, beforeEnter: requireAuth*/ },
     { path: '/', component: AppModule },

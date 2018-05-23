@@ -7,10 +7,10 @@ import webpackHotMiddleware from 'webpack-hot-middleware';
 import webpackConfig from './webpack.config';
 import run, { format } from './run';
 import clean from './clean';
-import * as helpers from './helpers';
+import { isDebug } from './common';
 
 
-const isDebug = helpers.isDebug();
+// https://webpack.js.org/configuration/watch/#watchoptions
 const watchOptions = {
   // Watching may not work with NFS and machines in VirtualBox
   // Uncomment next line if it is your case (use true or interval in milliseconds)
@@ -50,40 +50,22 @@ function createCompilationPromise(name, compiler, config) {
 
 let server;
 
+/**
+ * Launches a development web server with "live reload" functionality -
+ * synchronizing URLs, interactions and code changes across multiple devices.
+ */
 async function start() {
-  console.info(server);
   if (server) return server;
   server = express();
+  server.use(express.static(path.resolve(__dirname, '../public')));
 
-  server.use(express.static(path.resolve(__dirname, '../build/public')));
-
+  // Configure client-side hot module replacement
   const clientConfig = webpackConfig.find(config => config.name === 'client');
-  clientConfig.entry.client = ['./config/lib/webpackHotDevClient']
-    .concat(clientConfig.entry.client)
-    .sort((a, b) => b.includes('polyfill') - a.includes('polyfill'));
-  clientConfig.output.filename = clientConfig.output.filename.replace(
-    'chunkhash',
-    'hash',
-  );
-  clientConfig.output.chunkFilename = clientConfig.output.chunkFilename.replace(
-    'chunkhash',
-    'hash',
-  );
-  clientConfig.module.rules = clientConfig.module.rules.filter(
-    x => x.loader !== 'null-loader',
-  );
-  clientConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
 
-
+  // Configure server-side hot module replacement
   const serverConfig = webpackConfig.find(config => config.name === 'server');
-  serverConfig.output.hotUpdateMainFilename = 'updates/[hash].hot-update.json';
-  serverConfig.output.hotUpdateChunkFilename =
-    'updates/[id].[hash].hot-update.js';
-  serverConfig.module.rules = serverConfig.module.rules.filter(
-    x => x.loader !== 'null-loader',
-  );
-  serverConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
 
+  // Configure compilation
   await run(clean);
   const multiCompiler = webpack(webpackConfig);
   const clientCompiler = multiCompiler.compilers.find(
@@ -103,6 +85,7 @@ async function start() {
     serverConfig,
   );
 
+  // https://github.com/webpack/webpack-dev-middleware
   server.use(
     webpackDevMiddleware(clientCompiler, {
       publicPath: clientConfig.output.publicPath,
@@ -116,6 +99,7 @@ async function start() {
   let appPromise;
   let appPromiseResolve;
   let appPromiseIsResolved = true;
+
   serverCompiler.hooks.compile.tap('server', () => {
     if (!appPromiseIsResolved) return;
     appPromiseIsResolved = false;
@@ -161,6 +145,7 @@ async function start() {
         if (['abort', 'fail'].includes(app.hot.status())) {
           console.warn(`${hmrPrefix}Cannot apply update.`);
           delete require.cache[require.resolve('../build/server')];
+          // eslint-disable-next-line global-require, import/no-unresolved
           app = require('../build/server').default;
           console.warn(`${hmrPrefix}App has been reloaded.`);
         } else {
@@ -180,27 +165,33 @@ async function start() {
     }
   });
 
+  // Wait until both client-side and server-side bundles are ready
   await clientPromise;
   await serverPromise;
 
   const timeStart = new Date();
   console.info(`[${format(timeStart)}] Launching server...`);
 
+  // Load compiled src/server.js as a middleware
+  // eslint-disable-next-line global-require, import/no-unresolved
   app = require('../build/server').default;
   appPromiseIsResolved = true;
   appPromiseResolve();
+  if (isDebug()) {
 
-  await new Promise((resolve, reject) =>
-    browserSync.create().init(
-      {
-        server: '../build/server.js',
-        middleware: [server],
-        open: false,
-        ...(isDebug ? {} : { notify: false, ui: false }),
-      },
-      (error, bs) => (error ? reject(error) : resolve(bs)),
-    ),
-  );
+    // Launch the development server with Browsersync and HMR
+    await new Promise((resolve, reject) =>
+      browserSync.create().init(
+        {
+          // https://www.browsersync.io/docs/options
+          server: 'src/index.js',
+          middleware: [server],
+          open: false,
+        },
+        (error, bs) => (error ? reject(error) : resolve(bs)),
+      ),
+    );
+  }
 
   const timeEnd = new Date();
   const time = timeEnd.getTime() - timeStart.getTime();

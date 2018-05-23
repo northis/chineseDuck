@@ -7,20 +7,20 @@ import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import path from 'path';
 
 import webpack from 'webpack';
+import * as common from './common';
 import * as helpers from './helpers';
 import pkg from '../package.json';
 
-const mode = helpers.getMode();
-
+const mode = common.getMode();
 
 const ROOT_DIR = path.resolve(__dirname, '..');
 const resolvePath = (...args) => path.resolve(ROOT_DIR, ...args);
 const SRC_DIR = resolvePath('src');
 const BUILD_DIR = resolvePath('build');
 const CLIENT_DIR = resolvePath(BUILD_DIR, 'public');
-const isDebug = helpers.isDebug();
-const isVerbose = helpers.isVerbose();
-const isAnalyze = helpers.isAnalyze();
+const isDebug = common.isDebug();
+const isVerbose = common.isVerbose();
+const isAnalyze = common.isAnalyze();
 
 const reScript = /\.(js)$/;
 const reStyle = /\.(css|less|styl|scss|sass|sss)$/;
@@ -52,6 +52,10 @@ const config = {
     resolve: {
         modules: ['node_modules', 'src'],
     },
+
+    plugins: [
+        new webpack.HotModuleReplacementPlugin()
+    ],
 
     module: {
         strictExportPresence: true,
@@ -219,6 +223,7 @@ const clientConfig = {
     },
 
     plugins: [
+        ...config.plugins,
         new webpack.DefinePlugin({
             'process.env.BROWSER': true,
             'process.env.NODE_ENV': JSON.stringify(mode),
@@ -278,7 +283,7 @@ const serverConfig = {
     target: 'node',
 
     entry: {
-        server: ['@babel/polyfill/noConflict', './src/api/server.js'],
+        server: ['@babel/polyfill/noConflict', './src/server'],
     },
 
     output: {
@@ -351,6 +356,7 @@ const serverConfig = {
     // ],
 
     plugins: [
+        ...config.plugins,
         new webpack.DefinePlugin({
             'process.env.BROWSER': false,
             'process.env.NODE_ENV': JSON.stringify(mode),
@@ -377,5 +383,31 @@ const serverConfig = {
         }),
     ],
 };
+
+
+//if (isDebug) {
+
+    clientConfig.entry.client = ['./config/lib/webpackHotDevClient']
+        .concat(clientConfig.entry.client)
+        .sort((a, b) => b.includes('polyfill') - a.includes('polyfill'));
+    clientConfig.output.filename = clientConfig.output.filename.replace(
+        'chunkhash',
+        'hash',
+    );
+    clientConfig.output.chunkFilename = clientConfig.output.chunkFilename.replace(
+        'chunkhash',
+        'hash',
+    );
+    clientConfig.module.rules = clientConfig.module.rules.filter(
+        x => x.loader !== 'null-loader',
+    );
+
+    serverConfig.output.hotUpdateMainFilename = 'updates/[hash].hot-update.json';
+    serverConfig.output.hotUpdateChunkFilename =
+        'updates/[id].[hash].hot-update.js';
+    serverConfig.module.rules = serverConfig.module.rules.filter(
+        x => x.loader !== 'null-loader',
+    );
+//}
 
 export default [clientConfig, serverConfig];

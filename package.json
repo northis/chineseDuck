@@ -2,13 +2,12 @@
   "name": "chinese_duck",
   "version": "0.1.5",
   "description": "Webpart of the Chinese Duck Bot system",
-  "main": "src/api/server.js",
+  "main": "server/index.js",
   "scripts": {
     "test": "echo \\\"Error: no test specified\\\" && exit 1",
-    "build-prod": "babel-node server.js --mode production",
-    "build-dev": "babel-node server.js --mode development",
-    "start": "babel-node config/run start --mode development --verbose",
-    "clean": "babel-node config/run clean --mode development --verbose"
+    "build-prod": "babel-node config/run start --mode production",
+    "build-bundle": "babel-node config/run bundle --mode production",
+    "build-dev": "babel-node config/run start --mode development --verbose"
   },
   "engines": {
     "node": ">=6.13.1",

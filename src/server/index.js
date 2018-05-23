@@ -10,19 +10,6 @@ import PrettyError from 'pretty-error';
 import config from './config';
 import helmet from 'helmet';
 
-process.on('unhandledRejection', (reason, p) => {
-  console.error('Unhandled Rejection at:', p, 'reason:', reason);
-  // send entire app down. Process manager will restart it
-  process.exit(1);
-});
-
-//
-// Tell any CSS tooling (such as Material UI) to use all vendor prefixes if the
-// user agent is not known.
-// -----------------------------------------------------------------------------
-global.navigator = global.navigator || {};
-global.navigator.userAgent = global.navigator.userAgent || 'all';
-
 const app = express();
 
 // Register Node.js middleware
@@ -74,7 +61,10 @@ app.use((err, req, res, next) => {
 //   },
 // );
 
-app.use("/client", express.static(path.join(__dirname, "../build/public")));
+app.use("/client", express.static(path.join(__dirname, "/public")));
+app.get('/', function(req, res) {
+  res.redirect('/client');
+});
 
 //app.get("*", (req, res) => res.sendFile(HTML_FILE));
 
@@ -91,6 +81,7 @@ app.use("/client", express.static(path.join(__dirname, "../build/public")));
 const pe = new PrettyError();
 pe.skipNodeFiles();
 pe.skipPackage('express');
+
 // Hot Module Replacement
 // -----------------------------------------------------------------------------
 if (module.hot) {
@@ -98,11 +89,7 @@ if (module.hot) {
   module.hot.accept();
 }
 
-//
-// Launch the server
-// -----------------------------------------------------------------------------
 app.listen(config.port, () => {
   console.info(`The server is running at http://localhost:${config.port}/`);
 });
-
 export default app;
