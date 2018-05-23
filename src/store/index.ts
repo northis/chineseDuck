@@ -1,20 +1,19 @@
 import Vue from 'vue';
-import Vuex, { StoreOptions  } from 'vuex';
-import {auth} from './auth/index';
-import getters from './getters';
-import {RootState} from './types';
+import { Store, StoreOptions } from 'vuex';
+import Vuex from 'vuex';
+import container from '../di/inversify.config';
+import * as ST from '../store/types';
+import auth from './auth';
 
 Vue.use(Vuex);
-const store: StoreOptions<RootState> = {
+const store: StoreOptions<ST.IRootState> = {
     state: {
-        version: '1.0.0',
-        appName: 'Chinese Duck',
+        Version: '1.0.0',
+        AppName: 'Chinese Duck',
     },
-    getters,
     modules: {
         auth,
     },
-
 };
 
-export default new Vuex.Store<RootState>(store);
+export default new Vuex.Store<ST.IRootState>(store);

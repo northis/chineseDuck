@@ -1,16 +1,36 @@
 import { Container } from 'inversify';
 import 'reflect-metadata';
-import { AuthService } from '../services/AuthService';
-import * as I from '../services/interfaces';
-import { LocalStorageService } from '../services/LocalStorageService';
-import Types from './types';
+import { Store } from 'vuex';
+import * as services from './services';
 
-import { FAuthService } from '../services/fake/FAuthService';
-import { FStorageService } from '../services/fake/FStorageService';
+function configContainer() {
 
-const container = new Container();
-// container.bind<I.IStorageService>(Types.IStorageService).to(LocalStorageService);
-// container.bind<I.IAuthenticationService>(Types.IAuthenticationService).to(AuthService);
-container.bind<I.IStorageService>(Types.IStorageService).to(FStorageService);
-container.bind<I.IAuthenticationService>(Types.IAuthenticationService).to(FAuthService);
-export default container;
+    const container = new Container();
+    container.options.autoBindInjectable = true;
+    container.options.defaultScope = 'Singleton';
+
+    services.Bind(container);
+
+    return container;
+}
+
+export class DI {
+
+    private static instance: DI;
+    private container: Container;
+
+    private constructor() {
+        this.container = configContainer();
+    }
+
+    public static get Instance() {
+        return this.instance || (this.instance = new this());
+    }
+
+    public get Container(): Container {
+        return DI.Instance.container;
+    }
+}
+
+const containerInstance = DI.Instance.Container;
+export default containerInstance;

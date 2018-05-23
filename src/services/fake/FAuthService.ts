@@ -1,19 +1,33 @@
 import { inject, injectable } from 'inversify';
-import Types from '../../di/types';
-import * as T from '../interfaces';
+import * as E from '../../types/enums';
+import * as T from '../../types/interfaces';
 
 @injectable()
 export class FAuthService implements T.IAuthenticationService {
-    public static StorageKey: string = 'UserKey';
-    private userKey: string | null;
-    private storage: T.IStorageService;
 
-    constructor(@inject(Types.IStorageService)storage: T.IStorageService) {
-        this.storage = storage;
-        this.storage.SetValue(FAuthService.StorageKey, '');
+    public async SendPhoneNumber(phone: string): Promise<boolean> {
+        await this.delay(1000);
+        return new Promise<boolean>((resolve, reject) => {
+            try {
+                resolve(true);
+            } catch (e) {
+                reject(e);
+            }
+        });
     }
 
-    public IsAuthenticated(): boolean {
-        return this.storage.GetValue(FAuthService.StorageKey) != null;
+    public async SendCode(code: string): Promise<T.IUser | null> {
+        await this.delay(1000);
+
+        return {
+            id: 1,
+            name: 'Mike',
+            key: '2',
+        };
     }
+
+    private delay(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
 }
