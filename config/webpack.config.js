@@ -14,8 +14,6 @@ import pkg from '../package.json';
 
 const mode = common.getMode();
 
-process.env.API_CLIENT_URL = 'http://localhost:8000/client/__webpack_hmr';
-
 const ROOT_DIR = path.resolve(__dirname, '..');
 const resolvePath = (...args) => path.resolve(ROOT_DIR, ...args);
 const SRC_DIR = resolvePath('src');

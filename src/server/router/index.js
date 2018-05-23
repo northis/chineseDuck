@@ -1,10 +1,14 @@
-var express = require('express');
-var router = express.Router();
+import { Router } from "express";
+var router = Router();
 
-/* GET home page. */
-router.get('/api', function(req, res) {
-    
-  res.render('index', { title: 'Express' });
+// middleware that is specific to this router
+router.use(function timeLog(req, res, next) {
+  console.info('Time: ', Date.now());
+  next();
+});
+// define the home page route
+router.get('/', function(req, res) {
+  res.send('Birds home page');
 });
 
-module.exports = router;
+export default router;

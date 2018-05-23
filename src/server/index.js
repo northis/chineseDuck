@@ -6,10 +6,12 @@ import expressJwt, { UnauthorizedError as Jwt401Error } from 'express-jwt';
 //import jwt from 'jsonwebtoken';
 import PrettyError from 'pretty-error';
 //import passport from './passport';
-//import router from './router';
+import router from './router';
 import config from './config';
 import helmet from 'helmet';
 import compression from 'compression';
+import httpErrorPages from 'http-error-pages';
+import pkg from '../../package.json';
 
 const app = express();
 
@@ -63,21 +65,23 @@ app.use((err, req, res, next) => {
 //   },
 // );
 
-app.use("/client", express.static(path.join(__dirname, "/public")));
-app.get('*', function(req, res) {
-  res.redirect('/client');
+app.use('/client', express.static(path.join(__dirname, '/public')));
+
+app.use('/api/v1/', router);
+app.use('/', function (req, res, next) {
+  if (req.path === '/')
+    res.redirect('/client');
+  else {
+    const myError = new Error();
+    myError.status = 404;
+    next(myError);
+  }
 });
 
-//app.get("*", (req, res) => res.sendFile(HTML_FILE));
-
-// // Register server-side rendering middleware
-// app.get('/public', async (req, res, next) => {
-//   try {
-//     next();
-//   } catch (err) {
-//     next(err);
-//   }
-// });
+httpErrorPages.express(app, {
+  lang: 'en_US',
+  footer: `<p>${pkg.description} - ${pkg.version} <a href=${pkg.url}>Contact me</a></p>`
+});
 
 // Error handling
 const pe = new PrettyError();
