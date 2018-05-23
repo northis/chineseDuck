@@ -9,6 +9,7 @@ import PrettyError from 'pretty-error';
 //import router from './router';
 import config from './config';
 import helmet from 'helmet';
+import compression from 'compression';
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(helmet());
+app.use(compression());
 
 // Authentication
 app.use(
@@ -62,7 +64,7 @@ app.use((err, req, res, next) => {
 // );
 
 app.use("/client", express.static(path.join(__dirname, "/public")));
-app.get('/', function(req, res) {
+app.get('*', function(req, res) {
   res.redirect('/client');
 });
 

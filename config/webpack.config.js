@@ -4,6 +4,7 @@ import WriteFilePlugin from 'write-file-webpack-plugin';
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import nodeExternals from 'webpack-node-externals';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import UglifyJSPlugin from 'uglifyjs-webpack-plugin';
 import path from 'path';
 
 import webpack from 'webpack';
@@ -12,6 +13,8 @@ import * as helpers from './helpers';
 import pkg from '../package.json';
 
 const mode = common.getMode();
+
+process.env.API_CLIENT_URL = 'http://localhost:8000/client/__webpack_hmr';
 
 const ROOT_DIR = path.resolve(__dirname, '..');
 const resolvePath = (...args) => path.resolve(ROOT_DIR, ...args);
@@ -52,10 +55,6 @@ const config = {
     resolve: {
         modules: ['node_modules', 'src'],
     },
-
-    plugins: [
-        new webpack.HotModuleReplacementPlugin()
-    ],
 
     module: {
         strictExportPresence: true,
@@ -103,7 +102,7 @@ const config = {
         version: isVerbose,
     },
 
-    devtool: 'source-map',
+    devtool: isDebug ? 'source-map' : '',
 };
 
 // client-side bundle
@@ -113,7 +112,9 @@ const clientConfig = {
     name: 'client',
     target: 'web',
 
-    entry: ['webpack-hot-middleware/client', './src/index.ts'],
+    entry: (isDebug
+        ? ['./src/index.ts']
+        : ['./src/index.ts']),
     module: {
         ...config.module,
 
@@ -223,7 +224,6 @@ const clientConfig = {
     },
 
     plugins: [
-        ...config.plugins,
         new webpack.DefinePlugin({
             'process.env.BROWSER': true,
             'process.env.NODE_ENV': JSON.stringify(mode),
@@ -250,6 +250,7 @@ const clientConfig = {
             ? []
             : [
                 ...(isAnalyze ? [new BundleAnalyzerPlugin()] : []),
+                new UglifyJSPlugin()
             ]),
     ],
 
@@ -356,7 +357,6 @@ const serverConfig = {
     // ],
 
     plugins: [
-        ...config.plugins,
         new webpack.DefinePlugin({
             'process.env.BROWSER': false,
             'process.env.NODE_ENV': JSON.stringify(mode),
@@ -385,29 +385,31 @@ const serverConfig = {
 };
 
 
-//if (isDebug) {
+clientConfig.entry.client = ['./config/lib/webpackHotDevClient']
+    .concat(clientConfig.entry.client)
+    .sort((a, b) => b.includes('polyfill') - a.includes('polyfill'));
+clientConfig.output.filename = clientConfig.output.filename.replace(
+    'chunkhash',
+    'hash',
+);
+clientConfig.output.chunkFilename = clientConfig.output.chunkFilename.replace(
+    'chunkhash',
+    'hash',
+);
+clientConfig.module.rules = clientConfig.module.rules.filter(
+    x => x.loader !== 'null-loader',
+);
 
-    clientConfig.entry.client = ['./config/lib/webpackHotDevClient']
-        .concat(clientConfig.entry.client)
-        .sort((a, b) => b.includes('polyfill') - a.includes('polyfill'));
-    clientConfig.output.filename = clientConfig.output.filename.replace(
-        'chunkhash',
-        'hash',
-    );
-    clientConfig.output.chunkFilename = clientConfig.output.chunkFilename.replace(
-        'chunkhash',
-        'hash',
-    );
-    clientConfig.module.rules = clientConfig.module.rules.filter(
-        x => x.loader !== 'null-loader',
-    );
+serverConfig.output.hotUpdateMainFilename = 'updates/[hash].hot-update.json';
+serverConfig.output.hotUpdateChunkFilename =
+    'updates/[id].[hash].hot-update.js';
+serverConfig.module.rules = serverConfig.module.rules.filter(
+    x => x.loader !== 'null-loader',
+);
 
-    serverConfig.output.hotUpdateMainFilename = 'updates/[hash].hot-update.json';
-    serverConfig.output.hotUpdateChunkFilename =
-        'updates/[id].[hash].hot-update.js';
-    serverConfig.module.rules = serverConfig.module.rules.filter(
-        x => x.loader !== 'null-loader',
-    );
-//}
+if (isDebug) {
 
+    clientConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
+    serverConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
+}
 export default [clientConfig, serverConfig];

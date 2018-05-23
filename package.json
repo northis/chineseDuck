@@ -1,12 +1,12 @@
 {
   "name": "chinese_duck",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Webpart of the Chinese Duck Bot system",
   "main": "server/index.js",
   "scripts": {
     "test": "echo \\\"Error: no test specified\\\" && exit 1",
     "build-prod": "babel-node config/run start --mode production",
-    "build-bundle": "babel-node config/run bundle --mode production",
+    "build": "babel-node config/run build --mode production",
     "build-dev": "babel-node config/run start --mode development --verbose"
   },
   "engines": {
@@ -104,6 +104,7 @@
     "body-parser": "^1.18.3",
     "bootstrap": "^4.1.1",
     "browser-sync": "^2.24.4",
+    "compression": "^1.7.2",
     "cookie-parser": "^1.4.3",
     "express": "^4.16.3",
     "express-jwt": "^5.3.1",
