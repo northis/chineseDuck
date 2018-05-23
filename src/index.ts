@@ -1,26 +1,13 @@
-import Vue, { VNode } from 'vue';
-import VueRouter from 'vue-router';
-import './assets/mainStyles.less';
+import 'bootstrap';
+import Vue from 'vue';
+import VueI18n from 'vue-i18n';
+import './assets/styles/mainStyles.scss';
 import App from './components/main/App.vue';
-import router from './router';
-import storeItem from './store/index';
+import routerItem from './router';
+import * as storeItem from './store';
 
-Vue.use(VueRouter);
-
-class AppCore {
-  private instance: Vue;
-
-  constructor() {
-    this.instance = new Vue({
-      el: '#app',
-      router,
-      store : storeItem,
-      render(createElement): VNode {
-        return createElement(App);
-      },
-  });
-  }
-
-}
-
-const v = new AppCore();
+const instance = new Vue({
+  el: '#app',
+  router: routerItem,
+  store: storeItem.default,
+});

@@ -1,61 +1,36 @@
 <template>
-  <div id="app">
-      <app-header></app-header>
-      <app-main></app-main>
-  </div>
+    <div>
+        <app-header></app-header>
+        <app-main></app-main>
+    </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import Component from 'vue-class-component'
-import Header from '../Header.vue'
-import Main from '../Main.vue'
+import Component from "vue-class-component";
+import Header from "../Header.vue";
+import Main from "../Main.vue";
 
 @Component({
-    name: 'app',
-    components: {
-        'app-header': Header,
-        'app-main': Main
-    }
+  name: "app",
+  components: {
+    "app-header": Header,
+    "app-main": Main
+  }
 })
 export default class App extends Vue {
 }
-
 </script>
 
-<style lang="less">
+<style lang="scss">
+@import "../../assets/styles/mainStyles.scss";
 
-@import '../../assets/mainStyles.less';
-
+html,
 body {
-    font-family: Ubuntu;
-    color: #555;
-    background-color: @backgroundColor,
-}
-
-@media screen and (max-width: 478px) {
-    h1 { 
-        font-size: 70px; 
-        padding: 1px; 
-    }
- 
-    h2 { 
-        font-size: 13px; 
-        padding: 1px;
-    }
- 
-    body { 
-        font-size: 13px; 
-    }
-}
- 
-@media screen and (max-width: 740px) {
-    .left-col { 
-        width: 100%; 
-    }
- 
-    .sidebar { 
-        width: 100%; 
-    }
+  height: unset;
+  width: unset;
+  display: unset;
+  align-items: unset;
+  justify-content: unset;
 }
 </style>
