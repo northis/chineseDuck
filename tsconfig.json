@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "outDir": "./build/clientApp",
+        "sourceMap": true,
+        "strict": true,
+        "strictPropertyInitialization": false,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "target": "es5",
+        "experimentalDecorators": true,
+        "lib": [
+            "es2015",
+            "dom"
+        ],
+        "sourceRoot": "src",
+        "allowJs": true
+    },
+    "include": [
+        "./src/**/*"
+    ]
+}
