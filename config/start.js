@@ -1,4 +1,3 @@
-import path from 'path';
 import express from 'express';
 import browserSync from 'browser-sync';
 import webpack from 'webpack';
@@ -9,14 +8,10 @@ import run, { format } from './run';
 import clean from './clean';
 import { isDebug } from './common';
 
-
 // https://webpack.js.org/configuration/watch/#watchoptions
 const watchOptions = {
-  // Watching may not work with NFS and machines in VirtualBox
-  // Uncomment next line if it is your case (use true or interval in milliseconds)
-  // poll: true,
-  // Decrease CPU or memory usage in some file systems
-  // ignored: /node_modules/,
+  aggregateTimeout: 300,
+  poll: 1000
 };
 
 function createCompilationPromise(name, compiler, config) {
@@ -57,7 +52,7 @@ let server;
 async function start() {
   if (server) return server;
   server = express();
-  server.use(express.static(path.resolve(__dirname, '../public')));
+  //server.use(express.static(path.resolve(__dirname, '../public')));
 
   // Configure client-side hot module replacement
   const clientConfig = webpackConfig.find(config => config.name === 'client');
@@ -85,16 +80,17 @@ async function start() {
     serverConfig,
   );
 
-  // https://github.com/webpack/webpack-dev-middleware
   server.use(
     webpackDevMiddleware(clientCompiler, {
       publicPath: clientConfig.output.publicPath,
-      logLevel: 'silent',
-      watchOptions,
+      watchOptions
     }),
   );
 
-  server.use(webpackHotMiddleware(clientCompiler, { log: false }));
+  server.use(webpackHotMiddleware(clientCompiler, {
+    log: false,
+    heartbeat: 2000
+  }));
 
   let appPromise;
   let appPromiseResolve;
@@ -108,6 +104,7 @@ async function start() {
   });
 
   let app;
+
   server.use((req, res) => {
     appPromise
       .then(() => app.handle(req, res))
@@ -172,9 +169,8 @@ async function start() {
   const timeStart = new Date();
   console.info(`[${format(timeStart)}] Launching server...`);
 
-  // Load compiled src/server.js as a middleware
-  // eslint-disable-next-line global-require, import/no-unresolved
   app = require('../build/server').default;
+  console.info(app);
   appPromiseIsResolved = true;
   appPromiseResolve();
   if (isDebug()) {
@@ -184,9 +180,9 @@ async function start() {
       browserSync.create().init(
         {
           // https://www.browsersync.io/docs/options
-          server: 'src/index.js',
+          server: 'src/server',
           middleware: [server],
-          open: false,
+          open: false
         },
         (error, bs) => (error ? reject(error) : resolve(bs)),
       ),

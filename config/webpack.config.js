@@ -6,6 +6,7 @@ import nodeExternals from 'webpack-node-externals';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import UglifyJSPlugin from 'uglifyjs-webpack-plugin';
 import path from 'path';
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 import webpack from 'webpack';
 import * as common from './common';
@@ -47,7 +48,7 @@ const config = {
             ? '[name].chunk.js'
             : '[name].[chunkhash:8].chunk.js',
         devtoolModuleFilenameTemplate: info =>
-            path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
+            path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')
     },
 
     resolve: {
@@ -77,7 +78,7 @@ const config = {
                                     modules: false,
                                     useBuiltIns: false,
                                     debug: false,
-                                },
+                                }
                             ],
                         ]
                     },
@@ -109,10 +110,7 @@ const clientConfig = {
 
     name: 'client',
     target: 'web',
-
-    entry: (isDebug
-        ? ['./src/index.ts']
-        : ['./src/index.ts']),
+    entry: (isDebug ? ['webpack-hot-middleware/client', './src/index.ts'] : ['./src/index.ts']),
     module: {
         ...config.module,
 
@@ -128,57 +126,73 @@ const clientConfig = {
             },
             {
                 test: /\.scss$/,
-                use: [{
-                    loader: MiniCssExtractPlugin.loader,
-                }, {
-                    loader: 'css-loader',
-                    options: {
-                        importLoaders: 1,
-                        sourceMap: isDebug,
-                        modules: true,
-                        localIdentName: isDebug
-                            ? '[name]-[local]-[hash:base64:5]'
-                            : '[hash:base64:5]',
-                        minimize: isDebug ? false : minimizeCssOptions,
-                    }
-                }, {
-                    loader: 'postcss-loader',
-                    options: {
-                        plugins: () => {
-                            [
-                                require('precss'),
-                                require('autoprefixer')
-                            ]
+                use: [
+                    'vue-style-loader', MiniCssExtractPlugin.loader, {
+                        loader: 'css-loader',
+                        options: {
+                            importLoaders: 1,
+                            sourceMap: isDebug,
+                            modules: false,
+                            localIdentName: isDebug
+                                ? '[name]-[local]-[hash:base64:5]'
+                                : '[hash:base64:5]',
+                            minimize: isDebug ? false : minimizeCssOptions,
                         }
-                    }
-                }, {
-                    loader: 'sass-loader'
-                }]
+                    }, {
+                        loader: 'postcss-loader',
+                        options: {
+                            plugins: () => {
+                                [
+                                    require('precss'),
+                                    require('autoprefixer')
+                                ]
+                            }
+                        }
+                    }, {
+                        loader: 'sass-loader'
+                    }]
             },
             {
                 test: /\.css$/,
-                loaders: [
-                    MiniCssExtractPlugin.loader,
-                    'vue-style-loader',
-                    'css-loader'
-                ],
+                oneOf: [
+                    // this matches `<style module>`
+                    {
+                        resourceQuery: /module/,
+                        use: [
+                            'vue-style-loader',
+                            {
+                                loader: 'css-loader',
+                                options: {
+                                    modules: true,
+                                    localIdentName: '[local]_[hash:base64:5]'
+                                }
+                            }
+                        ]
+                    },
+                    // this matches plain `<style>` or `<style scoped>`
+                    {
+                        use: [
+                            'vue-style-loader',
+                            MiniCssExtractPlugin.loader,
+                            'css-loader'
+                        ]
+                    }
+                ]
             },
             {
                 test: /\.vue$/,
                 loader: 'vue-loader',
                 options: {
-                    loaders: {
-                        ts: 'ts-loader',
-                        'scss': 'vue-style-loader!css-loader!sass-loader',
-                        'sass': 'vue-style-loader!css-loader!sass-loader?indentedSyntax'
-                    },
                     esModule: true
                 }
             },
             {
                 test: /\.js$/,
                 loader: 'babel-loader',
-                exclude: /node_modules/
+                exclude: file => (
+                    /node_modules/.test(file) &&
+                    !/\.vue\.js/.test(file)
+                )
             },
             {
                 test: reImage,
@@ -242,7 +256,11 @@ const clientConfig = {
             helpers.getFontCopyPattern(),
             { from: './node_modules/jquery/dist/jquery.min.js', to: './jquery.min.js' },
         ]),
-        new WriteFilePlugin(),
+        new VueLoaderPlugin(),
+        new WriteFilePlugin({
+            // exclude hot-update files
+            test: /^(?!.*(hot)).*/,
+        }),
 
         ...(isDebug
             ? []
@@ -282,14 +300,14 @@ const serverConfig = {
     target: 'node',
 
     entry: {
-        server: ['@babel/polyfill/noConflict', './src/server'],
+        server: ['@babel/polyfill', './src/server'],
     },
-
     output: {
         ...config.output,
         path: BUILD_DIR,
         filename: '[name].js',
         chunkFilename: 'chunks/[name].js',
+        libraryTarget: 'commonjs-module'
     },
 
     // Webpack mutates resolve object, so clone it to avoid issues
@@ -318,9 +336,9 @@ const serverConfig = {
                                             targets: {
                                                 node: pkg.engines.node.match(/(\d+\.?)+/)[0],
                                             },
-                                            modules: false,
                                             useBuiltIns: false,
                                             debug: false,
+                                            modules: false
                                         },
                                     ],
                         ),
@@ -377,15 +395,15 @@ const serverConfig = {
     },
     externals: [
         nodeExternals({
-            whitelist: [reStyle, reImage],
+            whitelist: [reStyle, reImage,],
         }),
     ],
 };
 
 
-clientConfig.entry.client = ['./config/lib/webpackHotDevClient']
-    .concat(clientConfig.entry.client)
-    .sort((a, b) => b.includes('polyfill') - a.includes('polyfill'));
+// clientConfig.entry.client = ['./config/lib/webpackHotDevClient']
+//     .concat(clientConfig.entry.client)
+//     .sort((a, b) => b.includes('polyfill') - a.includes('polyfill'));
 clientConfig.output.filename = clientConfig.output.filename.replace(
     'chunkhash',
     'hash',
