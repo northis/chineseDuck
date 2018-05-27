@@ -100,18 +100,21 @@ async function start() {
   serverCompiler.hooks.compile.tap('server', () => {
     if (!appPromiseIsResolved) return;
     appPromiseIsResolved = false;
-    // eslint-disable-next-line no-return-assign
     appPromise = new Promise(resolve => (appPromiseResolve = resolve));
   });
 
   let app;
   let listen;
 
+  function expressInit() {
+    const srv = require('../build/server').default;
+    app = srv.app;
+    listen = srv.listen;
+  }
   function expressReload() {
     listen.close();
     delete require.cache[require.resolve('../build/server')];
-    // eslint-disable-next-line global-require, import/no-unresolved
-    app = require('../build/server').default;
+    expressInit();
   }
   server.use((req, res) => {
     appPromise
@@ -174,10 +177,7 @@ async function start() {
 
   const timeStart = new Date();
   console.info(`[${format(timeStart)}] Launching server...`);
-
-  const srv = require('../build/server').default;
-  app = srv.app;
-  listen = srv.listen;
+  expressInit();
 
   appPromiseIsResolved = true;
   appPromiseResolve();

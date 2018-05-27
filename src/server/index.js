@@ -3,11 +3,11 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import PrettyError from 'pretty-error';
-import router from './router';
+import api from './api';
 //import * as errors from './errors';
 import config from './config';
 import helmet from 'helmet';
-//import compression from 'compression';
+import compression from 'compression';
 import httpErrorPages from 'http-error-pages';
 import pkg from '../../package.json';
 
@@ -17,18 +17,13 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(helmet());
-//app.use(compression());
-
+app.use(compression());
 
 app.use('/client', express.static(path.join(__dirname, '/public')));
 
-app.use('/api/v1/', router);
-app.use('/', function (req, res, next) {
-  if (req.path === '/')
-    res.redirect('/client');
-  // else if(!req.path.startsWith('/api/v1/')) {
-  //   errors.e401(next);
-  // }
+app.use('/api/v1/', api);
+app.use('/', function (req, res) {
+  res.redirect('/client');
 });
 
 httpErrorPages.express(app, {
@@ -49,7 +44,7 @@ const listen = app.listen(config.port, () => {
 // -----------------------------------------------------------------------------
 if (module.hot) {
   app.hot = module.hot;
-  module.hot.accept('./router');
+  module.hot.accept('./api');
 }
 
-export default {app, listen};
+export default { app, listen };

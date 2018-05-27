@@ -1,7 +1,7 @@
 import { Router } from "express";
-import * as errors from '../errors';
-import config from '../config';
-import jwt from 'express-jwt';
+// import * as errors from '../errors';
+// import config from '../config';
+//import jwt from 'express-jwt';
 var router = Router();
 
 // router.use(

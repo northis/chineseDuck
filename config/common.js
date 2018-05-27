@@ -8,7 +8,7 @@ export function getMode() {
     var indexModeArg = process.argv.indexOf('--mode');
     if (indexModeArg != -1) {
         var mode = process.argv[indexModeArg + 1];
-        return mode == undefined ? ModeEnum.Development : mode;
+        return mode == undefined ? ModeEnum.Production : mode;
     }
 }
 

@@ -1,14 +1,14 @@
 {
   "name": "chinese_duck",
   "url": "https://t.me/DeathWhinny",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Webpart of the Chinese Duck Bot system",
   "main": "server/index.js",
   "scripts": {
     "test": "echo \\\"Error: no test specified\\\" && exit 1",
     "build-prod": "babel-node config/run start --mode production",
-    "build-dev-run": "babel-node config/run start --mode development --hot",
-    "build-dev-run-verbose": "babel-node config/run start --mode development --verbose --hot",
+    "build-dev-run": "babel-node config/run start --mode development",
+    "build-dev-run-verbose": "babel-node config/run start --mode development --verbose",
     "build": "babel-node config/run build --mode production",
     "build-dev": "babel-node config/run build --mode development"
   },

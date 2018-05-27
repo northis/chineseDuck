@@ -378,12 +378,6 @@ const serverConfig = {
             'process.env.NODE_ENV': JSON.stringify(mode),
             __DEV__: isDebug,
         }),
-
-        new webpack.BannerPlugin({
-            banner: 'require("source-map-support").install();',
-            raw: true,
-            entryOnly: false,
-        }),
     ],
     node: {
         console: false,
