@@ -2,19 +2,19 @@
 @import "../fontFaces.main.scss";
 @font-face {
     font-family: 'Aleo';
-    src: url('/client/fonts/aleo-italic-webfont.ttf');
+    src: url('/fonts/aleo-italic-webfont.ttf');
     font-style: italic, oblique;
 }
 
 @font-face {
     font-family: 'Aleo';
-    src: url('/client/fonts/aleo-bold-webfont.ttf');
+    src: url('/fonts/aleo-bold-webfont.ttf');
     font-weight: bold;
 }
 
 @font-face {
     font-family: 'Aleo';
-    src: url('/client/fonts/aleo-bolditalic-webfont.ttf');
+    src: url('/fonts/aleo-bolditalic-webfont.ttf');
     font-weight: bold;
     font-style: italic, oblique;
 }

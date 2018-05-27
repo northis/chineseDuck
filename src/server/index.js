@@ -19,11 +19,14 @@ app.use(bodyParser.json());
 app.use(helmet());
 app.use(compression());
 
-app.use('/client', express.static(path.join(__dirname, '/public')));
-
 app.use('/api/v1/', api);
-app.use('/', function (req, res) {
-  res.redirect('/client');
+app.use(express.static(path.join(__dirname, '/public')));
+
+
+// handle every other route with index.html, which will contain
+// a script tag to your application's JavaScript file(s).
+app.get('*', function (request, response) {
+  response.sendFile(path.resolve(__dirname, 'index.html'));
 });
 
 httpErrorPages.express(app, {
