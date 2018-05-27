@@ -45,6 +45,7 @@ function createCompilationPromise(name, compiler, config) {
 
 let server;
 
+
 /**
  * Launches a development web server with "live reload" functionality -
  * synchronizing URLs, interactions and code changes across multiple devices.
@@ -104,7 +105,14 @@ async function start() {
   });
 
   let app;
+  let listen;
 
+  function expressReload() {
+    listen.close();
+    delete require.cache[require.resolve('../build/server')];
+    // eslint-disable-next-line global-require, import/no-unresolved
+    app = require('../build/server').default;
+  }
   server.use((req, res) => {
     appPromise
       .then(() => app.handle(req, res))
@@ -136,15 +144,13 @@ async function start() {
             console.info(`${hmrPrefix} - ${moduleId}`),
           );
           checkForUpdate(true);
+          expressReload();
         }
       })
       .catch(error => {
         if (['abort', 'fail'].includes(app.hot.status())) {
           console.warn(`${hmrPrefix}Cannot apply update.`);
-          delete require.cache[require.resolve('../build/server')];
-          // eslint-disable-next-line global-require, import/no-unresolved
-          app = require('../build/server').default;
-          console.warn(`${hmrPrefix}App has been reloaded.`);
+          expressReload();
         } else {
           console.warn(
             `${hmrPrefix}Update failed: ${error.stack || error.message}`,
@@ -169,8 +175,10 @@ async function start() {
   const timeStart = new Date();
   console.info(`[${format(timeStart)}] Launching server...`);
 
-  app = require('../build/server').default;
-  console.info(app);
+  const srv = require('../build/server').default;
+  app = srv.app;
+  listen = srv.listen;
+
   appPromiseIsResolved = true;
   appPromiseResolve();
   if (isDebug()) {

@@ -22,7 +22,7 @@ router.use(function timeLog(req, res, next) {
 });
 // define the home page route
 router.get('/', function(req, res) {
-  res.send('Birds home page0');
+  res.send('Birds home page1');
 });
 
 export default router;

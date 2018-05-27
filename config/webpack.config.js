@@ -307,7 +307,7 @@ const serverConfig = {
         path: BUILD_DIR,
         filename: '[name].js',
         chunkFilename: 'chunks/[name].js',
-        libraryTarget: 'commonjs-module'
+        libraryTarget: 'commonjs2'
     },
 
     // Webpack mutates resolve object, so clone it to avoid issues

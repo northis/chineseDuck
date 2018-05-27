@@ -41,7 +41,7 @@ const pe = new PrettyError();
 pe.skipNodeFiles();
 pe.skipPackage('express');
 
-app.listen(config.port, () => {
+const listen = app.listen(config.port, () => {
   console.info(`The server is running at http://localhost:${config.port}/`);
 });
 
@@ -52,4 +52,4 @@ if (module.hot) {
   module.hot.accept('./router');
 }
 
-export default app;
+export default {app, listen};
