@@ -379,6 +379,10 @@ const serverConfig = {
             'process.env.NODE_ENV': JSON.stringify(mode),
             __DEV__: isDebug,
         }),
+        new CopyWebpackPlugin([
+            { from: './src/server/api/swagger.json', to: './swagger.json' },
+            { from: './src/server/api/swagger.yaml', to: './swagger.yaml' },
+        ]),
     ],
     node: {
         console: false,
