@@ -46,6 +46,9 @@
         Sending the code...
       </div>
     </form>
+    <p class="mt-5 mb-3 text-muted">
+      <app-footer></app-footer>
+    </p>
   </div>
 </template>
 
@@ -63,6 +66,7 @@ import { LoginVM } from "./viewModels/loginVM";
 import * as ST from "../store/types";
 import { getStoreAccessors } from "vuex-typescript";
 import auth from "../store/auth";
+import Footer from "./Footer.vue";
 
 const mask = require("./directives/mask").default;
 Vue.use(mask);
@@ -70,7 +74,8 @@ Vue.use(mask);
 @Component({
   components: {
     "app-checkBox": CheckBox,
-    "app-comboBox": ComboBox
+    "app-comboBox": ComboBox,
+    "app-footer": Footer
   }
 })
 export default class Login extends Vue {
@@ -146,10 +151,10 @@ export default class Login extends Vue {
     }
   }
 
-  restoreVM(){
-      this.VM.UserTel = "";
-      this.VM.IsPhoneReady = this.VM.IsCodeReady = false;
-      this.VM.FirstFocusPhone = this.VM.FirstFocusCode = true;
+  restoreVM() {
+    this.VM.UserTel = "";
+    this.VM.IsPhoneReady = this.VM.IsCodeReady = false;
+    this.VM.FirstFocusPhone = this.VM.FirstFocusCode = true;
   }
 
   setFocus(itemName: string) {

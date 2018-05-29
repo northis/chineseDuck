@@ -120,8 +120,8 @@
     "jsonwebtoken": "^8.2.1",
     "passport": "^0.4.0",
     "popper.js": "^1.14.3",
-    "pretty-error": "^2.1.1",
     "reflect-metadata": "^0.1.12",
+    "swagger-ui-express": "^3.0.9",
     "vue": "^2.5.16",
     "vue-i18n": "^7.7.0",
     "vuex": "^3.0.1"
