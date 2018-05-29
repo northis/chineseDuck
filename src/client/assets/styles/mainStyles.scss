@@ -19,7 +19,7 @@ button {
 }
 
 $primary: $mainColor !default;
-@import "../../../node_modules/bootstrap/scss/bootstrap";
+@import "../../../../node_modules/bootstrap/scss/bootstrap";
 body,
 html {
     font-family: $mainFont, Georgia, 'Times New Roman', Times, serif;

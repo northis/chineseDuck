@@ -2,9 +2,9 @@ import { getMode, ModeEnum } from './common';
 
 export function getFontCopyPattern() {
   if (getMode() === ModeEnum.Production)
-    return { from: './src/assets/fonts', to: './fonts/' }
+    return { from: './src/client/assets/fonts', to: './fonts/' }
   else
-    return { from: './src/assets/fonts/aleo-regular-webfont.ttf', to: './fonts/aleo-regular-webfont.ttf' }
+    return { from: './src/client/assets/fonts/aleo-regular-webfont.ttf', to: './fonts/aleo-regular-webfont.ttf' }
 }
 
 export function overrideRules(rules, patch) {

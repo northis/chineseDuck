@@ -31,7 +31,7 @@ export default {
   },
 
   data() {
-    const cBpxJs = require("../../../node_modules/@danielfarrell/bootstrap-combobox/js/bootstrap-combobox.js");
+    const cBpxJs = require("../../../../node_modules/@danielfarrell/bootstrap-combobox/js/bootstrap-combobox.js");
     let cb = $(".combobox");
     cb.combobox();
 
@@ -41,5 +41,5 @@ export default {
 </script>
 
 <style scoped>
-@import "../../../node_modules/@danielfarrell/bootstrap-combobox/css/bootstrap-combobox.css";
+@import "../../../../node_modules/@danielfarrell/bootstrap-combobox/css/bootstrap-combobox.css";
 </style>

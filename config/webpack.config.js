@@ -110,7 +110,7 @@ const clientConfig = {
 
     name: 'client',
     target: 'web',
-    entry: (isDebug ? ['webpack-hot-middleware/client', './src/index.ts'] : ['./src/index.ts']),
+    entry: (isDebug ? ['webpack-hot-middleware/client', './src/client/index.ts'] : ['./src/client/index.ts']),
     module: {
         ...config.module,
 
@@ -246,13 +246,13 @@ const clientConfig = {
             chunkFilename: "[id].css"
         }),
         new HtmlWebpackPlugin({
-            template: 'src/index.html',
+            template: 'src/client/index.html',
             inject: true,
             hash: true
         }),
         new CopyWebpackPlugin([
-            { from: './src/assets/favicon', to: './favicon/' },
-            { from: './src/assets/favicon/favicon.ico', to: './favicon.ico' },
+            { from: './src/client/assets/favicon', to: './favicon/' },
+            { from: './src/client/assets/favicon/favicon.ico', to: './favicon.ico' },
             helpers.getFontCopyPattern(),
             { from: './node_modules/jquery/dist/jquery.min.js', to: './jquery.min.js' },
         ]),
