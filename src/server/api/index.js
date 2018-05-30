@@ -1,4 +1,5 @@
 import { Router } from "express";
+import * as user from "./handlers/user";
 
 // import * as errors from '../errors';
 // import config from '../config';
@@ -15,6 +16,11 @@ import { Router } from "express";
 
 //   }
 // );
+router.route('/user')
+  .post(user.post)
+  .get(user.get);
+
+
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
   console.info('Time: ', Date.now());

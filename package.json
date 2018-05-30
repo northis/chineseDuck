@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \\\"Error: no test specified\\\" && exit 1",
     "build-prod": "babel-node config/run start --mode production",
-    "build-dev-run": "babel-node config/run start --mode development",
+    "build-dev-run": "babel-node config/run start --mode development --nolazy --inspect-brk=9229 server/index.js",
     "build-dev-run-verbose": "babel-node config/run start --mode development --verbose",
     "build": "babel-node config/run build --mode production",
     "build-dev": "babel-node config/run build --mode development"
@@ -122,6 +122,7 @@
     "popper.js": "^1.14.3",
     "reflect-metadata": "^0.1.12",
     "swagger-ui-express": "^3.0.9",
+    "swagmock": "^1.0.0",
     "vue": "^2.5.16",
     "vue-i18n": "^7.7.0",
     "vuex": "^3.0.1"

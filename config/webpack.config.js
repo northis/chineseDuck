@@ -380,11 +380,8 @@ const serverConfig = {
             __DEV__: isDebug,
         }),
         // new CopyWebpackPlugin([
-        //     // { from: './src/server/api/swagger.json', to: './swagger.json' },
+        //     { from: './src/server/api/swagger.json', to: './swagger.json' },
         //     // { from: './src/server/api/swagger.yaml', to: './swagger.yaml' },
-        //     { from: './src/server/data', to: './data' },
-        //     { from: './src/server/handlers', to: './handlers' },
-        //     { from: './src/server/security', to: './security' }
         // ]),
     ],
     node: {
