@@ -12,7 +12,7 @@ module.exports = {
      * responses: 200, 400, 404
      * operationId: authUser
      */
-    get: {
+    post: {
         200: function (req, res, callback) {
             /**
              * Using mock data generator module.
@@ -20,7 +20,7 @@ module.exports = {
              */
             Mockgen().responses({
                 path: '/user/auth',
-                operation: 'get',
+                operation: 'post',
                 response: '200'
             }, callback);
         },
@@ -31,7 +31,7 @@ module.exports = {
              */
             Mockgen().responses({
                 path: '/user/auth',
-                operation: 'get',
+                operation: 'post',
                 response: '400'
             }, callback);
         },
@@ -42,7 +42,7 @@ module.exports = {
              */
             Mockgen().responses({
                 path: '/user/auth',
-                operation: 'get',
+                operation: 'post',
                 response: '404'
             }, callback);
         }

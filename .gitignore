@@ -2,6 +2,7 @@
 node_modules/
 dist/
 build/
+sessions/
 npm-debug.log
 yarn-error.log
 

@@ -7,7 +7,7 @@ module.exports = {
     /**
      * summary: Move words to another folder
      * description: 
-     * parameters: wordIds, folderId
+     * parameters: body, folderId
      * produces: 
      * responses: 400, 404
      * operationId: moveWordsToFolder

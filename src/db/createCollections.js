@@ -7,7 +7,8 @@ db.createCollection("users", {
             required: [
                 '_id',
                 'username',
-                'joinDate'
+                'joinDate',
+                'who'
             ],
             properties: {
                 _id: {
@@ -18,6 +19,16 @@ db.createCollection("users", {
                 },
                 tokenHash: {
                     bsonType: 'string'
+                },
+                sessionId: {
+                    bsonType: 'string'
+                },
+                who: {
+                    'enum': [
+                        'read',
+                        'write',
+                        'admin'
+                    ]
                 },
                 lastCommand: {
                     bsonType: 'string'
@@ -82,7 +93,8 @@ db.createCollection("folders", {
             required: [
                 '_id',
                 'name',
-                'owner_id'
+                'owner_id',
+                'createDate'
             ],
             properties: {
                 _id: {
@@ -93,6 +105,9 @@ db.createCollection("folders", {
                 },
                 owner_id: {
                     bsonType: 'long'
+                },
+                createDate: {
+                    bsonType: 'date'
                 }
             }
         },
@@ -160,8 +175,13 @@ db.createCollection("words", {
                         lastLearned: {
                             bsonType: 'string'
                         },
-                        lastLearnMode: {
-                            bsonType: 'string'
+                        lastLearnMode: {                            
+                            'enum': [
+                                'OriginalWord',
+                                'Translation',
+                                'FullView',
+                                'Pronunciation'
+                            ]
                         },
                         isInLearnMode: {
                             bsonType: 'bool'

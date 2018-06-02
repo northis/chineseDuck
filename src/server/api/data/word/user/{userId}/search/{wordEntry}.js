@@ -1,26 +1,26 @@
 'use strict';
-var Mockgen = require('../mockgen.js');
+var Mockgen = require('../../../../mockgen.js');
 /**
- * Operations on /user/login
+ * Operations on /word/user/{userId}/search/{wordEntry}
  */
 module.exports = {
     /**
-     * summary: Logs user into the system
-     * description: 
-     * parameters: pnone, code
-     * produces: application/json
+     * summary: Get words by word or character for user
+     * description: Get words by wordEntry for user
+     * parameters: wordEntry, userId
+     * produces: 
      * responses: 200, 400, 404
-     * operationId: loginUser
+     * operationId: getWordsByUser
      */
-    post: {
+    get: {
         200: function (req, res, callback) {
             /**
              * Using mock data generator module.
              * Replace this by actual data for the api.
              */
             Mockgen().responses({
-                path: '/user/login',
-                operation: 'post',
+                path: '/word/user/{userId}/search/{wordEntry}',
+                operation: 'get',
                 response: '200'
             }, callback);
         },
@@ -30,8 +30,8 @@ module.exports = {
              * Replace this by actual data for the api.
              */
             Mockgen().responses({
-                path: '/user/login',
-                operation: 'post',
+                path: '/word/user/{userId}/search/{wordEntry}',
+                operation: 'get',
                 response: '400'
             }, callback);
         },
@@ -41,8 +41,8 @@ module.exports = {
              * Replace this by actual data for the api.
              */
             Mockgen().responses({
-                path: '/user/login',
-                operation: 'post',
+                path: '/word/user/{userId}/search/{wordEntry}',
+                operation: 'get',
                 response: '404'
             }, callback);
         }

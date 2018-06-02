@@ -15,7 +15,7 @@ const nodeJsApp = {
       `http://localhost:${port}`,
   },
 
-  databaseUrl: process.env.DATABASE_URL || 'localhost:27017',
+  databaseUrl: process.env.DATABASE_URL || 'mongodb://apiUser:qipassword@localhost:27017/chineseDuck',
   auth: {
     jwt: { secret: process.env.JWT_SECRET || 'No secrets from you' },
   },

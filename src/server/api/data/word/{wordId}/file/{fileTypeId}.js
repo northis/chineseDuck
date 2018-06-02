@@ -1,26 +1,26 @@
 'use strict';
-var Mockgen = require('../mockgen.js');
+var Mockgen = require('../../../mockgen.js');
 /**
- * Operations on /user/login
+ * Operations on /word/{wordId}/file/{fileTypeId}
  */
 module.exports = {
     /**
-     * summary: Logs user into the system
+     * summary: Get word&#39;s flash card as png binary
      * description: 
-     * parameters: pnone, code
-     * produces: application/json
+     * parameters: wordId, fileTypeId
+     * produces: 
      * responses: 200, 400, 404
-     * operationId: loginUser
+     * operationId: getWordCard
      */
-    post: {
+    get: {
         200: function (req, res, callback) {
             /**
              * Using mock data generator module.
              * Replace this by actual data for the api.
              */
             Mockgen().responses({
-                path: '/user/login',
-                operation: 'post',
+                path: '/word/{wordId}/file/{fileTypeId}',
+                operation: 'get',
                 response: '200'
             }, callback);
         },
@@ -30,8 +30,8 @@ module.exports = {
              * Replace this by actual data for the api.
              */
             Mockgen().responses({
-                path: '/user/login',
-                operation: 'post',
+                path: '/word/{wordId}/file/{fileTypeId}',
+                operation: 'get',
                 response: '400'
             }, callback);
         },
@@ -41,8 +41,8 @@ module.exports = {
              * Replace this by actual data for the api.
              */
             Mockgen().responses({
-                path: '/user/login',
-                operation: 'post',
+                path: '/word/{wordId}/file/{fileTypeId}',
+                operation: 'get',
                 response: '404'
             }, callback);
         }

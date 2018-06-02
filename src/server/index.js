@@ -11,6 +11,8 @@ import httpErrorPages from 'http-error-pages';
 import { getFooterMarkupLine } from '../../config/common.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './api/swagger.json';
+import passport from './security/passport';
+import sessionItem from './security/session';
 
 const app = express();
 
@@ -19,6 +21,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(helmet());
 app.use(compression());
+
+app.use(sessionItem);
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/api/docs/', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/v1/', api);
