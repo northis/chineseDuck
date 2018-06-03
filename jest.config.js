@@ -1,8 +1,11 @@
 // Jest configuration
 
-export const globalSetup = "./tests/db/setup.js";
-export const globalTeardown = "./tests/db/teardown.js";
-export const testEnvironment = "./tests/db/mongo-environment.js";
+module.exports = {
+    globalSetup: "./tests/db/setup.js",
+    globalTeardown: "./tests/db/teardown.js",
+    testEnvironment: "./tests/db/mongo-environment.js"
+};
+
 
 // export const automock = false;
 // export const browser = false;
@@ -25,4 +28,4 @@ export const testEnvironment = "./tests/db/mongo-environment.js";
 //   "^(?!.*\\.(js|jsx|json|css|less|styl|scss|sass|sss)$)":
 //     "<rootDir>/config/lib/fileTransformer.js"
 // };
-// export const verbose = true;
+//  export const verbose = true;

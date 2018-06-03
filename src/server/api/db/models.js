@@ -1,7 +1,40 @@
 import { Schema } from "mongoose";
 
+/* eslint-disable */
+function getNextSequence(name) {
+  var ret = db.counters.findAndModify({
+    query: { _id: name },
+    update: { $inc: { seq: 1 } },
+    new: true,
+    upsert: true
+  });
+
+  return NumberLong(ret.seq);
+}
+/* eslint-enable */
+
+export const RightEnum = {
+  read: "read",
+  write: "write",
+  admin: "admin"
+};
+
+export const FileTypeEnum = {
+  audio: "audio",
+  orig: "orig",
+  pron: "pron",
+  trans: "trans",
+  full: "full"
+};
+export const LearnModeEnum = {
+  OriginalWord: "OriginalWord",
+  Translation: "Translation",
+  FullView: "FullView",
+  Pronunciation: "Pronunciation"
+};
+
 const userSchema = Schema({
-  _id: Number,
+  _id: { type: Number, default: getNextSequence("userid") },
   username: String,
   tokenHash: String,
   sessionId: String,
@@ -9,8 +42,8 @@ const userSchema = Schema({
   joinDate: { type: Date, default: Date.now },
   who: {
     type: String,
-    enum: ["read", "write", "admin"],
-    default: "read"
+    enum: Object.values(RightEnum),
+    default: RightEnum.read
   },
   mode: String
 });
@@ -23,8 +56,8 @@ const wordFileSchema = Schema({
   width: Number,
   fileType: {
     type: String,
-    enum: ["audio", "orig", "pron", "trans", "full"],
-    default: "full"
+    enum: Object.values(FileTypeEnum),
+    default: FileTypeEnum.full
   }
 });
 
@@ -52,7 +85,7 @@ const wordSchema = Schema({
     lastLearned: String,
     lastLearnMode: {
       type: String,
-      enum: ["OriginalWord", "Translation", "FullView", "Pronunciation"]
+      enum: Object.values(LearnModeEnum)
     },
     isInLearnMode: Boolean,
     rightAnswerNumber: Number,

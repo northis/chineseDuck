@@ -1,38 +1,39 @@
-import { MongoClient } from "mongodb";
+import { Users, /*Folders, WordFiles, Words,*/ connectItem  } from "../../src/server/api/db";
+import { RightEnum, /*FileTypeEnum, LearnModeEnum, Words,*/ } from "../../src/server/api/db/models";
+import { expect } from "chai";
+import * as setup from "./setup";
+import * as teardown from "./teardown";
 
 let connection;
 let db;
 
-beforeAll(async () => {
-  connection = await MongoClient.connect(global.__MONGO_URI__);
+before(async done => {
+  setup.default();
+
+  db.on('error', console.error.bind(console, 'connection error'));
+  db.once('open', function() {
+    console.info('We are connected to test database!');
+    done();
+  });
+  connection = connectItem;
   db = await connection.db(global.__MONGO_DB_NAME__);
 });
 
-afterAll(async () => {
-  await connection.close();
+after(async done => {
+  await teardown.default();
   await db.close();
+  await connection.close(done);
 });
 
 it("should insert a doc into collection", async () => {
-  const users = db.collection("users");
 
-  const mockUser = { _id: "some-user-id", name: "John" };
-  await users.insertOne(mockUser);
+  var user = new Users({ username: "username", tokenHash: "tokenHash", sessionId: "sessionId", lastCommand: "lastCommand", joinDate : Date.UTC(Date.now), who: RightEnum.write, mode: "mode" });
+  await user.save(function(err) {
+    if (err) console.error(err);
+    // saved!
+  });
 
-  const insertedUser = await users.findOne({ _id: "some-user-id" });
-  expect(insertedUser).toEqual(mockUser);
+  const insertedUser = await Users.findOne({ _id: user._id });
+  expect(insertedUser).toEqual(user);
 });
 
-it("should insert many docs into collection", async () => {
-  const users = db.collection("users");
-
-  const mockUsers = [{ name: "Alice" }, { name: "Bob" }];
-  await users.insertMany(mockUsers);
-
-  const insertedUsers = await users.find().toArray();
-  expect(insertedUsers).toEqual([
-    expect.objectContaining({ name: "John" }),
-    expect.objectContaining({ name: "Alice" }),
-    expect.objectContaining({ name: "Bob" })
-  ]);
-});

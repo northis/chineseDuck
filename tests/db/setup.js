@@ -1,6 +1,6 @@
 import { MongodbMemoryServer } from "mongodb-memory-server";
 
-const MONGO_DB_NAME = "jest";
+const MONGO_DB_NAME = "testChineseDuck";
 const mongod = new MongodbMemoryServer.default({
   instance: {
     dbName: MONGO_DB_NAME
@@ -10,7 +10,7 @@ const mongod = new MongodbMemoryServer.default({
   }
 });
 
-export default function () {
+export default function() {
   global.__MONGOD__ = mongod;
   global.__MONGO_DB_NAME__ = MONGO_DB_NAME;
 }
