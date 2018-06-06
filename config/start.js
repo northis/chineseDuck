@@ -1,12 +1,12 @@
-import express from 'express';
-import browserSync from 'browser-sync';
-import webpack from 'webpack';
-import webpackDevMiddleware from 'webpack-dev-middleware';
-import webpackHotMiddleware from 'webpack-hot-middleware';
-import webpackConfig from './webpack.config';
-import run, { format } from './run';
-import clean from './clean';
-import { isDebug } from './common';
+import express from "express";
+import browserSync from "browser-sync";
+import webpack from "webpack";
+import webpackDevMiddleware from "webpack-dev-middleware";
+import webpackHotMiddleware from "webpack-hot-middleware";
+import webpackConfig from "./webpack.config";
+import run, { format } from "./run";
+import clean from "./clean";
+import { isDebug } from "./common";
 
 // https://webpack.js.org/configuration/watch/#watchoptions
 const watchOptions = {
@@ -28,14 +28,12 @@ function createCompilationPromise(name, compiler, config) {
       const time = timeEnd.getTime() - timeStart.getTime();
       if (stats.hasErrors()) {
         console.info(
-          `[${format(timeEnd)}] Failed to compile '${name}' after ${time} ms`,
+          `[${format(timeEnd)}] Failed to compile '${name}' after ${time} ms`
         );
-        reject(new Error('Compilation failed!'));
+        reject(new Error("Compilation failed!"));
       } else {
         console.info(
-          `[${format(
-            timeEnd,
-          )}] Finished '${name}' compilation after ${time} ms`,
+          `[${format(timeEnd)}] Finished '${name}' compilation after ${time} ms`
         );
         resolve(stats);
       }
@@ -44,7 +42,6 @@ function createCompilationPromise(name, compiler, config) {
 }
 
 let server;
-
 
 /**
  * Launches a development web server with "live reload" functionality -
@@ -56,65 +53,72 @@ async function start() {
   //server.use(express.static(path.resolve(__dirname, '../public')));
 
   // Configure client-side hot module replacement
-  const clientConfig = webpackConfig.find(config => config.name === 'client');
+  const clientConfig = webpackConfig.find(config => config.name === "client");
 
   // Configure server-side hot module replacement
-  const serverConfig = webpackConfig.find(config => config.name === 'server');
+  const serverConfig = webpackConfig.find(config => config.name === "server");
 
   // Configure compilation
   await run(clean);
   const multiCompiler = webpack(webpackConfig);
   const clientCompiler = multiCompiler.compilers.find(
-    compiler => compiler.name === 'client',
+    compiler => compiler.name === "client"
   );
   const serverCompiler = multiCompiler.compilers.find(
-    compiler => compiler.name === 'server',
+    compiler => compiler.name === "server"
   );
   const clientPromise = createCompilationPromise(
-    'client',
+    "client",
     clientCompiler,
-    clientConfig,
+    clientConfig
   );
   const serverPromise = createCompilationPromise(
-    'server',
+    "server",
     serverCompiler,
-    serverConfig,
+    serverConfig
   );
 
   server.use(
     webpackDevMiddleware(clientCompiler, {
       publicPath: clientConfig.output.publicPath,
       watchOptions
-    }),
+    })
   );
 
-  server.use(webpackHotMiddleware(clientCompiler, {
-    log: false,
-    heartbeat: 2000
-  }));
+  server.use(
+    webpackHotMiddleware(clientCompiler, {
+      log: false,
+      heartbeat: 2000
+    })
+  );
 
   let appPromise;
   let appPromiseResolve;
   let appPromiseIsResolved = true;
 
-  serverCompiler.hooks.compile.tap('server', () => {
+  serverCompiler.hooks.compile.tap("server", () => {
     if (!appPromiseIsResolved) return;
     appPromiseIsResolved = false;
     appPromise = new Promise(resolve => (appPromiseResolve = resolve));
   });
 
   let app;
-  let listen;
+  //let listen;
+  let shutdownManager;
 
   function expressInit() {
-    const srv = require('../build/server').default;
+    const srv = require("../build/server").default;
     app = srv.app;
-    listen = srv.listen;
+    //listen = srv.listen;
+    shutdownManager = srv.shutdownManager;
   }
-  function expressReload() {
-    listen.close();
-    delete require.cache[require.resolve('../build/server')];
-    expressInit();
+  async function expressReload() {
+    shutdownManager.terminate(() => {
+      console.info("Server is gracefully terminated");
+      console.info("Server is starting again...");
+      delete require.cache[require.resolve("../build/server")];
+      expressInit();
+    });
   }
   server.use((req, res) => {
     appPromise
@@ -123,19 +127,20 @@ async function start() {
   });
 
   function checkForUpdate(fromUpdate) {
-    const hmrPrefix = '[\x1b[35mHMR\x1b[0m] ';
+    const hmrPrefix = "[\x1b[35mHMR\x1b[0m] ";
     if (!app.hot) {
       throw new Error(`${hmrPrefix}Hot Module Replacement is disabled.`);
     }
-    if (app.hot.status() !== 'idle') {
+    if (app.hot.status() !== "idle") {
       return Promise.resolve();
     }
     return app.hot
       .check(true)
-      .then(updatedModules => {
+      .then(async updatedModules => {
         if (!updatedModules) {
           if (fromUpdate) {
             console.info(`${hmrPrefix}Update applied.`);
+            await expressReload();
           }
           return;
         }
@@ -144,19 +149,18 @@ async function start() {
         } else {
           console.info(`${hmrPrefix}Updated modules:`);
           updatedModules.forEach(moduleId =>
-            console.info(`${hmrPrefix} - ${moduleId}`),
+            console.info(`${hmrPrefix} - ${moduleId}`)
           );
           checkForUpdate(true);
-          expressReload();
         }
       })
-      .catch(error => {
-        if (['abort', 'fail'].includes(app.hot.status())) {
+      .catch(async error => {
+        if (["abort", "fail"].includes(app.hot.status())) {
           console.warn(`${hmrPrefix}Cannot apply update.`);
-          expressReload();
+          await expressReload();
         } else {
           console.warn(
-            `${hmrPrefix}Update failed: ${error.stack || error.message}`,
+            `${hmrPrefix}Update failed: ${error.stack || error.message}`
           );
         }
       });
@@ -182,18 +186,17 @@ async function start() {
   appPromiseIsResolved = true;
   appPromiseResolve();
   if (isDebug()) {
-
     // Launch the development server with Browsersync and HMR
     await new Promise((resolve, reject) =>
       browserSync.create().init(
         {
           // https://www.browsersync.io/docs/options
-          server: 'src/server',
+          server: "src/server",
           middleware: [server],
           open: false
         },
-        (error, bs) => (error ? reject(error) : resolve(bs)),
-      ),
+        (error, bs) => (error ? reject(error) : resolve(bs))
+      )
     );
   }
 

@@ -18,16 +18,16 @@ const out = {
      * For response `default` status 200 is used.
      */
     var status = 200;
+    console.info(200);
 
     passport.authenticate("local", (err, user, info) => {
-      console.info(info);
       req.login(user, err => {
         if (err === undefined) {
           return res
             .status(status)
             .send("You were authenticated & logged in!\n");
         } else {
-          errors.e401(next);
+          errors.e400(next, err);
         }
       });
     })(req, res, next);

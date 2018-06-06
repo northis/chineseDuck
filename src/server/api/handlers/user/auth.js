@@ -1,5 +1,5 @@
-"use strict";
 import * as errors from "../../../errors";
+import { sendCode } from "../../../services/telegram";
 /**
  * Operations on /user/auth
  */
@@ -7,20 +7,32 @@ const ops = {
   /**
    * summary: Send the auth code to user via sms
    * description:
-   * parameters: pnone
+   * parameters: body
    * produces: application/json
    * responses: 200, 400, 404
    */
-  post: function authUser(req, res, next) {
+  post: async function authUser(req, res, next) {
     /**
      * Get the data for response 200
      * For response `default` status 200 is used.
      */
-    var status = 200;
-    if ("+79267000000" == req.body) {
-      return res.status(status).send("Code has been successfully sent!\n");
+    if (
+      !req.body.phone ||
+      req.body.phone.length > 16 ||
+      !req.body.phone.startsWith("+")
+    ) {
+      errors.e400(next);
+      return;
+    }
+
+    const status = 200;
+    let result = await sendCode(req.body.phone);
+    console.info(result);
+
+    if (result) {
+      return res.status(status).send(JSON.stringify({ hash: result }));
     } else {
-      errors.e401(next);
+      errors.e404(next);
     }
   }
 };

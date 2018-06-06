@@ -1,18 +1,3 @@
-import { Schema } from "mongoose";
-
-/* eslint-disable */
-function getNextSequence(name) {
-  var ret = db.counters.findAndModify({
-    query: { _id: name },
-    update: { $inc: { seq: 1 } },
-    new: true,
-    upsert: true
-  });
-
-  return NumberLong(ret.seq);
-}
-/* eslint-enable */
-
 export const RightEnum = {
   read: "read",
   write: "write",
@@ -32,25 +17,36 @@ export const LearnModeEnum = {
   FullView: "FullView",
   Pronunciation: "Pronunciation"
 };
+export const CollectionsEnum = {
+  users: "users",
+  wordFiles: "wordFiles",
+  folders: "folders",
+  words: "words"
+};
+export const ModelsEnum = {
+  user: "user",
+  wordFile: "wordFile",
+  folder: "folder",
+  word: "word"
+};
 
-const userSchema = Schema({
-  _id: { type: Number, default: getNextSequence("userid") },
+export const userSchema = {
   username: String,
   tokenHash: String,
   sessionId: String,
   lastCommand: String,
-  joinDate: { type: Date, default: Date.now },
+  joinDate: { type: Date, default: new Date() },
   who: {
     type: String,
     enum: Object.values(RightEnum),
     default: RightEnum.read
   },
   mode: String
-});
+};
 
-const wordFileSchema = Schema({
+export const wordFileSchema = {
   word_id: Number,
-  createDate: { type: Date, default: Date.now },
+  createDate: { type: Date, default: new Date() },
   bytes: Buffer,
   height: Number,
   width: Number,
@@ -59,17 +55,15 @@ const wordFileSchema = Schema({
     enum: Object.values(FileTypeEnum),
     default: FileTypeEnum.full
   }
-});
+};
 
-const folderSchema = Schema({
-  _id: Number,
+export const folderSchema = {
   name: String,
   owner_id: Number,
-  createDate: { type: Date, default: Date.now }
-});
+  createDate: { type: Date, default: new Date() }
+};
 
-const wordSchema = Schema({
-  _id: Number,
+export const wordSchema = {
   owner_id: Number,
   originalWord: String,
   pronunciation: String,
@@ -77,11 +71,11 @@ const wordSchema = Schema({
   usage: String,
   syllablesCount: { type: Number, min: 1, max: 8000 },
   folder_id: Number,
-  createDate: { type: Date, default: Date.now },
+  createDate: { type: Date, default: new Date() },
   score: {
     originalWordCount: Number,
     originalWordSuccessCount: Number,
-    lastView: { type: Date, default: Date.now },
+    lastView: { type: Date, default: new Date() },
     lastLearned: String,
     lastLearnMode: {
       type: String,
@@ -96,6 +90,4 @@ const wordSchema = Schema({
     viewCount: Number,
     name: String
   }
-});
-
-export default { userSchema, wordFileSchema, folderSchema, wordSchema };
+};

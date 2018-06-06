@@ -1,16 +1,31 @@
-import { connect, connection, model } from "mongoose";
-import { databaseUrl } from "../../config";
-import { userSchema, folderSchema, wordFileSchema, wordSchema } from "./models";
+import { ModelsHolder } from "./modelsHolder";
+import { Settings } from "../../../../config/common";
+import mongoose from "mongoose";
 
-connection.on("error", console.error.bind(console, "connection error:"));
-connection.once("open", function() {
-  console.info("connected!");
-});
-const connectItem = connect(databaseUrl, { keepAlive: 120 });
+mongoose.connect(Settings.mongoDbString);
 
-const Users = model("users", userSchema);
-const Folders = model("folders", folderSchema);
-const WordFiles = model("wordFiles", wordFileSchema);
-const Words = model("words", wordSchema);
+if (mongoose.connection._eventsCount == 0) {
+  mongoose.connection.on("connected", () => {
+    console.info(
+      "Mongoose default connection open to " + Settings.mongoDbString
+    );
+  });
+  mongoose.connection.on("error", err => {
+    console.info("Mongoose default connection error: " + err);
+  });
+  mongoose.connection.on("disconnected", () => {
+    console.info("Mongoose default connection disconnected");
+  });
+  process.on("SIGINT", () => {
+    mongoose.connection.close(() => {
+      console.info(
+        "Mongoose default connection disconnected through app termination"
+      );
+    });
+  });
+}
+const modelsHolder = new ModelsHolder();
+modelsHolder.init();
 
-export default { Users, Folders, WordFiles, Words, connectItem  };
+export const mh = modelsHolder;
+export default modelsHolder;

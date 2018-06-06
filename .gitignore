@@ -3,6 +3,7 @@ node_modules/
 dist/
 build/
 sessions/
+apiKeys.js
 npm-debug.log
 yarn-error.log
 

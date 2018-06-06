@@ -554,10 +554,10 @@
         "tags" : [ "user" ],
         "summary" : "Send the auth code to user via sms",
         "operationId" : "authUser",
-        "consumes" : [ "text/plain" ],
+        "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
         "parameters" : [ {
-          "name" : "body",
+          "name" : "phone",
           "in" : "body",
           "description" : "The user phone for auth",
           "required" : true,
@@ -567,7 +567,10 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "Auth code sent"
+            "description" : "Auth code sent, hash in object",
+            "schema" : {
+              "$ref" : "#/definitions/ApiUser"
+            }
           },
           "400" : {
             "description" : "Invalid phone supplied"
@@ -988,6 +991,9 @@
           "type" : "string"
         },
         "code" : {
+          "type" : "string"
+        },
+        "hash" : {
           "type" : "string"
         }
       },
