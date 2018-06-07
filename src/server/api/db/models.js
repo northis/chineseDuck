@@ -21,13 +21,15 @@ export const CollectionsEnum = {
   users: "users",
   wordFiles: "wordFiles",
   folders: "folders",
-  words: "words"
+  words: "words",
+  sessions: "sessions"
 };
 export const ModelsEnum = {
   user: "user",
   wordFile: "wordFile",
   folder: "folder",
-  word: "word"
+  word: "word",
+  session: "session"
 };
 
 export const userSchema = {
@@ -89,5 +91,12 @@ export const wordSchema = {
     translationSuccessCount: Number,
     viewCount: Number,
     name: String
+  }
+};
+
+export const sessionSchema = {
+  expires: Date,
+  session: {
+    cookie: {}
   }
 };

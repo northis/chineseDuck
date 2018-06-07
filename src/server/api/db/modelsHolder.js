@@ -6,7 +6,8 @@ import {
   wordFileSchema,
   wordSchema,
   CollectionsEnum,
-  ModelsEnum
+  ModelsEnum,
+  sessionSchema
 } from "./models";
 
 export class ModelsHolder {
@@ -25,6 +26,7 @@ export class ModelsHolder {
     delete mongoose.connection.models[ModelsEnum.folder];
     delete mongoose.connection.models[ModelsEnum.word];
     delete mongoose.connection.models[ModelsEnum.wordFile];
+    delete mongoose.connection.models[ModelsEnum.session];
 
     this.user = mongoose.model(
       ModelsEnum.user,
@@ -46,10 +48,16 @@ export class ModelsHolder {
       new mongoose.Schema(wordFileSchema),
       CollectionsEnum.wordFiles
     );
+    this.session = mongoose.model(
+      ModelsEnum.session,
+      new mongoose.Schema(sessionSchema),
+      CollectionsEnum.sessions
+    );
   }
 
   user;
   folder;
   wordFile;
   word;
+  session;
 }

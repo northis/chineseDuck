@@ -1,4 +1,3 @@
-"use strict";
 import passport from "../../../security/passport";
 import * as errors from "../../../errors";
 /**
@@ -18,9 +17,8 @@ const out = {
      * For response `default` status 200 is used.
      */
     var status = 200;
-    console.info(200);
 
-    passport.authenticate("local", (err, user, info) => {
+    passport.authenticate("local", (err, user) => {
       req.login(user, err => {
         if (err === undefined) {
           return res

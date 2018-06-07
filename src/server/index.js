@@ -39,6 +39,12 @@ app.get("/", function(request, response) {
   response.redirect("/client");
 });
 
+function logErrors(err, req, res, next) {
+  console.error(err.stack);
+  next(err);
+}
+app.use(logErrors);
+
 httpErrorPages.express(app, {
   lang: "en_US",
   footer: getFooterMarkupLine()
@@ -49,17 +55,22 @@ const listen = app.listen(Settings.port, () => {
 });
 
 const shutdownManager = new GracefulShutdownManager(listen);
-const shutDown = () => {
+const shutDown = async () => {
   shutdownManager.terminate(() => {
     console.info("Server is gracefully terminated");
+    Promise.resolve();
   });
 };
-process.on("SIGTERM", shutDown);
 
+const shutDownEnabled = "shutDownEnabled";
+if (process.argv.find(a => a == shutDownEnabled) == undefined) {
+  process.on("SIGTERM", shutDown);
+  process.argv.push(shutDownEnabled);
+}
 // Hot Module Replacement
 if (module.hot) {
   app.hot = module.hot;
   module.hot.accept("./api");
 }
 
-export default { app, listen, shutdownManager };
+export default { app, listen, shutDown };

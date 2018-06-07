@@ -45,10 +45,13 @@ export function getFooterMarkup() {
 export const DebugKeys = {
   phone_code_hash: "06ad2b144ebb09eacd",
   phone: "+79200000000",
-  phone_code: 43312
+  phone_code: 43312,
+  password_hash: "$2b$10$xkwscjZQ.KM3uf1ZG2totO8RRfASADnADfyGNn6t3R5XDva0HKQ3y",
+  password: "5lJnlNrgDjeu"
 };
 
 export const Settings = {
   mongoDbString: "mongodb://apiUser:qipassword@localhost:27017/chineseDuck",
-  port: 3000
+  port: 3000,
+  sessionsPass: "2%$&epZvC$dA_Hsd"
 };

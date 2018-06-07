@@ -104,21 +104,19 @@ async function start() {
 
   let app;
   //let listen;
-  let shutdownManager;
+  let shutDown;
 
   function expressInit() {
     const srv = require("../build/server").default;
     app = srv.app;
     //listen = srv.listen;
-    shutdownManager = srv.shutdownManager;
+    shutDown = srv.shutDown;
   }
   async function expressReload() {
-    shutdownManager.terminate(() => {
-      console.info("Server is gracefully terminated");
-      console.info("Server is starting again...");
-      delete require.cache[require.resolve("../build/server")];
-      expressInit();
-    });
+    await shutDown();
+    console.info("Server is starting again...");
+    delete require.cache[require.resolve("../build/server")];
+    expressInit();
   }
   server.use((req, res) => {
     appPromise
