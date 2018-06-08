@@ -2,7 +2,6 @@ import passport from "passport";
 import Strategy from "passport-local";
 import { signIn } from "../../server/services/telegram";
 import mh from "../../server/api/db";
-const generatePassword = require("password-generator");
 const bcrypt = require("bcrypt");
 
 async function onAuthRequest(req, id, code, done) {
@@ -18,12 +17,7 @@ async function onAuthRequest(req, id, code, done) {
       if (usr == null) {
         return done(null, false);
       } else {
-        let pwd = generatePassword(12, false);
-        let hash = await bcrypt.hashSync(pwd, 10);
-        console.info(pwd);
-        console.info(hash);
-        await mh.user.updateOne({ _id: usrResp.user.id }, { tokenHash: hash });
-        return done(null, { id: usrResp.user.id, code: pwd });
+        return done(null, { id: usrResp.user.id });
       }
     } catch (e) {
       return done(e);

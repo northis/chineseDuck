@@ -25,7 +25,7 @@
         <div class="mb-3 text-left errorText" v-if="VM.CommonError != ''">
           {{VM.CommonError}}
         </div>
-        <button class="btn-block" type="submit">Send SMS</button>
+        <button class="btn-block" type="submit">Send message</button>
       </template>
 
       <div class="form-group" v-if="auth.stage == 1">

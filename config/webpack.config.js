@@ -35,6 +35,7 @@ const minimizeCssOptions = {
   discardComments: { removeAll: true }
 };
 
+helpers.updateRoutesFromSwagger();
 // Common configuration chunk
 const config = {
   context: ROOT_DIR,
@@ -104,15 +105,21 @@ const config = {
   devtool: isDebug ? "source-map" : ""
 };
 
+const clientEntries = [
+  "./src/client/beforeStart/index.js",
+  "./src/client/index.ts"
+];
+
 // client-side bundle
 const clientConfig = {
   ...config,
 
   name: "client",
   target: "web",
-  entry: isDebug
-    ? ["webpack-hot-middleware/client", "./src/client/index.ts"]
-    : ["./src/client/index.ts"],
+  entry: [
+    ...(isDebug ? ["webpack-hot-middleware/client"] : []),
+    ...clientEntries
+  ],
   module: {
     ...config.module,
 
@@ -246,6 +253,12 @@ const clientConfig = {
       template: "src/client/index.html",
       inject: true,
       hash: true
+    }),
+    new HtmlWebpackPlugin({
+      inject: false,
+      filename: "unsupported.html",
+      footer: common.getFooterMarkupLine(),
+      template: "src/client/beforeStart/unsupported.html"
     }),
     new CopyWebpackPlugin([
       { from: "./src/client/assets/favicon", to: "./favicon/" },

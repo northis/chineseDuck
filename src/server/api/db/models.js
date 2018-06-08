@@ -35,7 +35,6 @@ export const ModelsEnum = {
 export const userSchema = {
   username: String,
   tokenHash: String,
-  sessionId: String,
   lastCommand: String,
   joinDate: { type: Date, default: new Date() },
   who: {

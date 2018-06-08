@@ -31,6 +31,10 @@ app.use("/api/docs/", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api/v1/", api);
 app.use(express.static(path.join(__dirname, "/public")));
 
+app.get(/^\/unsupported/, function(request, response) {
+  response.sendFile(path.resolve(__dirname, "public/unsupported.html"));
+});
+
 app.get(/^\/client/, function(request, response) {
   response.sendFile(path.resolve(__dirname, "public/index.html"));
 });
