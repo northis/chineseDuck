@@ -3,11 +3,12 @@ import * as user from "./handlers/user";
 import auth from "./handlers/user/auth";
 import login from "./handlers/user/login";
 import logout from "./handlers/user/logout";
+import * as rt from "../../shared/routes.gen";
 
 var router = Router();
 
-router.route("/user/auth").post(auth.post);
-router.route("/user/login").post(login.post);
+router.route(rt.default._user_auth).post(auth.post);
+router.route(rt.default._user_login).post(login.post);
 router.use((req, res, next) => {
   console.info("=");
   if (req.isAuthenticated()) {
@@ -23,7 +24,7 @@ router
   .post(user.post)
   .get(user.get);
 
-router.route("/user/logout").get(logout.get);
+router.route(rt.default._user_logout).get(logout.get);
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {

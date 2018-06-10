@@ -25,7 +25,9 @@ import Footer from "../Footer.vue";
     "app-footer": Footer
   }
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+  created() {}
+}
 </script>
 
 <style lang="scss">

@@ -1,11 +1,11 @@
-import { GetterTree, Store, StoreOptions } from 'vuex';
-import * as I from '../types/interfaces';
+import { GetterTree, Store, StoreOptions } from "vuex";
+import * as I from "../types/interfaces";
 
 export interface IRootState {
-    Version: string;
-    AppName: string;
+  Version: string;
+  AppName: string;
 }
 
 export const Modules = {
-    auth: 'auth',
+  auth: "auth"
 };

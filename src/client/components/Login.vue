@@ -102,11 +102,6 @@ export default class Login extends Vue {
             }).bind(this)
           )
           .catch(e => this.setError.bind(this, e)());
-
-        this.store.commit(auth.mutations.setAuthState)(
-          this.$store,
-          E.EAuthStage.PhoneSent
-        );
         break;
 
       case E.EAuthStage.PhoneOk:

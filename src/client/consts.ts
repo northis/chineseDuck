@@ -1,3 +1,3 @@
 export class Consts {
-    public static UserKeyString = 'User';
+  public static UserKeyString = "User";
 }
