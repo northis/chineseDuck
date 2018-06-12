@@ -46,9 +46,6 @@
         Sending the code...
       </div>
     </form>
-    <p class="mt-5 mb-3 text-muted">
-      <app-footer></app-footer>
-    </p>
   </div>
 </template>
 
@@ -118,6 +115,7 @@ export default class Login extends Vue {
               if (userExists) {
                 const form = <HTMLFormElement>e.target;
                 if (form != null) {
+                  document.body.style.display = "unset";
                   this.$router.push(form.action);
                 }
               } else {
@@ -196,27 +194,20 @@ export default class Login extends Vue {
 }
 </script>
 
+<style lang="scss">
+html,
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
 <style lang="scss" scoped>
 @import "../assets/styles/mainStyles.scss";
 $mControlWidth: 330px;
 $sBorderWidth: 15px;
 $xsBorderWidth: 10px;
 $mBorderWidth: 25px;
-
-html,
-body {
-  height: 100%;
-}
-
-.text-center {
-  height: 100%;
-}
-
-body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
 .form-signin {
   max-width: $mControlWidth;

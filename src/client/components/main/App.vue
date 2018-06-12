@@ -2,11 +2,6 @@
   <div>
     <app-header></app-header>
     <app-main></app-main>
-    <footer class="footer">
-      <div class="container">
-        <app-footer></app-footer>
-      </div>
-    </footer>
   </div>
 </template>
 
@@ -15,14 +10,12 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import Header from "../Header.vue";
 import Main from "../Main.vue";
-import Footer from "../Footer.vue";
 
 @Component({
   name: "app",
   components: {
     "app-header": Header,
-    "app-main": Main,
-    "app-footer": Footer
+    "app-main": Main
   }
 })
 export default class App extends Vue {
@@ -31,9 +24,4 @@ export default class App extends Vue {
 </script>
 
 <style lang="scss">
-html,
-body,
-#app {
-  height: 100%;
-}
 </style>

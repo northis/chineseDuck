@@ -17,15 +17,12 @@ export default class Main extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "../assets/styles/mainStyles.scss";
 
 html,
 body {
   height: 100%;
-  width: unset;
-  display: unset;
-  align-items: unset;
-  justify-content: unset;
+  width: 100%;
 }
 </style>

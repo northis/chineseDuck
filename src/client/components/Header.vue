@@ -17,11 +17,13 @@
               </a>
             </li>
           </ul>
+
           <div class="my-2 my-lg-0">
-            <router-link class="nav-link" to="/user">
+            <router-link to="/user">
               {{this.auth.user.name}}
             </router-link>
-            <router-link class="nav-link" to="/logout">
+            |
+            <router-link to="/logout">
               Logout
             </router-link>
           </div>
@@ -45,11 +47,9 @@ export default class Header extends Vue {
     console.log("Header mounted");
     //this.fetchData();
   }
-  created() {
-  }
+  created() {}
 }
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/styles/mainStyles.scss";
 </style>

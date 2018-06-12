@@ -251,6 +251,7 @@ const clientConfig = {
     }),
     new HtmlWebpackPlugin({
       template: "src/client/index.html",
+      footer: common.getFooterMarkup(),
       inject: true,
       hash: true
     }),
@@ -263,7 +264,6 @@ const clientConfig = {
     new CopyWebpackPlugin([
       { from: "./src/client/assets/favicon", to: "./favicon/" },
       { from: "./src/client/assets/favicon/favicon.ico", to: "./favicon.ico" },
-      helpers.getFontCopyPattern(),
       {
         from: "./node_modules/jquery/dist/jquery.min.js",
         to: "./jquery.min.js"
@@ -274,7 +274,6 @@ const clientConfig = {
       // exclude hot-update files
       test: /^(?!.*(hot)).*/
     }),
-
     ...(isDebug
       ? []
       : [

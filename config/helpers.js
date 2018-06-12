@@ -5,16 +5,6 @@ import fs from "fs";
 import util from "util";
 import md5 from "js-md5";
 
-export function getFontCopyPattern() {
-  if (getMode() === ModeEnum.Production)
-    return { from: "./src/client/assets/fonts", to: "./fonts/" };
-  else
-    return {
-      from: "./src/client/assets/fonts/aleo-regular-webfont.ttf",
-      to: "./fonts/aleo-regular-webfont.ttf"
-    };
-}
-
 export function overrideRules(rules, patch) {
   return rules.map(ruleToPatch => {
     let rule = patch(ruleToPatch);

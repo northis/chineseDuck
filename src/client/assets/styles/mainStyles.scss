@@ -1,47 +1,52 @@
 $backgroundColor: #e9ecef;
-$mainFont: 'Aleo';
+//$mainFont: "Aleo";
 $mainColor: #ffc40d !default;
-$textColor: #333;
+$textColor: #555;
+$hoverTextColor: black;
 .fullSize {
-    height: 100%;
-    width: 100%;
+  height: 100%;
+  width: 100%;
 }
 
-@import "./fontFaces.main.scss";
 .circle {
-    border-radius: 50%;
+  border-radius: 50%;
 }
 
 button {
-    @extend .btn;
-    @extend .btn-lg;
-    @extend .btn-primary
+  @extend .btn;
+  @extend .btn-lg;
+  @extend .btn-primary;
 }
 
 $primary: $mainColor !default;
 @import "../../../../node_modules/bootstrap/scss/bootstrap";
 body,
 html {
-    font-family: $mainFont, Georgia, 'Times New Roman', Times, serif;
-    color: $textColor;
-    background-color: $backgroundColor; //@extend .fullSize;
+  //font-family: $mainFont, Georgia, "Times New Roman", Times, serif;
+  color: $textColor;
+  background-color: $backgroundColor; //@extend .fullSize;
 }
 
 .em1 {
-    width: 1em;
-    height: 1em;
+  width: 1em;
+  height: 1em;
 }
 
 .em2 {
-    width: 2em;
-    height: 2em;
+  width: 2em;
+  height: 2em;
 }
 
 a {
-    color: $textColor;
+  color: $textColor;
+}
+
+a:hover {
+  color: $hoverTextColor;
+  text-decoration: none;
 }
 
 .errorText {
-    @extend .invalid-feedback;
-    display: block;
+  @extend .invalid-feedback;
+  display: block;
 }
