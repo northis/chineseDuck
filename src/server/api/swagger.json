@@ -1031,6 +1031,9 @@
           },
           "hash" : {
             "type" : "string"
+          },
+          "remember" : {
+            "type" : "boolean"
           }
         },
         "xml" : {

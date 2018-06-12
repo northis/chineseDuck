@@ -12,10 +12,10 @@ import auth from "../store/auth";
 @Component
 export default class Logout extends Vue {
   mounted() {
-    this.store.commit(auth.mutations.logOut)(this.$store);
-    this.$router.push('/');
+    this.store.dispatch(auth.actions.logout)(this.$store);
+    this.$router.push("/");
   }
-  
+
   get store() {
     return getStoreAccessors<I.IAuthState, ST.IRootState>(ST.Modules.auth);
   }

@@ -16,7 +16,7 @@ export interface ITelMasks {
 export interface IUser {
   id: number;
   name: string;
-  key: string;
+  who: string;
 }
 
 export interface IPhoneMask {

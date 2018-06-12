@@ -10,9 +10,12 @@ async function onAuthRequest(req, id, code, done) {
   if (isNaN(idInt)) {
     try {
       const hashPhone = req.body.hash;
+      const remember = req.body.remember;
       let usrResp = await signIn(id, code, hashPhone);
 
       usr = await mh.user.findOne({ _id: usrResp.user.id });
+
+      if (!remember) req.cookie.maxAge = 1000 * 60 * 60; // 1 hour
 
       if (usr == null) {
         return done(null, false);

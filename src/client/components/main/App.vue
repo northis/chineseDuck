@@ -35,7 +35,7 @@ export default class App extends Vue {
 
 html,
 body {
-  height: unset;
+  height: 100%;
   width: unset;
   display: unset;
   align-items: unset;

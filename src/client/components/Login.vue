@@ -35,7 +35,7 @@
       <template v-if="auth.stage == 2">
         <p class="text-left">Please type a code from the SMS you've just received.</p>
         <div class="form-group">
-          <input type="tel" id="inputCode" class="form-control" @blur.once="VM.FirstFocusCode = false" @invalid="VM.IsCodeReady = false" @focus="VM.IsCodeReady = true" v-mask="'9999'" v-model="VM.UserCode" v-bind:class="{ 'is-invalid': !VM.FirstFocusCode && !VM.IsCodeReady }" />
+          <input type="tel" id="inputCode" class="form-control" @blur.once="VM.FirstFocusCode = false" @invalid="VM.IsCodeReady = false" @focus="VM.IsCodeReady = true" v-mask="'99999'" v-model="VM.UserCode" v-bind:class="{ 'is-invalid': !VM.FirstFocusCode && !VM.IsCodeReady }" />
           <div class="invalid-feedback">Invalid code.</div>
         </div>
 
@@ -89,6 +89,7 @@ export default class Login extends Vue {
     switch (this.auth.stage) {
       case E.EAuthStage.NoAuth:
         e.preventDefault();
+        this.VM.UserCode = "";
 
         if (!this.VM.IsPhoneReady) {
           return;
@@ -126,10 +127,6 @@ export default class Login extends Vue {
             }).bind(this)
           )
           .catch(this.setError.bind(this));
-        this.store.commit(auth.mutations.setAuthState)(
-          this.$store,
-          E.EAuthStage.CodeSent
-        );
         break;
 
       default:
