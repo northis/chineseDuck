@@ -31,14 +31,9 @@ export default class App extends Vue {
 </script>
 
 <style lang="scss">
-@import "../../assets/styles/mainStyles.scss";
-
 html,
-body {
+body,
+#app {
   height: 100%;
-  width: unset;
-  display: unset;
-  align-items: unset;
-  justify-content: unset;
 }
 </style>

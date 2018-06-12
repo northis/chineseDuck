@@ -25,15 +25,15 @@
         <div class="mb-3 text-left errorText" v-if="VM.CommonError != ''">
           {{VM.CommonError}}
         </div>
-        <button class="btn-block" type="submit">Send message</button>
+        <button class="btn-block" type="submit">Request code</button>
       </template>
 
       <div class="form-group" v-if="auth.stage == 1">
-        Sending the phone number...
+        Requesting code for the phone number...
       </div>
 
       <template v-if="auth.stage == 2">
-        <p class="text-left">Please type a code from the SMS you've just received.</p>
+        <p class="text-left">Please type a code from the message you've just received.</p>
         <div class="form-group">
           <input type="tel" id="inputCode" class="form-control" @blur.once="VM.FirstFocusCode = false" @invalid="VM.IsCodeReady = false" @focus="VM.IsCodeReady = true" v-mask="'99999'" v-model="VM.UserCode" v-bind:class="{ 'is-invalid': !VM.FirstFocusCode && !VM.IsCodeReady }" />
           <div class="invalid-feedback">Invalid code.</div>
@@ -85,7 +85,6 @@ export default class Login extends Vue {
   @Emit()
   submit(e: Event) {
     this.setError(null);
-
     switch (this.auth.stage) {
       case E.EAuthStage.NoAuth:
         e.preventDefault();
@@ -126,7 +125,7 @@ export default class Login extends Vue {
               }
             }).bind(this)
           )
-          .catch(this.setError.bind(this));
+          .catch((() => (this.VM.IsCodeReady = false)).bind(this));
         break;
 
       default:
@@ -191,12 +190,13 @@ export default class Login extends Vue {
 
   @Emit()
   saveAuthChanged(value: boolean) {
+    this.store.commit(auth.mutations.setSaveAuth)(this.$store, value);
     this.VM.SaveAuth = value;
   }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "../assets/styles/mainStyles.scss";
 $mControlWidth: 330px;
 $sBorderWidth: 15px;
@@ -208,6 +208,10 @@ body {
   height: 100%;
 }
 
+.text-center {
+  height: 100%;
+}
+
 body {
   display: flex;
   align-items: center;
@@ -215,7 +219,6 @@ body {
 }
 
 .form-signin {
-  width: 100%;
   max-width: $mControlWidth;
   padding: $xsBorderWidth;
   margin: 0 auto;

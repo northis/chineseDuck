@@ -97,6 +97,12 @@ export const login = {
     passport.authenticate("local", (err, user) => {
       req.login(user, err => {
         if (err === undefined) {
+          if (req.body.remember) {
+            req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 90; // 90 days
+          } else {
+            req.session.cookie.maxAge = 1000 * 60 * 60; // 1 hour
+          }
+
           return res
             .status(status)
             .send("You were authenticated & logged in!\n");

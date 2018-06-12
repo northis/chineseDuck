@@ -23,6 +23,9 @@ const mutations = {
   setPhoneHash(state: I.IAuthState, payload: string): void {
     state.hash = payload;
   },
+  setSaveAuth(state: I.IAuthState, payload: boolean): void {
+    state.saveAuth = payload;
+  },
   setUser(state: I.IAuthState, payload: I.IUser): void {
     state.user = payload;
   }
@@ -46,7 +49,7 @@ const actions = {
       return Promise.resolve(null);
     } catch (e) {
       context.commit(mutations.logOut.name);
-      return Promise.reject(e);
+      return Promise.resolve(null);
     }
   },
 
@@ -99,11 +102,9 @@ const actions = {
       if (result.status === 200) {
         return await actions.fetchUser(context);
       }
-
-      context.commit(mutations.logOut.name);
-      return Promise.reject("Autentication error, sorry, try it again.");
+      return null;
     } catch (e) {
-      context.commit(mutations.logOut.name);
+      context.commit(auth.mutations.setAuthState.name, E.EAuthStage.PhoneOk);
       return Promise.reject(e);
     }
   },

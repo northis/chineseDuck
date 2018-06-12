@@ -1,6 +1,6 @@
 <template>
-    <div id="app-main">
-    </div>
+  <div id="app-main">
+  </div>
 </template>
 
 <script lang="ts">
@@ -13,10 +13,19 @@ export default class Main extends Vue {
   mounted() {
     console.log("Main mounted");
   }
-  created () {
-  }
+  created() {}
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "../assets/styles/mainStyles.scss";
+
+html,
+body {
+  height: 100%;
+  width: unset;
+  display: unset;
+  align-items: unset;
+  justify-content: unset;
+}
 </style>

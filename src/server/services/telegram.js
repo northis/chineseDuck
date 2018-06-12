@@ -42,7 +42,8 @@ export async function signIn(phone, code, phoneHash) {
   if (isDebug()) {
     await setTimeout(() => {}, 1000);
 
-    if (DebugKeys.phone == normalPhone) return { user: { id: 100 } };
+    if (DebugKeys.phone == normalPhone && DebugKeys.phone_code == normalCode)
+      return { user: { id: 100 } };
     else throw new Error("Wrong number");
   } else {
     return await client("auth.signIn", {

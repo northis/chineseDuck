@@ -12,8 +12,9 @@ import auth from "../store/auth";
 @Component
 export default class Logout extends Vue {
   mounted() {
-    this.store.dispatch(auth.actions.logout)(this.$store);
-    this.$router.push("/");
+    this.store
+      .dispatch(auth.actions.logout)(this.$store)
+      .then((() => this.$router.push("/")).bind(this));
   }
 
   get store() {
@@ -22,7 +23,7 @@ export default class Logout extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "../assets/styles/mainStyles.scss";
 
 html,

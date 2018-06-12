@@ -15,12 +15,10 @@ async function onAuthRequest(req, id, code, done) {
 
       usr = await mh.user.findOne({ _id: usrResp.user.id });
 
-      if (!remember) req.cookie.maxAge = 1000 * 60 * 60; // 1 hour
-
       if (usr == null) {
         return done(null, false);
       } else {
-        return done(null, { id: usrResp.user.id });
+        return done(null, { id: usrResp.user.id, remember });
       }
     } catch (e) {
       return done(e);

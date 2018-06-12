@@ -13,8 +13,9 @@ const sessionItem = session({
     collection: "sessions"
   }),
   secret: Settings.sessionsPass,
+
   cookie: {
-    maxAge: 1000 * 60 * 60 * 24 * 90 // 90 days
+    maxAge: 1000 * 60 * 60 * 24 * 10 // 10 days
   },
   resave: true,
   saveUninitialized: true,
