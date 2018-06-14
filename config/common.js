@@ -53,5 +53,7 @@ export const DebugKeys = {
 export const Settings = {
   mongoDbString: "mongodb://apiUser:qipassword@localhost:27017/chineseDuck",
   port: 3000,
-  sessionsPass: "2%$&epZvC$dA_Hsd"
+  sessionsPass: "2%$&epZvC$dA_Hsd",
+  apiPrefix: "/api/v1/",
+  docsPrefix: "/api/docs/"
 };

@@ -26,11 +26,6 @@ export default class Logout extends Vue {
 <style lang="scss" scoped>
 @import "../assets/styles/mainStyles.scss";
 
-html,
-body {
-  height: 100%;
-}
-
 body {
   display: flex;
   align-items: center;

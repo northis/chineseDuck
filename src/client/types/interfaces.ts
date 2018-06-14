@@ -8,6 +8,10 @@ export interface IAuthState {
   phone: string | null;
 }
 
+export interface IFolderState {
+  folders: IFolder[];
+}
+
 export interface ITelMasks {
   mainCountriesMasks: IPhoneMask[];
   otherCountriesMasks: IPhoneMask[] | null;
@@ -17,6 +21,12 @@ export interface IUser {
   id: number;
   name: string;
   who: string;
+}
+
+export interface IFolder {
+  _id: number;
+  name: string;
+  createDate: Date;
 }
 
 export interface IPhoneMask {

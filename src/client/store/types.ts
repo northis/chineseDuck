@@ -7,5 +7,6 @@ export interface IRootState {
 }
 
 export const Modules = {
-  auth: "auth"
+  auth: "auth",
+  folder: "folder"
 };

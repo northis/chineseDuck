@@ -63,7 +63,6 @@ import { LoginVM } from "./viewModels/loginVM";
 import * as ST from "../store/types";
 import { getStoreAccessors } from "vuex-typescript";
 import auth from "../store/auth";
-import Footer from "./Footer.vue";
 
 const mask = require("./directives/mask").default;
 Vue.use(mask);
@@ -71,8 +70,7 @@ Vue.use(mask);
 @Component({
   components: {
     "app-checkBox": CheckBox,
-    "app-comboBox": ComboBox,
-    "app-footer": Footer
+    "app-comboBox": ComboBox
   }
 })
 export default class Login extends Vue {

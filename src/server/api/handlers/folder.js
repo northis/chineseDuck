@@ -1,29 +1,61 @@
-'use strict';
-var dataProvider = require('../data/folder.js');
+import * as errors from "../../errors";
+import mh from "../../../server/api/db";
+import JSONStream from "JSONStream";
+
 /**
  * Operations on /folder
  */
-module.exports = {
+export const main = {
+  /**
+   * summary: Create folder
+   * description:
+   * parameters: body
+   * produces:
+   * responses: 201, 409, 200
+   */
+  post: function createFolder(req, res, next) {
+    var status = 201;
+    res.status(404);
+  },
+  /**
+   * summary: Get folders for current user
+   * description:
+   * produces: application/json
+   * responses: 200
+   */
+  get: async function getFoldersForCurrentUser(req, res, next) {
+    const idUser = req.session.passport.user;
+    await mh.folder
+      .find({ owner_id: idUser }, { owner_id: false })
+      .cursor()
+      .pipe(JSONStream.stringify())
+      .pipe(res.type("json"));
+  }
+};
+
+export const user = {
+  /**
+   * summary: Get folders for user
+   * description:
+   * parameters: userId
+   * produces: application/json
+   * responses: 400, 404, 200
+   */
+  get: function getFoldersForUser(req, res, next) {
+    var status = 400;
+    res.status(404);
+  },
+  id: {
     /**
-     * summary: Create folder
-     * description: 
-     * parameters: body
-     * produces: 
-     * responses: 201, 409, default
+     * summary: Get folders for user
+     * description:
+     * parameters: userId
+     * produces: application/json
+     * responses: 400, 404, 200
      */
-    post: function createFolder(req, res, next) {
-        /**
-         * Get the data for response 201
-         * For response `default` status 200 is used.
-         */
-        var status = 201;
-        var provider = dataProvider['post']['201'];
-        provider(req, res, function (err, data) {
-            if (err) {
-                next(err);
-                return;
-            }
-            res.status(status).send(data && data.responses);
-        });
+    get: function getFoldersForUser(req, res, next) {
+      var status = 400;
+      res.status(404);
     }
+  }
 };

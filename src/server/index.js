@@ -27,8 +27,8 @@ app.use(sessionItem);
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/api/docs/", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use("/api/v1/", api);
+app.use(Settings.docsPrefix, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use(Settings.apiPrefix, api);
 app.use(express.static(path.join(__dirname, "/public")));
 
 app.get(/^\/unsupported/, function(request, response) {

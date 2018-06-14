@@ -1,11 +1,10 @@
 import axios from "axios";
 import { isNullOrUndefined } from "util";
-import { ActionContext, Module } from "vuex";
-import { Consts } from "../../consts";
-import { route, routes } from "../../services/routeService";
-import * as E from "../../types/enums";
-import * as I from "../../types/interfaces";
-import * as ST from "../types";
+import { ActionContext } from "vuex";
+import { route, routes } from "../services/routeService";
+import * as E from "../types/enums";
+import * as I from "../types/interfaces";
+import * as ST from "./types";
 
 const mutations = {
   logOut(state: I.IAuthState): void {
@@ -128,8 +127,8 @@ const getters = {
 
   getTelMasks(): I.ITelMasks {
     const masksItem = {
-      mainCountriesMasks: require("../../services/phoneService/masksMain.json") as I.IPhoneMask[],
-      otherCountriesMasks: require("../../services/phoneService/masksOther.json") as I.IPhoneMask[]
+      mainCountriesMasks: require("../services/phoneService/masksMain.json") as I.IPhoneMask[],
+      otherCountriesMasks: require("../services/phoneService/masksOther.json") as I.IPhoneMask[]
     };
 
     return masksItem;

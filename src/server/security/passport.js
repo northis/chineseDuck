@@ -56,6 +56,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   const user = await mh.user.findOne({ _id: id });
+  user.tokenHash = "";
   done(null, user);
 });
 

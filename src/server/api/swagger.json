@@ -443,6 +443,35 @@
           "description" : "Created folder object",
           "required" : true
         }
+      },
+      "get" : {
+        "tags" : [ "folder" ],
+        "summary" : "Get folders for current user",
+        "operationId" : "getFoldersForCurrentUser",
+        "responses" : {
+          "400" : {
+            "description" : "Invalid ID supplied"
+          },
+          "404" : {
+            "description" : "User is not found"
+          },
+          "default" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Folder"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "cookieAuth" : [ "read" ]
+        } ]
       }
     },
     "/folder/user/{userId}" : {
@@ -482,7 +511,7 @@
           }
         },
         "security" : [ {
-          "cookieAuth" : [ "read" ]
+          "cookieAuth" : [ "admin" ]
         } ]
       }
     },
@@ -584,8 +613,8 @@
         "summary" : "Get user according to token in header",
         "operationId" : "getUserByToken",
         "parameters" : [ {
-          "name" : "token",
-          "in" : "header",
+          "name" : "connect.sid",
+          "in" : "cookie",
           "description" : "user token",
           "required" : true,
           "schema" : {
@@ -602,6 +631,12 @@
                 }
               }
             }
+          },
+          "401" : {
+            "description" : "Invalid auth data"
+          },
+          "404" : {
+            "description" : "User not found"
           }
         },
         "security" : [ {

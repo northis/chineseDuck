@@ -1,12 +1,10 @@
 import Vue from "vue";
-import VueRouter, { Route } from "vue-router";
-import { getStoreAccessors } from "vuex-typescript";
+import VueRouter from "vue-router";
 import LogoutModule from "./components/Logout.vue";
 import AppModule from "./components/main/App.vue";
 import store from "./store";
 import auth from "./store/auth";
 import * as ST from "./store/types";
-import * as I from "./types/interfaces";
 
 export const routerInit = async () => {
   try {

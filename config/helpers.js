@@ -33,14 +33,22 @@ export function updateRoutesFromSwagger() {
       pathObj.value = key;
 
       let actions = {};
-      Object.keys(methods).map(a => (actions[a] = a));
+      for (const methodKey of Object.keys(methods)) {
+        actions[methodKey] = JSON.stringify(
+          methods[methodKey].security[0].cookieAuth
+        );
+      }
       pathObj.actions = actions;
       routesObject[key.replace(/[\/{}]/g, "_")] = pathObj;
     }
 
     fs.writeFileSync(
       "./src/shared/routes.gen.js",
-      "export default " + util.inspect(routesObject)
+      "export default " +
+        util
+          .inspect(routesObject)
+          .replace(/'\[/gi, "[")
+          .replace(/]'/gi, "]")
     );
 
     docHash.hash = actualHash;

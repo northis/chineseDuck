@@ -4,6 +4,12 @@ export const RightEnum = {
   admin: "admin"
 };
 
+export const RightWeightEnum = {
+  read: 1,
+  write: 2,
+  admin: 3
+};
+
 export const FileTypeEnum = {
   audio: "audio",
   orig: "orig",

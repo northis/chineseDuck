@@ -3,6 +3,7 @@ import { Store, StoreOptions } from "vuex";
 import Vuex from "vuex";
 import * as ST from "../store/types";
 import auth from "./auth";
+import folder from "./folder";
 
 Vue.use(Vuex);
 const store: StoreOptions<ST.IRootState> = {
@@ -11,7 +12,8 @@ const store: StoreOptions<ST.IRootState> = {
     AppName: "Chinese Duck"
   },
   modules: {
-    auth
+    auth,
+    folder
   }
 };
 

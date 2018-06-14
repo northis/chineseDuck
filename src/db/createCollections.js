@@ -116,8 +116,10 @@ db.createCollection("folders", {
 )
 
 db.folders.createIndex(
-    { owner_id: 1, name: "text" }, { unique: true }
+    { owner_id: 1, name: "" }, { unique: true }
 )
+
+db.folders.createIndex({ name: "text" })
 
 db.createCollection("words", {
     validator: {

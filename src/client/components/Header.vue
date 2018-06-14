@@ -19,10 +19,7 @@
           </ul>
 
           <div class="my-2 my-lg-0">
-            <router-link to="/user">
-              {{this.auth.user.name}}
-            </router-link>
-            |
+            {{this.auth.user.name}} |
             <router-link to="/logout">
               Logout
             </router-link>
