@@ -25,7 +25,7 @@ export default {
     selectedChanged(val, oldVal) {
       this.$emit("selectedChanged", val);
     },
-    focusLost(){
+    focusLost() {
       this.$emit("blur");
     }
   },

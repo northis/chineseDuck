@@ -63,6 +63,7 @@ import { LoginVM } from "./viewModels/loginVM";
 import * as ST from "../store/types";
 import { getStoreAccessors } from "vuex-typescript";
 import auth from "../store/auth";
+import { getFooterMarkupLine } from "../../../config/common";
 
 const mask = require("./directives/mask").default;
 Vue.use(mask);
@@ -76,6 +77,7 @@ Vue.use(mask);
 export default class Login extends Vue {
   @State auth: T.IAuthState;
   @Provide() VM = new LoginVM();
+  @Provide() Footer = getFooterMarkupLine();
 
   @Emit()
   submit(e: Event) {

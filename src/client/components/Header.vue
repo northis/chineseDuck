@@ -12,7 +12,7 @@
         <div class="collapse navbar-collapse" id="navbarExpander">
           <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             <li class="nav-item active">
-              <a class="nav-link" href="#">Home
+              <a class="nav-link" href="#">Folders
                 <span class="sr-only">(current)</span>
               </a>
             </li>

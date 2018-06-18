@@ -10,6 +10,7 @@ export interface IAuthState {
 
 export interface IFolderState {
   folders: IFolder[];
+  currentFolder: IFolder | null;
 }
 
 export interface ITelMasks {

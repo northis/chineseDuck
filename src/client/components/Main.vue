@@ -1,7 +1,7 @@
 <template>
-  <div role="main" id="app-main">
+  <main role="main" id="app-main">
     <app-folder> </app-folder>
-  </div>
+  </main>
 </template>
 
 <script lang="ts">
@@ -24,22 +24,4 @@ export default class Main extends Vue {
 </script>
 
 <style lang="scss">
-@import "../assets/styles/mainStyles.scss";
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-body {
-  //margin-bottom: 40px;
-  width: 100%;
-  height: 100%;
-}
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  // height: 40px;
-  // line-height: 40px;
-}
 </style>

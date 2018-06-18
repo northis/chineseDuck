@@ -3,7 +3,6 @@ import * as errors from "../errors";
 import * as user from "./handlers/user";
 import * as folder from "./handlers/folder";
 import * as rt from "../../shared/routes.gen";
-import { Settings } from "../../../config/common";
 import { RightWeightEnum } from "../../server/api/db/models";
 
 const routes = rt.default;
@@ -20,7 +19,7 @@ router.use(privateRoutesFilter, (req, res, next) => {
   }
   next();
 });
-const access = path => (req, res, next) => {
+const accessControl = path => (req, res, next) => {
   try {
     const method = req.method.toLowerCase();
     const role = req.user.who;
@@ -38,15 +37,16 @@ const access = path => (req, res, next) => {
 
 router
   .route(routes._user.value)
-  .all(access(routes._user))
+  .all(accessControl(routes._user))
   .get(user.main.get)
   .post(user.main.post);
 
 router
   .route(routes._folder.value)
-  .all(access(routes._folder))
+  .all(accessControl(routes._folder))
   .get(folder.main.get)
-  .post(folder.main.post);
+  .post(folder.main.post)
+  .delete(folder.id.delete);
 
 // router
 //   .route(routes._service_datetime.value)

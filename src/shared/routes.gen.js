@@ -26,7 +26,7 @@ export default { _word:
      actions: { get: ["admin"] } },
   _folder__folderId_: 
    { value: '/folder/{folderId}',
-     actions: { delete: ["read"], put: ["read"] } },
+     actions: { delete: ["write"], put: ["read"] } },
   _user: 
    { value: '/user',
      actions: { post: ["admin"], get: ["read"] } },

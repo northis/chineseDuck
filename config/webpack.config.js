@@ -251,7 +251,7 @@ const clientConfig = {
     }),
     new HtmlWebpackPlugin({
       template: "src/client/index.html",
-      footer: common.getFooterMarkupLine(),
+      footer: common.getFooterMarkup(),
       inject: true,
       hash: true
     }),

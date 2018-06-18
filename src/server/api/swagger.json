@@ -449,12 +449,6 @@
         "summary" : "Get folders for current user",
         "operationId" : "getFoldersForCurrentUser",
         "responses" : {
-          "400" : {
-            "description" : "Invalid ID supplied"
-          },
-          "404" : {
-            "description" : "User is not found"
-          },
           "default" : {
             "description" : "successful operation",
             "content" : {
@@ -531,15 +525,21 @@
           }
         } ],
         "responses" : {
+          "204" : {
+            "description" : "Deleted"
+          },
           "400" : {
             "description" : "Invalid folder id supplied"
+          },
+          "403" : {
+            "description" : "Access denied"
           },
           "404" : {
             "description" : "Folder not found"
           }
         },
         "security" : [ {
-          "cookieAuth" : [ "read" ]
+          "cookieAuth" : [ "write" ]
         } ]
       },
       "put" : {

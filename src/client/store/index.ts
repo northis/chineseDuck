@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { Store, StoreOptions } from "vuex";
+import { StoreOptions } from "vuex";
 import Vuex from "vuex";
 import * as ST from "../store/types";
 import auth from "./auth";
