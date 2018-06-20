@@ -42,7 +42,7 @@ const config = {
   mode,
   output: {
     path: CLIENT_DIR,
-    publicPath: "/",
+    publicPath: "/build/public",
     pathinfo: isVerbose,
     filename: isDebug ? "[name].js" : "[name].[chunkhash:8].js",
     chunkFilename: isDebug
@@ -320,7 +320,7 @@ const serverConfig = {
   },
   output: {
     ...config.output,
-    publicPath: "/client",
+    publicPath: "/build",
     path: BUILD_DIR,
     filename: "[name].js",
     chunkFilename: "chunks/[name].js",

@@ -21,6 +21,24 @@ const mutations = {
 };
 
 const actions = {
+  async saveFolder(
+    context: ActionContext<I.IFolderState, ST.IRootState>
+  ): Promise<void> {
+    if (isNullOrUndefined(context.state.currentFolder)) {
+      return Promise.reject("No items to save");
+    }
+
+    try {
+      await axios.delete(
+        route(routes._folder__folderId_, context.state.currentFolder._id)
+      );
+      context.commit(mutations.deleteFolder.name, context.state.currentFolder);
+      context.commit(mutations.setCurrentFolder.name, null);
+      return Promise.resolve();
+    } catch (e) {
+      Promise.reject(e);
+    }
+  },
   async deleteFolder(
     context: ActionContext<I.IFolderState, ST.IRootState>
   ): Promise<void> {

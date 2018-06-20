@@ -568,7 +568,7 @@
           }
         },
         "security" : [ {
-          "cookieAuth" : [ "read" ]
+          "cookieAuth" : [ "write" ]
         } ],
         "requestBody" : {
           "content" : {

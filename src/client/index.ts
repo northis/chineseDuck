@@ -6,8 +6,9 @@ import VueRouter from "vue-router";
 import "./assets/styles/mainStyles.scss";
 import { routerInit } from "./router";
 import * as storeItem from "./store";
+import { InitValidation } from "./validate";
 
-Vue.use(VeeValidate);
+InitValidation();
 // include factory methods here for testing purposes
 
 const createVue = (router: VueRouter) => {
