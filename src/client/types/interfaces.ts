@@ -25,9 +25,10 @@ export interface IUser {
 }
 
 export interface IFolder {
-  _id: number;
+  _id?: number;
   name: string;
-  createDate: Date;
+  activityDate?: Date;
+  wordsCount?: number;
 }
 
 export interface IPhoneMask {

@@ -21,6 +21,7 @@ for (var counter = 1; counter < 100; counter++) {
         useGrouping: false
       }),
     owner_id: owner,
-    createDate: ISODate()
+    wordsCount: NumberInt(0),
+    activityDate: ISODate()
   });
 }

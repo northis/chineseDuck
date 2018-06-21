@@ -39,6 +39,7 @@ export function updateRoutesFromSwagger() {
         );
       }
       pathObj.actions = actions;
+      pathObj.express = key.replace(/\{[^}{]*\}/g, ":$&").replace(/[}{}]/g, "");
       routesObject[key.replace(/[\/{}]/g, "_")] = pathObj;
     }
 

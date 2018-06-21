@@ -7,11 +7,11 @@ export const routes = rt.default;
 export const route = (r: { value: string }, ...params: any[]) => {
   let resValue = r.value;
   if (!isNullOrUndefined(params)) {
-    const regexPtrn = /{\[^\}\{\]\*+}/g;
-    const regResults = regexPtrn.exec(resValue);
+    const routeRegexPattern = /\{[^}{]*\}/g;
+    const regResults = routeRegexPattern.exec(resValue);
 
     if (!isNull(regResults) && regResults.length === params.length) {
-      for (let i = 0; i > params.length; i++) {
+      for (let i = 0; i < params.length; i++) {
         resValue = resValue.replace(regResults[i], params[i].toString());
       }
     }

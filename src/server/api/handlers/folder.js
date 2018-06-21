@@ -1,6 +1,16 @@
-import * as errors from "../../errors";
 import mh from "../../../server/api/db";
-import JSONStream from "JSONStream";
+// import JSONStream from "JSONStream";
+import * as folderVal from "../../../shared/validation";
+
+const catchUniqueName = (res, error) => {
+  if (error.code == 11000)
+    res
+      .status(409)
+      .send(
+        "A folder with that name already exists. Release you imagination and try again."
+      );
+  else res.status(500).send(error.message);
+};
 
 /**
  * Operations on /folder
@@ -13,23 +23,42 @@ export const main = {
    * produces:
    * responses: 201, 409, 200
    */
-  post: function createFolder(req, res, next) {
-    var status = 201;
-    res.status(404);
+  post: async function createFolder(req, res, next) {
+    const status = 201;
+    const name = req.body.name;
+    const idUser = req.session.passport.user;
+
+    if (!folderVal.folder.name.regex.test(name)) {
+      res.status(400).send("Bad folder name");
+      return;
+    }
+
+    try {
+      const result = new mh.folder({
+        name: name,
+        owner_id: idUser
+      });
+      await result.save();
+      res.status(status).send(result);
+    } catch (e) {
+      catchUniqueName(res, e);
+    }
   },
   /**
    * summary: Get folders for current user
    * description:
    * produces: application/json
    * responses: 200
-   */
-  get: async function getFoldersForCurrentUser(req, res) {
+   */ get: async function getFoldersForCurrentUser(req, res) {
     const idUser = req.session.passport.user;
-    return await mh.folder
+    const result = await mh.folder
       .find({ owner_id: idUser }, { owner_id: false })
-      .cursor()
-      .pipe(JSONStream.stringify())
-      .pipe(res.type("json"));
+      .sort({ activityDate: -1 });
+
+    res.json(result);
+    // .cursor()
+    // .pipe(JSONStream.stringify())
+    // .pipe(res.type("json"));
   }
 };
 
@@ -39,41 +68,48 @@ export const id = {
    * description:
    * parameters: folderId
    * produces:
-   * responses: 400, 404, 204
+   * responses: 204
    */
   delete: async function deleteFolder(req, res, next) {
-    var status = 204;
-
-    var provider = dataProvider["delete"]["400"];
-    provider(req, res, function(err, data) {
-      if (err) {
-        next(err);
-        return;
-      }
-      res.status(status).send(data && data.responses);
-    });
+    var status = 200;
+    const folderId = req.params.folderId;
+    const result = await mh.folder.deleteOne({ _id: folderId });
+    res.status(status).send(result);
   },
   /**
    * summary: Update folder (rename)
    * description:
    * parameters: folderId, body
    * produces:
-   * responses: 400, 404, 409
+   * responses: 200, 400, 409
    */
+
   put: async function updateFolder(req, res, next) {
-    /**
-     * Get the data for response 400
-     * For response `default` status 200 is used.
-     */
-    var status = 400;
-    var provider = dataProvider["put"]["400"];
-    provider(req, res, function(err, data) {
-      if (err) {
-        next(err);
-        return;
-      }
-      res.status(status).send(data && data.responses);
-    });
+    var status = 200;
+    const name = req.body.name;
+
+    if (!folderVal.folder.name.regex.test(name)) {
+      res.status(400).send("Bad folder name");
+      return;
+    }
+
+    const folderId = req.params.folderId;
+    try {
+      const result = await mh.folder.findOneAndUpdate(
+        { _id: folderId },
+        {
+          name: req.body.name,
+          activityDate: Date.now()
+        },
+        {
+          new: true
+        }
+      );
+      console.info(result);
+      res.status(status).send(result);
+    } catch (e) {
+      catchUniqueName(res, e);
+    }
   }
 };
 

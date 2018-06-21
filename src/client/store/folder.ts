@@ -6,6 +6,9 @@ import * as I from "../types/interfaces";
 import * as ST from "./types";
 
 const mutations = {
+  createFolder(state: I.IFolderState, payload: I.IFolder): void {
+    state.folders.unshift(payload);
+  },
   setFolders(state: I.IFolderState, payload: I.IFolder[]): void {
     state.folders = payload;
   },
@@ -21,41 +24,42 @@ const mutations = {
 };
 
 const actions = {
+  async createFolder(
+    context: ActionContext<I.IFolderState, ST.IRootState>
+  ): Promise<void> {
+    if (isNullOrUndefined(context.state.currentFolder)) {
+      throw new Error("No items to save");
+    }
+    await axios.post(route(routes._folder), context.state.currentFolder);
+    context.commit(mutations.setCurrentFolder.name, null);
+  },
+
   async saveFolder(
     context: ActionContext<I.IFolderState, ST.IRootState>
   ): Promise<void> {
     if (isNullOrUndefined(context.state.currentFolder)) {
-      return Promise.reject("No items to save");
+      throw new Error("No items to save");
     }
-
-    try {
-      await axios.delete(
-        route(routes._folder__folderId_, context.state.currentFolder._id)
-      );
-      context.commit(mutations.deleteFolder.name, context.state.currentFolder);
-      context.commit(mutations.setCurrentFolder.name, null);
-      return Promise.resolve();
-    } catch (e) {
-      Promise.reject(e);
-    }
+    const result = await axios.put(
+      route(routes._folder__folderId_, context.state.currentFolder._id),
+      context.state.currentFolder
+    );
+    context.state.currentFolder.activityDate = result.data.activityDate;
+    context.commit(mutations.setCurrentFolder.name, null);
   },
+
   async deleteFolder(
     context: ActionContext<I.IFolderState, ST.IRootState>
   ): Promise<void> {
     if (isNullOrUndefined(context.state.currentFolder)) {
-      return Promise.reject("No items to delete");
+      throw new Error("No items to delete");
     }
 
-    try {
-      await axios.delete(
-        route(routes._folder__folderId_, context.state.currentFolder._id)
-      );
-      context.commit(mutations.deleteFolder.name, context.state.currentFolder);
-      context.commit(mutations.setCurrentFolder.name, null);
-      return Promise.resolve();
-    } catch (e) {
-      Promise.reject(e);
-    }
+    await axios.delete(
+      route(routes._folder__folderId_, context.state.currentFolder._id)
+    );
+    context.commit(mutations.deleteFolder.name, context.state.currentFolder);
+    context.commit(mutations.setCurrentFolder.name, null);
   },
 
   async fetchFolders(
@@ -65,13 +69,14 @@ const actions = {
       const resp = await axios.get(route(routes._folder));
 
       const data: I.IFolder[] = resp.data;
-      context.commit(mutations.setFolders.name, data.slice(0, 10));
+      context.commit(mutations.setFolders.name, data);
       return Promise.resolve();
     } catch (e) {
       return Promise.reject(e);
     }
   }
 };
+
 const getters = {
   getFolders(state: I.IFolderState): I.IFolder[] {
     return state.folders;

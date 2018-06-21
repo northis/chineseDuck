@@ -7,6 +7,7 @@
             <div class="input-group-prepend">
               <button class="btn"
                       type="button"
+                      @click="startCreateFolder()"
                       :disabled="isNoEdit">Add new</button>
             </div>
             <input type="text"
@@ -21,63 +22,105 @@
     <div class="row">
       <div class="col-sm-nopadding">
         <div class="marginagble">
+          <div class="progress margin-noside"
+               v-show="IsLoading && !currentFolder">
+            <div class="progress-bar progress-bar-striped progress-bar-animated"
+                 role="progressbar"
+                 aria-valuenow="100"
+                 aria-valuemin="0"
+                 aria-valuemax="100"
+                 style="width: 100%" />
+          </div>
           <div class="list-group">
             <div class="list-group-item list-group-item-action flex-column align-items-start d-flex w-100 justify-content-between"
                  v-for="folder in filteredFolders"
                  :key="folder._id">
               <div class="container nopadding">
                 <div class="row">
-                  <div class="col nopadding">
-                    <div v-html="highlightKeyword(folder.name) + ` (0)`"
-                         v-if="!IsInEditMode || folder._id != currentFolder._id" />
-                    <div v-else>
+                  <div class="col">
+                    <div v-html="highlightKeyword(folder.name) + ` (${folder.wordsCount})`"
+                         v-if="!IsInEditMode || folder && currentFolder && folder._id != currentFolder._id" />
+                    <div v-else
+                         class="input-group">
 
-                      <div class="input-group">
-                        <div class="input-group-prepend">
-                          <button class="btn"
-                                  @click="saveFolder()">
-                            <img src="../assets/images/save.svg"
-                                 class="align-middle" />
-                          </button>
-                          <button class="btn"
-                                  @click="cancelEdit()">
-                            <img src="../assets/images/x.svg"
-                                 class="align-middle" />
-                          </button>
-                        </div>
-
-                        <input v-validate="{ required: true, regex: validation.folder.name.regex }"
-                               :class="{'form-control': true, 'is-invalid': errors.has('folderName') }"
-                               name="folderName"
-                               type="text"
-                               v-model="folder.name">
-                        <div class="invalid-feedback">
-                          {{ validation.folder.name.message }}
-                        </div>
+                      <div class="input-group-prepend">
+                        <button class="btn"
+                                :disabled="isInvalid || IsLoading"
+                                data-toggle="tooltip"
+                                title="Save the changes"
+                                @click="saveFolder()">
+                          <img src="../assets/images/save.svg"
+                               class="align-middle" />
+                        </button>
+                        <button class="btn"
+                                :disabled="IsLoading"
+                                data-toggle="tooltip"
+                                title="Discard the changes"
+                                @click="cancelEdit()">
+                          <img src="../assets/images/x.svg"
+                               class="align-middle" />
+                        </button>
                       </div>
 
+                      <input v-validate="'required|FolderNameValidation'"
+                             :class="{'form-control': true, 'is-invalid': isInvalid }"
+                             name="folderName"
+                             type="text"
+                             v-model="folder.name" />
                     </div>
-                    <small>
-                      {{timeagoInstance.format(folder.createDate)}}
-                    </small>
+                    <div v-if="isInvalid && folder && currentFolder && folder._id == currentFolder._id"
+                         class="invalid">
+                      {{ errors.first('folderName')}}
+                    </div>
+                    <div v-else>
+                      <div class="progress margin-noside"
+                           v-if="IsLoading && folder && currentFolder && folder._id == currentFolder._id">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                             role="progressbar"
+                             aria-valuenow="100"
+                             aria-valuemin="0"
+                             aria-valuemax="100"
+                             style="width: 100%" />
+                      </div>
+                      <small v-else
+                             class="semiOpacity">
+                        {{timeagoInstance.format(folder.activityDate)}}
+                      </small>
+                    </div>
                   </div>
-                  <div class="col-md-auto nopadding">
+                  <div class="col-auto nopadding">
                     <button type="button"
-                            class="btn btn-light"
+                            data-toggle="tooltip"
+                            title="Go to the words in this folder"
+                            class="btn btn-outline-success"
+                            :disabled="isNoEdit"
+                            @click="editFolder(folder)">
+                      To words
+                      <img src="../assets/images/arrow-right-circle.svg"
+                           class="buttonIcons" />
+                    </button>
+                    <button type="button"
+                            data-toggle="tooltip"
+                            title="Edit the folder"
+                            class="btn btn-outline-secondary"
                             :disabled="isNoEdit"
                             @click="editFolder(folder)">
                       <img src="../assets/images/edit.svg"
-                           class="align-middle" />
+                           class="buttonIcons" />
                     </button>
-                    <button type="button"
-                            class="btn btn-light"
-                            data-toggle="modal"
-                            :disabled="isNoEdit"
-                            @click="deleteFolder(folder)"
-                            data-target="#deleteConfirmWindow">
-                      <img src="../assets/images/trash.svg"
-                           class="align-middle" />
-                    </button>
+                    <span data-toggle="tooltip"
+                          title="Delete the folder">
+                      <button type="button"
+                              class="btn btn-outline-danger"
+                              data-toggle="modal"
+                              :disabled="isNoEdit"
+                              @click="startDeleteFolder(folder)"
+                              data-target="#deleteConfirmWindow">
+                        <img src="../assets/images/trash.svg"
+                             class="buttonIcons" />
+                      </button>
+
+                    </span>
                   </div>
                 </div>
               </div>
@@ -109,11 +152,27 @@ import * as ST from "../store/types";
 import { Provide, Emit } from "vue-property-decorator";
 import { getStoreAccessors } from "vuex-typescript";
 import folder from "../store/folder";
-import { isNullOrUndefined, isNull } from "util";
+import { isNullOrUndefined, isNull, isUndefined } from "util";
 import * as JsSearch from "js-search";
 import ConfirmWindow from "./framework/ConfirmWindow.vue";
 import * as validation from "../../shared/validation";
 import timeago from "timeago.js";
+import { Validator } from "vee-validate";
+import { formatError } from "../services/timeSavers";
+
+const dictionary = {
+  en: {
+    attributes: {
+      folderName: "folder name"
+    }
+  }
+};
+
+Validator.localize(dictionary);
+Validator.extend("FolderNameValidation", {
+  getMessage: (field: string) => validation.folder.name.message,
+  validate: (value: string) => validation.folder.name.regex.test(value)
+});
 
 @Component({
   components: {
@@ -134,18 +193,19 @@ export default class Folder extends Vue {
   @Provide() IsInDeleteMode = false;
   @Provide() IsConfirmed = false;
   @Provide() IsLoading = false;
-  @Provide() validation = validation;
   @Provide() timeagoInstance = timeago();
 
-  editUndo = {
-    folderName: ""
+  saveItem = {
+    oldFolderName: ""
   };
   search: JsSearch.Search;
 
   mounted() {
+    this.IsLoading = true;
     this.store
       .dispatch(folder.actions.fetchFolders)(this.$store)
       .then(a => {
+        this.IsLoading = false;
         this.search.addDocuments(this.folders);
       });
   }
@@ -161,6 +221,9 @@ export default class Folder extends Vue {
   get folders() {
     return this.store.read(folder.getters.getFolders)(this.$store);
   }
+  get isInvalid() {
+    return this.$validator.errors.any();
+  }
   get currentFolder() {
     return this.store.read(folder.getters.getCurrentFolder)(this.$store);
   }
@@ -168,15 +231,29 @@ export default class Folder extends Vue {
     return this.IsInEditMode || this.IsLoading;
   }
 
+  get isAddMode() {
+    return !isNull(this.currentFolder) && isUndefined(this.currentFolder._id);
+  }
+
   @Emit()
   editFolder(folderItem: T.IFolder) {
     this.IsInEditMode = true;
     this.setCurrentFolder(folderItem);
-    this.editUndo.folderName = folderItem.name;
+    this.saveItem.oldFolderName = folderItem.name;
   }
 
   @Emit()
-  deleteFolder(folderItem: T.IFolder) {
+  startDeleteFolder(folderItem: T.IFolder) {
+    this.setCurrentFolder(folderItem);
+  }
+
+  @Emit()
+  startCreateFolder() {
+    this.IsInEditMode = true;
+    const folderItem: T.IFolder = {
+      name: "New folder"
+    };
+    this.store.commit(folder.mutations.createFolder)(this.$store, folderItem);
     this.setCurrentFolder(folderItem);
   }
 
@@ -189,17 +266,40 @@ export default class Folder extends Vue {
 
   cancelEdit() {
     this.IsInEditMode = false;
+
     if (!isNull(this.currentFolder)) {
-      this.currentFolder.name = this.editUndo.folderName;
+      if (this.isAddMode) {
+        this.store.commit(folder.mutations.deleteFolder)(
+          this.$store,
+          this.currentFolder
+        );
+      } else {
+        this.currentFolder.name = this.saveItem.oldFolderName;
+      }
+
       this.setCurrentFolder(null);
     }
-    this.editUndo.folderName = "";
+    this.saveItem.oldFolderName = "";
   }
 
   saveFolder() {
     this.IsLoading = true;
 
-    this.IsInEditMode = false;
+    this.store
+      .dispatch(
+        this.isAddMode ? folder.actions.createFolder : folder.actions.saveFolder
+      )(this.$store)
+      .then(a => {
+        this.IsInEditMode = false;
+        this.IsLoading = false;
+      })
+      .catch((e: any) => {
+        this.$validator.errors.add({
+          field: "folderName",
+          msg: formatError(e)
+        });
+        this.IsLoading = false;
+      });
   }
 
   deleteCurrentFolder() {
@@ -240,6 +340,12 @@ export default class Folder extends Vue {
   @extend .marginagble;
   margin-bottom: 0;
 }
+
+.margin-noside {
+  @extend .marginagble;
+  margin-left: 0;
+  margin-right: 0;
+}
 .nopadding {
   padding: 0;
 }
@@ -257,5 +363,17 @@ export default class Folder extends Vue {
 
 .listItemPadding {
   padding: 0.5em 1em 0.5em 1em;
+}
+.invalid {
+  @extend .invalid-feedback;
+  display: unset;
+}
+
+.semiOpacity {
+  color: rgba(0, 0, 0, $mainSemiOpacity);
+}
+.buttonIcons {
+  @extend .align-middle;
+  opacity: $mainSemiOpacity;
 }
 </style>

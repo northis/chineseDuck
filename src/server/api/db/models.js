@@ -67,7 +67,8 @@ export const wordFileSchema = {
 export const folderSchema = {
   name: String,
   owner_id: Number,
-  createDate: { type: Date, default: new Date() }
+  wordsCount: Number,
+  activityDate: { type: Date, default: new Date() }
 };
 
 export const wordSchema = {

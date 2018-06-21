@@ -94,7 +94,7 @@ db.createCollection("folders", {
                 '_id',
                 'name',
                 'owner_id',
-                'createDate'
+                'activityDate'
             ],
             properties: {
                 _id: {
@@ -106,8 +106,11 @@ db.createCollection("folders", {
                 owner_id: {
                     bsonType: 'long'
                 },
-                createDate: {
+                activityDate: {
                     bsonType: 'date'
+                },
+                wordsCount: {
+                    bsonType: 'int'
                 }
             }
         },
