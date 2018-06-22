@@ -1,7 +1,9 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import FolderModule from "./components/Folder.vue";
 import LogoutModule from "./components/Logout.vue";
-import AppModule from "./components/main/App.vue";
+import MainModule from "./components/Main.vue";
+import WordModule from "./components/Word.vue";
 import store from "./store";
 import auth from "./store/auth";
 import * as ST from "./store/types";
@@ -21,10 +23,29 @@ export const routerInit = async () => {
     mode: "history",
     base: "/client",
     routes: [
-      { path: "/login", component: LoginModule /*, beforeEnter: requireAuth*/ },
-      { path: "/", component: AppModule },
+      {
+        path: "/login",
+        component: LoginModule
+      },
+      {
+        path: "/",
+        component: MainModule,
+        children: [
+          {
+            path: "folder/:id",
+            component: WordModule
+          },
+          {
+            path: "folder",
+            component: FolderModule
+          },
+          {
+            path: "/",
+            component: FolderModule
+          }
+        ]
+      },
       { path: "/logout", component: LogoutModule },
-      // { path: '/bar', props: { id: 123 }},
       { path: "*", redirect: "/" }
     ]
   });

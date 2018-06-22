@@ -1,48 +1,87 @@
 <template>
   <div class="text-center">
-    <form class="form-signin" action="/" @submit.prevent="submit" method="post" novalidate>
-      <img class="mb-4" src="../assets/favicon/logo.svg" alt="" width="72" height="72">
+    <form class="form-signin"
+          action="/"
+          @submit.prevent="submit"
+          method="post"
+          novalidate>
+      <img class="mb-4"
+           src="../assets/favicon/logo.svg"
+           alt=""
+           width="72"
+           height="72">
 
       <template v-if="auth.stage == 0">
         <p class="text-left">Please type your Telegram-bound phone number</p>
         <div class="form-group">
-          <app-comboBox :useFullList="true" @selectedChanged="selectedChanged" autofocus @blur.once="VM.FirstFocusCountry = false" v-bind:class="{ 'is-invalid': VM.CurrentMask=='' && !VM.FirstFocusCountry }">
-            <option v-for="item in mainCountries" :key="item.n" :value="item.m"> {{item.n}}</option>
-            <option slot="FullList" v-for="item in otherCountries" :key="item.n" :value="item.m"> {{item.n}}</option>
+          <app-comboBox :useFullList="true"
+                        @selectedChanged="selectedChanged"
+                        autofocus
+                        @blur.once="VM.FirstFocusCountry = false"
+                        v-bind:class="{ 'is-invalid': VM.CurrentMask=='' && !VM.FirstFocusCountry }">
+            <option v-for="item in mainCountries"
+                    :key="item.n"
+                    :value="item.m"> {{item.n}}</option>
+            <option slot="FullList"
+                    v-for="item in otherCountries"
+                    :key="item.n"
+                    :value="item.m"> {{item.n}}</option>
             <span slot="Header">Select your country </span>
           </app-comboBox>
         </div>
 
         <div class="form-group">
-          <input type="tel" id="inputPhone" class="form-control" @blur="VM.FirstFocusPhone = false" @invalid="VM.IsPhoneReady = false" @focus="VM.IsPhoneReady = true" v-mask="VM.CurrentMask" v-model="VM.UserTel" v-bind:class="{ 'is-invalid': isPhoneInvalid }" />
+          <input type="tel"
+                 id="inputPhone"
+                 class="form-control"
+                 @blur="VM.FirstFocusPhone = false"
+                 @invalid="VM.IsPhoneReady = false"
+                 @focus="VM.IsPhoneReady = true"
+                 v-mask="VM.CurrentMask"
+                 v-model="VM.UserTel"
+                 v-bind:class="{ 'is-invalid': isPhoneInvalid }" />
           <div class="invalid-feedback">
             Invalid phone number.
           </div>
         </div>
 
-        <app-checkBox class="mb-3 text-left" @checkedChanged="saveAuthChanged">Remember me</app-checkBox>
+        <app-checkBox class="mb-3 text-left"
+                      @checkedChanged="saveAuthChanged">Remember me</app-checkBox>
 
-        <div class="mb-3 text-left errorText" v-if="VM.CommonError != ''">
+        <div class="mb-3 text-left errorText"
+             v-if="VM.CommonError != ''">
           {{VM.CommonError}}
         </div>
-        <button class="btn-block" type="submit">Request code</button>
+        <button class="btn-block"
+                type="submit">Request code</button>
       </template>
 
-      <div class="form-group" v-if="auth.stage == 1">
+      <div class="form-group"
+           v-if="auth.stage == 1">
         Requesting code for the phone number...
       </div>
 
       <template v-if="auth.stage == 2">
         <p class="text-left">Please type a code from the message you've just received.</p>
         <div class="form-group">
-          <input type="tel" id="inputCode" class="form-control" @blur.once="VM.FirstFocusCode = false" @invalid="VM.IsCodeReady = false" @focus="VM.IsCodeReady = true" v-mask="'99999'" v-model="VM.UserCode" v-bind:class="{ 'is-invalid': !VM.FirstFocusCode && !VM.IsCodeReady }" />
+          <input type="tel"
+                 id="inputCode"
+                 class="form-control"
+                 @blur.once="VM.FirstFocusCode = false"
+                 @invalid="VM.IsCodeReady = false"
+                 @focus="VM.IsCodeReady = true"
+                 v-mask="'99999'"
+                 v-model="VM.UserCode"
+                 v-bind:class="{ 'is-invalid': !VM.FirstFocusCode && !VM.IsCodeReady }" />
           <div class="invalid-feedback">Invalid code.</div>
         </div>
 
-        <button class="btn-block" type="submit">Send code</button>
+        <button class="btn-block"
+                type="submit">Send code</button>
       </template>
 
-      <div class="form-group" v-if="auth.stage == 3">
+      <div class="form-group"
+           v-if="auth.stage == 3">
         Sending the code...
       </div>
     </form>
@@ -115,8 +154,7 @@ export default class Login extends Vue {
               if (userExists) {
                 const form = <HTMLFormElement>e.target;
                 if (form != null) {
-                  document.body.style.display = "unset";
-                  this.$router.push(form.action);
+                  window.location.href = form.action;
                 }
               } else {
                 e.preventDefault();
@@ -153,7 +191,7 @@ export default class Login extends Vue {
 
   mounted() {
     console.log("Login mounted");
-    this.store.dispatch(auth.actions.fetchUser)(this.$store);
+    //this.store.dispatch(auth.actions.fetchUser)(this.$store);
   }
 
   created() {
@@ -197,9 +235,12 @@ export default class Login extends Vue {
 <style lang="scss">
 html,
 body {
-  display: flex;
   align-items: center;
   justify-content: center;
+}
+
+body {
+  display: flex;
 }
 </style>
 <style lang="scss" scoped>

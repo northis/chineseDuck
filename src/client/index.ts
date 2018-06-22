@@ -1,5 +1,4 @@
 import "bootstrap";
-import VeeValidate from "vee-validate";
 import Vue from "vue";
 // import VueI18n from "vue-i18n";
 import VueRouter from "vue-router";

@@ -1,4 +1,7 @@
 <template>
+  <div>
+    Words
+  </div>
 </template>
 
 <script lang="ts">
@@ -10,12 +13,8 @@ import { getStoreAccessors } from "vuex-typescript";
 import auth from "../store/auth";
 
 @Component
-export default class Logout extends Vue {
-  async mounted() {
-    await this.store.dispatch(auth.actions.logout)(this.$store);
-    this.$router.push("/");
-    document.body.style.display = "flex";
-  }
+export default class Word extends Vue {
+  mounted() {}
 
   get store() {
     return getStoreAccessors<I.IAuthState, ST.IRootState>(ST.Modules.auth);

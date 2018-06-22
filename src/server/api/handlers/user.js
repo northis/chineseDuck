@@ -163,8 +163,15 @@ export const logout = {
    * produces: application/json
    * responses: 401
    */
-  get: function logoutUser(req, res, next) {
+  get: function logoutUser(req, res) {
     req.logout();
-    res.status(401).redirect("/");
+    req.session.destroy(function(err) {
+      if (err) {
+        return next(err);
+      }
+      return res
+        .status(req.isAuthenticated() ? 200 : 401)
+        .send({ authenticated: req.isAuthenticated() });
+    });
   }
 };

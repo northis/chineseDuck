@@ -34,7 +34,11 @@ const actions = {
     context: ActionContext<I.IAuthState, ST.IRootState>
   ): Promise<I.IUser | null> {
     try {
-      const user = await axios.get(route(routes._user));
+      const user = await axios.get(route(routes._user), {
+        headers: {
+          "Cache-Control": "no-cache"
+        }
+      });
       if (!isNullOrUndefined(user.data.id)) {
         const localUser = {
           id: user.data.id,
@@ -112,11 +116,15 @@ const actions = {
     context: ActionContext<I.IAuthState, ST.IRootState>
   ): Promise<boolean> {
     try {
-      const result = await axios.get(route(routes._user_logout));
+      await axios.get(route(routes._user_logout), {
+        headers: {
+          "Cache-Control": "no-cache"
+        }
+      });
+      return Promise.reject(false);
+    } catch (e) {
       context.commit(mutations.logOut.name);
       return Promise.resolve(true);
-    } catch (e) {
-      return Promise.reject(e);
     }
   }
 };

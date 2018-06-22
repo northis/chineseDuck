@@ -94,7 +94,7 @@
                             title="Go to the words in this folder"
                             class="btn btn-outline-success"
                             :disabled="isNoEdit"
-                            @click="editFolder(folder)">
+                            @click="goToWords(folder)">
                       To words
                       <img src="../assets/images/arrow-right-circle.svg"
                            class="buttonIcons" />
@@ -240,6 +240,12 @@ export default class Folder extends Vue {
     this.IsInEditMode = true;
     this.setCurrentFolder(folderItem);
     this.saveItem.oldFolderName = folderItem.name;
+  }
+
+  @Emit()
+  goToWords(folderItem: T.IFolder) {
+    this.setCurrentFolder(folderItem);
+    this.$router.push("folder/" + folderItem._id);
   }
 
   @Emit()

@@ -14,14 +14,19 @@ var router = Router();
 
 router.route(routes._user_auth.value).post(user.auth.post);
 router.route(routes._user_login.value).post(user.login.post);
+router.route(routes._user_logout.express).get(user.logout.get);
 
 router.use(privateRoutesFilter, (req, res, next) => {
   if (!req.isAuthenticated()) {
-    return res.redirect("/");
+    return res.status(401).redirect("/");
   }
   next();
 });
 const accessControl = path => (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).redirect("/");
+  }
+
   try {
     const method = req.method.toLowerCase();
     const role = req.user.who;
@@ -81,10 +86,4 @@ router
   .delete(folder.id.delete)
   .put(folder.id.put);
 
-router.route(routes._user_logout.value).get(user.logout.get);
-
-// define the home page route
-router.get("/", function(req, res) {
-  res.send("Birds home page1");
-});
 export default router;
