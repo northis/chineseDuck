@@ -121,10 +121,10 @@ const actions = {
           "Cache-Control": "no-cache"
         }
       });
-      return Promise.reject(false);
-    } catch (e) {
       context.commit(mutations.logOut.name);
-      return Promise.resolve(true);
+      return Promise.resolve(false);
+    } catch (e) {
+      return Promise.reject(e);
     }
   }
 };

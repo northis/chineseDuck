@@ -1,4 +1,4 @@
-import mh from "../../../server/api/db";
+import { mh, defaultFolderId } from "../../../server/api/db";
 // import JSONStream from "JSONStream";
 import * as folderVal from "../../../shared/validation";
 
@@ -55,7 +55,32 @@ export const main = {
       .find({ owner_id: idUser }, { owner_id: false })
       .sort({ activityDate: -1 });
 
-    res.json(result);
+    const defWordsCount = await mh.word.count({
+      owner_id: idUser,
+      folder_id: defaultFolderId
+    });
+
+    const defWordsTheLastest = await mh.word
+      .find({
+        owner_id: idUser,
+        folder_id: defaultFolderId
+      })
+      .sort({ createDate: -1 })
+      .select("createDate")
+      .limit(1);
+    let defWordsDate = Date.now();
+
+    if (defWordsTheLastest.length != 0)
+      defWordsDate = defWordsTheLastest[0].createDate;
+
+    console.info(defWordsDate);
+    const defaultFolder = {
+      _id: defaultFolderId,
+      wordsCount: defWordsCount,
+      name: "Default",
+      activityDate: defWordsDate
+    };
+    res.json([defaultFolder].concat(result));
     // .cursor()
     // .pipe(JSONStream.stringify())
     // .pipe(res.type("json"));

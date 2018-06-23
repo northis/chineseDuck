@@ -8,6 +8,14 @@ import store from "./store";
 import auth from "./store/auth";
 import * as ST from "./store/types";
 
+export const ComponentRouteNames = {
+  Login: "Login",
+  Word: "Word",
+  Folder: "Folder",
+  Logout: "Logout",
+  Main: "Main"
+};
+
 export const routerInit = async () => {
   try {
     await store.dispatch(`${ST.Modules.auth}/${auth.actions.fetchUser.name}`);
@@ -25,6 +33,7 @@ export const routerInit = async () => {
     routes: [
       {
         path: "/login",
+        name: ComponentRouteNames.Login,
         component: LoginModule
       },
       {
@@ -33,19 +42,22 @@ export const routerInit = async () => {
         children: [
           {
             path: "folder/:id",
-            component: WordModule
-          },
-          {
-            path: "folder",
-            component: FolderModule
+            name: ComponentRouteNames.Word,
+            component: WordModule,
+            props: { default: true }
           },
           {
             path: "/",
+            name: ComponentRouteNames.Folder,
             component: FolderModule
           }
         ]
       },
-      { path: "/logout", component: LogoutModule },
+      {
+        path: "/logout",
+        name: ComponentRouteNames.Logout,
+        component: LogoutModule
+      },
       { path: "*", redirect: "/" }
     ]
   });

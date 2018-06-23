@@ -28,4 +28,5 @@ const modelsHolder = new ModelsHolder();
 modelsHolder.init();
 
 export const mh = modelsHolder;
+export const defaultFolderId = 0;
 export default modelsHolder;

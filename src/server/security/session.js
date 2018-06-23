@@ -5,11 +5,11 @@ export const MongoDBStore = require("connect-mongodb-session")(session);
 
 const sessionItem = session({
   genid: req => {
-    console.info(`Request object sessionID from client: ${req.sessionID}`);
     return uuid();
   },
   store: new MongoDBStore({
     uri: Settings.mongoDbString,
+    autoRemove: "interval",
     collection: "sessions"
   }),
   secret: Settings.sessionsPass,
@@ -17,9 +17,9 @@ const sessionItem = session({
   cookie: {
     maxAge: 1000 * 60 * 60 * 24 * 10 // 10 days
   },
-  resave: true,
-  saveUninitialized: true,
-  rolling: true
+  resave: false,
+  saveUninitialized: false,
+  rolling: false
 });
 
 export default sessionItem;

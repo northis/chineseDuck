@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 export const RightEnum = {
   read: "read",
   write: "write",
@@ -48,7 +50,8 @@ export const userSchema = {
     enum: Object.values(RightEnum),
     default: RightEnum.read
   },
-  mode: String
+  mode: String,
+  currentFolder_id: Number
 };
 
 export const wordFileSchema = {
@@ -101,8 +104,12 @@ export const wordSchema = {
 };
 
 export const sessionSchema = {
+  _id: String,
   expires: Date,
   session: {
-    cookie: {}
+    cookie: {},
+    passport: {
+      user: Number
+    }
   }
 };

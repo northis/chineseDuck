@@ -62,6 +62,10 @@ export default { _word:
    { value: '/user/{id}',
      actions: { get: ["admin"], put: ["admin"], delete: ["admin"] },
      express: '/user/:id' },
+  _user_currentFolder__folderId_: 
+   { value: '/user/currentFolder/{folderId}',
+     actions: { put: ["write"] },
+     express: '/user/currentFolder/:folderId' },
   _service_datetime: 
    { value: '/service/datetime',
      actions: { get: ["admin"] },

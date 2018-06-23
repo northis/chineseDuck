@@ -11,10 +11,13 @@ import auth from "../store/auth";
 
 @Component
 export default class Logout extends Vue {
-  async mounted() {
-    await this.store.dispatch(auth.actions.logout)(this.$store);
-    this.$router.push("/");
-    document.body.style.display = "flex";
+  mounted() {
+    this.store
+      .dispatch(auth.actions.logout)(this.$store)
+      .then(a => {
+        this.$router.push("/");
+        document.body.style.display = "flex";
+      });
   }
 
   get store() {

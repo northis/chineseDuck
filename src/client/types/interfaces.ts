@@ -22,6 +22,7 @@ export interface IUser {
   id: number;
   name: string;
   who: string;
+  currentFolder_id: number;
 }
 
 export interface IFolder {

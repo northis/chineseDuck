@@ -74,6 +74,11 @@ router
   .post(user.main.post);
 
 router
+  .route(routes._user_currentFolder__folderId_.express)
+  .all(accessControl(routes._user_currentFolder__folderId_))
+  .put(user.currentfolder.put);
+
+router
   .route(routes._folder.express)
   .all(accessControl(routes._folder))
   .get(folder.main.get)

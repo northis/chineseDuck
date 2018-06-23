@@ -3,6 +3,7 @@ import * as errors from "../../errors";
 import mh from "../../../server/api/db";
 import { isNullOrUndefined } from "util";
 import { sendCode, signIn } from "../../services/telegram";
+import { RightEnum } from "../../../server/api/db/models";
 /**
  * Operations on /user
  */
@@ -15,10 +16,6 @@ export const main = {
    * responses: default
    */
   post: function createUser(req, res, next) {
-    /**
-     * Get the data for response default
-     * For response `default` status 200 is used.
-     */
     var status = 200;
     res.status(404);
   },
@@ -27,20 +24,24 @@ export const main = {
    * description:
    * parameters: token
    * produces: application/json
-   * responses: 200, 401, 404
+   * responses: 200, 404
    */
   get: async function getUserByToken(req, res, next) {
     var status = 200;
 
     const id = req.session.passport.user;
-    if (isNullOrUndefined(id)) return res.status(401).send("Invalid auth data");
 
     const usr = await mh.user.findOne({ _id: id });
     if (isNullOrUndefined(usr)) return res.status(404).send("User not found");
 
-    return res
-      .status(status)
-      .send(JSON.stringify({ id: usr._id, name: usr.username, who: usr.who }));
+    return res.status(status).send(
+      JSON.stringify({
+        id: usr._id,
+        name: usr.username,
+        who: usr.who,
+        currentFolder_id: usr.currentFolder_id
+      })
+    );
   }
 };
 export const id = {
@@ -88,11 +89,7 @@ export const login = {
    * responses: 200, 400, 404
    */
   post: function loginUser(req, res, next) {
-    /**
-     * Get the data for response 200
-     * For response `default` status 200 is used.
-     */
-    var status = 200;
+    const status = 200;
 
     passport.authenticate("local", (err, user) => {
       req.login(user, err => {
@@ -126,10 +123,6 @@ export const auth = {
    * responses: 200, 400, 404
    */
   post: async function authUser(req, res, next) {
-    /**
-     * Get the data for response 200
-     * For response `default` status 200 is used.
-     */
     if (
       !req.body.phone ||
       req.body.phone.length > 20 ||
@@ -161,17 +154,47 @@ export const logout = {
    * description:
    * parameters:
    * produces: application/json
-   * responses: 401
+   * responses: 200
    */
-  get: function logoutUser(req, res) {
-    req.logout();
-    req.session.destroy(function(err) {
-      if (err) {
-        return next(err);
-      }
-      return res
-        .status(req.isAuthenticated() ? 200 : 401)
-        .send({ authenticated: req.isAuthenticated() });
+  get: async function logoutUser(req, res) {
+    const sessionId = req.sessionID;
+    req.logOut();
+    req.session.destroy(async () => {
+      await mh.session.deleteOne({ _id: sessionId });
+      res.redirect("/");
     });
+  }
+};
+
+/**
+ * Operations on /user/currentFolder/{folderId}
+ */
+export const currentfolder = {
+  /**
+   * summary: Set current folder for user
+   * description:
+   * parameters:
+   * produces: application/json
+   * responses: 201, 403
+   */
+  put: async function setFolder(req, res, next) {
+    const status = 201;
+    const folderId = req.params.folderId;
+    const userId = req.session.passport.user;
+
+    if (folderId !== 0 && req.user.who !== RightEnum.admin) {
+      const folderItem = await mh.folder.findById(folderId);
+
+      if (isNullOrUndefined(folderItem) || folderItem.owner_id != userId) {
+        errors.e403(next);
+        return;
+      }
+    }
+
+    await mh.user.findOneAndUpdate(
+      { _id: userId },
+      { currentFolder_id: folderId }
+    );
+    return res.status(status).send("Updated");
   }
 };

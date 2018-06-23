@@ -104,6 +104,7 @@
                             title="Edit the folder"
                             class="btn btn-outline-secondary"
                             :disabled="isNoEdit"
+                            v-show="!(folder && folder._id == 0)"
                             @click="editFolder(folder)">
                       <img src="../assets/images/edit.svg"
                            class="buttonIcons" />
@@ -115,6 +116,7 @@
                               data-toggle="modal"
                               :disabled="isNoEdit"
                               @click="startDeleteFolder(folder)"
+                              v-show="!(folder && folder._id == 0)"
                               data-target="#deleteConfirmWindow">
                         <img src="../assets/images/trash.svg"
                              class="buttonIcons" />

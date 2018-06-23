@@ -10,14 +10,18 @@ import * as I from "../types/interfaces";
 import * as ST from "../store/types";
 import Component from "vue-class-component";
 import { getStoreAccessors } from "vuex-typescript";
-import auth from "../store/auth";
+import folder from "../store/folder";
 
 @Component
 export default class Word extends Vue {
   mounted() {}
 
   get store() {
-    return getStoreAccessors<I.IAuthState, ST.IRootState>(ST.Modules.auth);
+    return getStoreAccessors<I.IFolderState, ST.IRootState>(ST.Modules.folder);
+  }
+
+  get currentFolder() {
+    return this.store.read(folder.getters.getCurrentFolder)(this.$store);
   }
 }
 </script>

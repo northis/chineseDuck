@@ -16,9 +16,7 @@ const toNumberString = s => s.replace(/\D/g, "");
 const client = MTProto({ server, api });
 
 export async function sendCode(phone) {
-  console.info(phone);
   const normalPhone = toNumberString(phone);
-  console.info(normalPhone);
 
   if (isDebug()) {
     await setTimeout(() => {}, 1000);

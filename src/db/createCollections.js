@@ -38,6 +38,9 @@ db.createCollection("users", {
                 },
                 mode: {
                     bsonType: 'string'
+                },
+                currentFolder_id: {
+                    bsonType: 'long'
                 }
             }
         },
@@ -134,7 +137,8 @@ db.createCollection("words", {
                 'translation',
                 'syllablesCount',
                 'folder_id',
-                'owner_id'
+                'owner_id',
+                'createDate'
             ],
             properties: {
                 _id: {
@@ -160,6 +164,9 @@ db.createCollection("words", {
                 },
                 folder_id: {
                     bsonType: 'long'
+                },
+                createDate: {
+                    bsonType: 'date'
                 },
                 score: {
                     bsonType: 'object',
