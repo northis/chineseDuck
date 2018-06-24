@@ -43,7 +43,8 @@ const actions = {
         const localUser = {
           id: user.data.id,
           name: user.data.name,
-          who: user.data.who
+          who: user.data.who,
+          currentFolder_id: user.data.currentFolder_id
         };
         context.commit(mutations.setUser.name, localUser);
         context.commit(mutations.setAuthState.name, E.EAuthStage.Auth);
@@ -126,6 +127,24 @@ const actions = {
     } catch (e) {
       return Promise.reject(e);
     }
+  },
+
+  async setUserCurrentFolder(
+    context: ActionContext<I.IAuthState, ST.IRootState>,
+    payload: I.IFolder
+  ): Promise<void> {
+    if (
+      isNullOrUndefined(payload) ||
+      isNullOrUndefined(payload._id) ||
+      isNullOrUndefined(context.state.user)
+    ) {
+      throw new Error("No items to update");
+    }
+
+    await axios.put(route(routes._user_currentFolder__folderId_, payload._id));
+
+    context.state.user.currentFolder_id = payload._id;
+    context.commit(mutations.setUser.name, context.state.user);
   }
 };
 const getters = {

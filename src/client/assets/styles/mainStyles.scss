@@ -3,7 +3,7 @@ $workColor: white;
 //$mainFont: "Aleo";
 $mainColor: #ffc40d !default;
 $textColor: #555;
-$mainSemiOpacity: 0.75;
+$mainSemiOpacity: 0.45;
 $hoverTextColor: black;
 $mainMargin: 1em;
 .fullSize {
@@ -22,6 +22,7 @@ button {
 }
 
 $primary: $mainColor !default;
+// $component-active-color: $mainColor !default;
 @import "../../../../node_modules/bootstrap/scss/bootstrap";
 body,
 html {
@@ -56,4 +57,8 @@ a:hover {
 
 .hidden {
   visibility: hidden;
+}
+
+.darkColor {
+  color: $hoverTextColor;
 }

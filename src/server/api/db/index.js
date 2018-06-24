@@ -3,6 +3,13 @@ import { Settings } from "../../../../config/common";
 import mongoose from "mongoose";
 
 mongoose.connect(Settings.mongoDbString);
+// mongoose.set("debug", function(collectionName, method, query, doc, options) {
+//   console.info(
+//     `collectionName: ${collectionName}; method: ${method}; query: ${JSON.stringify(
+//       query
+//     )}`
+//   );
+// });
 
 if (mongoose.connection._eventsCount == 0) {
   mongoose.connection.on("connected", () => {

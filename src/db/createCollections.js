@@ -1,52 +1,6 @@
 use chineseDuck
 
-db.createCollection("users", {
-    validator: {
-        $jsonSchema: {
-            bsonType: 'object',
-            required: [
-                '_id',
-                'username',
-                'joinDate',
-                'who'
-            ],
-            properties: {
-                _id: {
-                    bsonType: 'long'
-                },
-                username: {
-                    bsonType: 'string'
-                },
-                tokenHash: {
-                    bsonType: 'string'
-                },
-                sessionId: {
-                    bsonType: 'string'
-                },
-                who: {
-                    'enum': [
-                        'read',
-                        'write',
-                        'admin'
-                    ]
-                },
-                lastCommand: {
-                    bsonType: 'string'
-                },
-                joinDate: {
-                    bsonType: 'date'
-                },
-                mode: {
-                    bsonType: 'string'
-                },
-                currentFolder_id: {
-                    bsonType: 'long'
-                }
-            }
-        },
-    }
-}
-)
+db.createCollection("users")
 
 db.createCollection("wordFiles", {
     validator: {

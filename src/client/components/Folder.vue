@@ -33,13 +33,14 @@
           </div>
           <div class="list-group">
             <div class="list-group-item list-group-item-action flex-column align-items-start d-flex w-100 justify-content-between"
+                 :class="{hoverable: !(folder._id == userFolder ||  folder._id == 0 || currentFolder && folder._id == currentFolder._id)}"
                  v-for="folder in filteredFolders"
                  :key="folder._id">
               <div class="container nopadding">
                 <div class="row">
                   <div class="col">
                     <div v-html="highlightKeyword(folder.name) + ` (${folder.wordsCount})`"
-                         v-if="!IsInEditMode || folder && currentFolder && folder._id != currentFolder._id" />
+                         v-if="!IsInEditMode || currentFolder && folder._id != currentFolder._id" />
                     <div v-else
                          class="input-group">
 
@@ -68,13 +69,13 @@
                              type="text"
                              v-model="folder.name" />
                     </div>
-                    <div v-if="isInvalid && folder && currentFolder && folder._id == currentFolder._id"
+                    <div v-if="isInvalid && currentFolder && folder._id == currentFolder._id"
                          class="invalid">
                       {{ errors.first('folderName')}}
                     </div>
                     <div v-else>
                       <div class="progress margin-noside"
-                           v-if="IsLoading && folder && currentFolder && folder._id == currentFolder._id">
+                           v-if="IsLoading && currentFolder && folder._id == currentFolder._id">
                         <div class="progress-bar progress-bar-striped progress-bar-animated"
                              role="progressbar"
                              aria-valuenow="100"
@@ -82,9 +83,12 @@
                              aria-valuemax="100"
                              style="width: 100%" />
                       </div>
-                      <small v-else
-                             class="semiOpacity">
+                      <small v-else>
                         {{timeagoInstance.format(folder.activityDate)}}
+                        <span v-if="folder._id == 0"
+                              class="badge badge-primary badge-pill">Default</span>
+                        <span v-if="folder._id == userFolder"
+                              class="badge badge-primary badge-pill">Current learning folder</span>
                       </small>
                     </div>
                   </div>
@@ -92,34 +96,42 @@
                     <button type="button"
                             data-toggle="tooltip"
                             title="Go to the words in this folder"
-                            class="btn btn-outline-success"
-                            :disabled="isNoEdit"
+                            class="btn btn-outline-primary darkColor"
+                            v-show="!isNoEdit"
                             @click="goToWords(folder)">
                       To words
                       <img src="../assets/images/arrow-right-circle.svg"
-                           class="buttonIcons" />
+                           class="align-middle" />
+                    </button>
+                    <button type="button"
+                            v-if="folder._id != userFolder"
+                            data-toggle="tooltip"
+                            title="Set current learning folder"
+                            class="btn btn-outline-success"
+                            v-show="!isNoEdit"
+                            @click="setUserCurrent(folder)">
+                      <img src="../assets/images/flag.svg"
+                           class="align-middle" />
                     </button>
                     <button type="button"
                             data-toggle="tooltip"
-                            title="Edit the folder"
+                            title="Rename the folder"
                             class="btn btn-outline-secondary"
-                            :disabled="isNoEdit"
-                            v-show="!(folder && folder._id == 0)"
+                            v-show="!(folder && folder._id == 0) && !isNoEdit"
                             @click="editFolder(folder)">
-                      <img src="../assets/images/edit.svg"
-                           class="buttonIcons" />
+                      <img src="../assets/images/italic.svg"
+                           class="align-middle" />
                     </button>
                     <span data-toggle="tooltip"
                           title="Delete the folder">
                       <button type="button"
                               class="btn btn-outline-danger"
                               data-toggle="modal"
-                              :disabled="isNoEdit"
                               @click="startDeleteFolder(folder)"
-                              v-show="!(folder && folder._id == 0)"
+                              v-show="!(folder && folder._id == 0) && !isNoEdit"
                               data-target="#deleteConfirmWindow">
                         <img src="../assets/images/trash.svg"
-                             class="buttonIcons" />
+                             class="align-middle" />
                       </button>
 
                     </span>
@@ -154,6 +166,7 @@ import * as ST from "../store/types";
 import { Provide, Emit } from "vue-property-decorator";
 import { getStoreAccessors } from "vuex-typescript";
 import folder from "../store/folder";
+import auth from "../store/auth";
 import { isNullOrUndefined, isNull, isUndefined } from "util";
 import * as JsSearch from "js-search";
 import ConfirmWindow from "./framework/ConfirmWindow.vue";
@@ -190,6 +203,7 @@ export default class Folder extends Vue {
   }
 
   @State folder: T.IFolderState;
+  @State auth: T.IAuthState;
   @Provide() SearchText = "";
   @Provide() IsInEditMode = false;
   @Provide() IsInDeleteMode = false;
@@ -215,6 +229,10 @@ export default class Folder extends Vue {
   get store() {
     return getStoreAccessors<T.IFolderState, ST.IRootState>(ST.Modules.folder);
   }
+
+  get userStore() {
+    return getStoreAccessors<T.IAuthState, ST.IRootState>(ST.Modules.auth);
+  }
   get filteredFolders() {
     return this.SearchText == ""
       ? this.folders
@@ -235,6 +253,10 @@ export default class Folder extends Vue {
 
   get isAddMode() {
     return !isNull(this.currentFolder) && isUndefined(this.currentFolder._id);
+  }
+
+  get userFolder() {
+    return this.auth.user ? this.auth.user.currentFolder_id : 0;
   }
 
   @Emit()
@@ -263,6 +285,20 @@ export default class Folder extends Vue {
     };
     this.store.commit(folder.mutations.createFolder)(this.$store, folderItem);
     this.setCurrentFolder(folderItem);
+  }
+
+  @Emit()
+  setUserCurrent(folderItem: T.IFolder) {
+    this.IsLoading = true;
+    this.setCurrentFolder(folderItem);
+    this.userStore
+      .dispatch(auth.actions.setUserCurrentFolder)(this.$store, folderItem)
+      .then(a => {
+        this.IsLoading = false;
+      })
+      .catch((e: any) => {
+        this.IsLoading = false;
+      });
   }
 
   setCurrentFolder(folderItem: T.IFolder | null) {
@@ -380,6 +416,18 @@ export default class Folder extends Vue {
 .semiOpacity {
   color: rgba(0, 0, 0, $mainSemiOpacity);
 }
+
+.hoverable {
+  button {
+    opacity: $mainSemiOpacity;
+  }
+  &:hover {
+    button {
+      opacity: 1;
+    }
+  }
+}
+
 .buttonIcons {
   @extend .align-middle;
   opacity: $mainSemiOpacity;
