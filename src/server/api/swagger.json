@@ -163,6 +163,42 @@
           "description" : "Word ids",
           "required" : true
         }
+      },
+      "get" : {
+        "tags" : [ "word", "folder" ],
+        "description" : "Get words by folder id",
+        "operationId" : "getWordsFolderId",
+        "parameters" : [ {
+          "name" : "folderId",
+          "in" : "path",
+          "description" : "Folder id",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Word"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Folder is not found"
+          }
+        },
+        "security" : [ {
+          "cookieAuth" : [ "read" ]
+        } ]
       }
     },
     "/word/{wordId}/rename" : {
@@ -894,9 +930,9 @@
     "schemas" : {
       "User" : {
         "type" : "object",
-        "required" : [ "id", "username", "joinDate", "who" ],
+        "required" : [ "_id", "username", "joinDate", "who" ],
         "properties" : {
-          "id" : {
+          "_id" : {
             "type" : "integer",
             "format" : "int64"
           },
@@ -931,8 +967,12 @@
       },
       "Folder" : {
         "type" : "object",
-        "required" : [ "id", "name", "owner_id" ],
+        "required" : [ "_id", "name", "owner_id" ],
         "properties" : {
+          "_id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
           "owner_id" : {
             "type" : "integer",
             "format" : "int64"
@@ -1016,9 +1056,9 @@
       },
       "Word" : {
         "type" : "object",
-        "required" : [ "id", "originalWord", "translation", "syllablesCount", "owner_id", "folder_id", "createDate" ],
+        "required" : [ "_id", "originalWord", "translation", "syllablesCount", "owner_id", "folder_id", "lastModified" ],
         "properties" : {
-          "id" : {
+          "_id" : {
             "type" : "integer",
             "format" : "int64"
           },
@@ -1053,7 +1093,7 @@
             "type" : "integer",
             "format" : "int64"
           },
-          "createDate" : {
+          "lastModified" : {
             "type" : "string",
             "format" : "date-time"
           }
@@ -1064,9 +1104,9 @@
       },
       "WordFile" : {
         "type" : "object",
-        "required" : [ "id", "word_id", "createDate", "bytes", "fileType" ],
+        "required" : [ "_id", "word_id", "createDate", "bytes", "fileType" ],
         "properties" : {
-          "id" : {
+          "_id" : {
             "type" : "integer",
             "format" : "int64"
           },

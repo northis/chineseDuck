@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as errors from "../errors";
 import * as user from "./handlers/user";
+import * as word from "./handlers/word";
 import * as folder from "./handlers/folder";
 import * as rt from "../../shared/routes.gen";
 import mh from "../../server/api/db";
@@ -48,6 +49,10 @@ const accessControl = path => (req, res, next) => {
 const folderControl = async (req, res, next) => {
   const role = req.user.who;
   const folderId = req.params.folderId;
+
+  if (folderId == 0) {
+    return next();
+  }
   const folder = await mh.folder.findOne({ _id: folderId });
 
   if (isNullOrUndefined(folder)) {
@@ -61,7 +66,7 @@ const folderControl = async (req, res, next) => {
   const idUser = req.session.passport.user;
 
   if (idUser == folder.owner_id) {
-    next();
+    return next();
   } else {
     return errors.e403(next, new Error("It is not your folder"));
   }
@@ -76,7 +81,15 @@ router
 router
   .route(routes._user_currentFolder__folderId_.express)
   .all(accessControl(routes._user_currentFolder__folderId_))
+  .all(folderControl)
   .put(user.currentfolder.put);
+
+router
+  .route(routes._word_folder__folderId_.express)
+  .all(accessControl(routes._word_folder__folderId_))
+  .all(folderControl)
+  .get(word.folderId.get)
+  .put(word.folderId.put);
 
 router
   .route(routes._folder.express)

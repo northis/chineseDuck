@@ -13,6 +13,11 @@ export interface IFolderState {
   currentFolder: IFolder | null;
 }
 
+export interface IWordState {
+  words: IWord[];
+  currentWord: IWord | null;
+}
+
 export interface ITelMasks {
   mainCountriesMasks: IPhoneMask[];
   otherCountriesMasks: IPhoneMask[] | null;
@@ -30,6 +35,36 @@ export interface IFolder {
   name: string;
   activityDate?: Date;
   wordsCount?: number;
+}
+
+export interface IWord {
+  _id?: number;
+  owner_id?: number;
+  originalWord: string;
+  pronunciation: string;
+  translation: string;
+  usage?: string;
+  activityDate?: Date;
+  syllablesCount: number;
+  folder_id: number;
+  lastModified?: Date;
+  score: IScore;
+}
+
+export interface IScore {
+  originalWordCount: number;
+  originalWordSuccessCount: number;
+  lastView: Date;
+  lastLearned: Date;
+  lastLearnMode: string;
+  isInLearnMode: boolean;
+  rightAnswerNumber: number;
+  pronunciationCount: number;
+  pronunciationSuccessCount: number;
+  translationCount: number;
+  translationSuccessCount: number;
+  viewCount: number;
+  name: string;
 }
 
 export interface IPhoneMask {

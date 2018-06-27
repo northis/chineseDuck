@@ -3,7 +3,4 @@ export interface IRootState {
   AppName: string;
 }
 
-export const Modules = {
-  auth: "auth",
-  folder: "folder"
-};
+export const Modules = { auth: "auth", folder: "folder", word: "word" };

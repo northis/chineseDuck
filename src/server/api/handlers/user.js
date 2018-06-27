@@ -182,14 +182,6 @@ export const currentfolder = {
     const folderId = req.params.folderId;
     const userId = req.session.passport.user;
 
-    if (folderId != 0 && req.user.who != RightEnum.admin) {
-      const folderItem = await mh.folder.findById(folderId);
-      if (isNullOrUndefined(folderItem) || folderItem.owner_id != userId) {
-        errors.e403(next);
-        return;
-      }
-    }
-
     await mh.user.findByIdAndUpdate(
       { _id: userId },
       { currentFolder_id: folderId }

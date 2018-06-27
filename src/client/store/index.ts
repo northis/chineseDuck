@@ -4,6 +4,7 @@ import Vuex from "vuex";
 import * as ST from "../store/types";
 import auth from "./auth";
 import folder from "./folder";
+import word from "./word";
 
 Vue.use(Vuex);
 const store: StoreOptions<ST.IRootState> = {
@@ -13,7 +14,8 @@ const store: StoreOptions<ST.IRootState> = {
   },
   modules: {
     auth,
-    folder
+    folder,
+    word
   }
 };
 

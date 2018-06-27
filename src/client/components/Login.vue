@@ -1,6 +1,7 @@
 <template>
-  <div class="text-center">
-    <form class="form-signin"
+  <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column container">
+    <header class="masthead mb-auto" />
+    <form class="form-signin inner cover text-center"
           action="/"
           @submit.prevent="submit"
           method="post"
@@ -85,6 +86,10 @@
         Sending the code...
       </div>
     </form>
+
+    <footer class="mastfoot mt-auto text-center"
+            v-html="Footer">
+    </footer>
   </div>
 </template>
 
@@ -102,7 +107,7 @@ import { LoginVM } from "./viewModels/loginVM";
 import * as ST from "../store/types";
 import { getStoreAccessors } from "vuex-typescript";
 import auth from "../store/auth";
-import { getFooterMarkupLine } from "../../../config/common";
+import { getFooterMarkup } from "../../../config/common";
 
 const mask = require("./directives/mask").default;
 Vue.use(mask);
@@ -116,7 +121,7 @@ Vue.use(mask);
 export default class Login extends Vue {
   @State auth: T.IAuthState;
   @Provide() VM = new LoginVM();
-  @Provide() Footer = getFooterMarkupLine();
+  @Provide() Footer = getFooterMarkup();
 
   @Emit()
   submit(e: Event) {
@@ -235,12 +240,7 @@ export default class Login extends Vue {
 <style lang="scss">
 html,
 body {
-  align-items: center;
   justify-content: center;
-}
-
-body {
-  display: flex;
 }
 </style>
 <style lang="scss" scoped>

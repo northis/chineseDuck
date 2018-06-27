@@ -73,7 +73,6 @@ export const main = {
     if (defWordsTheLastest.length != 0)
       defWordsDate = defWordsTheLastest[0].createDate;
 
-    console.info(defWordsDate);
     const defaultFolder = {
       _id: defaultFolderId,
       wordsCount: defWordsCount,
@@ -134,33 +133,6 @@ export const id = {
       res.status(status).send(result);
     } catch (e) {
       catchUniqueName(res, e);
-    }
-  }
-};
-
-export const user = {
-  /**
-   * summary: Get folders for user
-   * description:
-   * parameters: userId
-   * produces: application/json
-   * responses: 400, 404, 200
-   */
-  get: function getFoldersForUser(req, res, next) {
-    var status = 400;
-    res.status(404);
-  },
-  id: {
-    /**
-     * summary: Get folders for user
-     * description:
-     * parameters: userId
-     * produces: application/json
-     * responses: 400, 404, 200
-     */
-    get: function getFoldersForUser(req, res, next) {
-      var status = 400;
-      res.status(404);
     }
   }
 };

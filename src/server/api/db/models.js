@@ -13,7 +13,6 @@ export const RightWeightEnum = {
 };
 
 export const FileTypeEnum = {
-  audio: "audio",
   orig: "orig",
   pron: "pron",
   trans: "trans",
@@ -82,16 +81,13 @@ export const wordSchema = {
   usage: String,
   syllablesCount: { type: Number, min: 1, max: 8000 },
   folder_id: Number,
-  createDate: { type: Date, default: new Date() },
+  lastModified: { type: Date, default: new Date() },
   score: {
     originalWordCount: Number,
     originalWordSuccessCount: Number,
     lastView: { type: Date, default: new Date() },
     lastLearned: String,
-    lastLearnMode: {
-      type: String,
-      enum: Object.values(LearnModeEnum)
-    },
+    lastLearnMode: { type: String, enum: Object.values(LearnModeEnum) },
     isInLearnMode: Boolean,
     rightAnswerNumber: Number,
     pronunciationCount: Number,

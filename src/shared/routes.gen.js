@@ -8,7 +8,7 @@ export default { _word:
      express: '/word/import' },
   _word_folder__folderId_: 
    { value: '/word/folder/{folderId}',
-     actions: { put: ["write"] },
+     actions: { put: ["write"], get: ["read"] },
      express: '/word/folder/:folderId' },
   _word__wordId__rename: 
    { value: '/word/{wordId}/rename',
