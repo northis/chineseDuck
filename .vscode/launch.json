@@ -1,0 +1,51 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch via NPM",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run-script", "build-dev-run"],
+      "port": 9229
+    },
+    {
+      "name": "Run ES6 Tests",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceRoot}",
+      "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+      "args": [
+        "./tests/common/*.test.js",
+        "--require",
+        "@babel/polyfill",
+        "--compilers",
+        "js:@babel/register"
+      ],
+      "runtimeArgs": ["--nolazy"],
+      "sourceMaps": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Program",
+      "program": "${workspaceFolder}\\build\\server.js"
+    },
+    {
+      "type": "chrome",
+      "request": "attach",
+      "name": "Attach to Chrome",
+      "sourceMaps": true,
+      "port": 9222,
+      "webRoot": "${workspaceRoot}"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome",
+      "url": "http://localhost:3000/index.html",
+      "webRoot": "${workspaceRoot}/src/client",
+      "sourceMaps": true
+    }
+  ]
+}

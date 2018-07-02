@@ -1,101 +1,80 @@
-import path from 'path';
-import express from 'express';
-import cookieParser from 'cookie-parser';
-import bodyParser from 'body-parser';
-import expressJwt, { UnauthorizedError as Jwt401Error } from 'express-jwt';
-//import jwt from 'jsonwebtoken';
-import PrettyError from 'pretty-error';
-//import passport from './passport';
-import router from './router';
-import config from './config';
-import helmet from 'helmet';
-import compression from 'compression';
-import httpErrorPages from 'http-error-pages';
-import pkg from '../../package.json';
+import path from "path";
+import express from "express";
+import cookieParser from "cookie-parser";
+import bodyParser from "body-parser";
+import api from "./api";
+//import * as errors from './errors';
+import helmet from "helmet";
+import compression from "compression";
+import httpErrorPages from "http-error-pages";
+import { getFooterMarkupLine } from "../../config/common.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./api/swagger.json";
+import passport from "./security/passport";
+import sessionItem from "./security/session";
+import { Settings } from "../../config/common";
+import { GracefulShutdownManager } from "@moebius/http-graceful-shutdown";
 
 const app = express();
 
-// Register Node.js middleware
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(helmet());
 app.use(compression());
 
-// Authentication
-app.use(
-  expressJwt({
-    secret: config.auth.jwt.secret,
-    credentialsRequired: false,
-    getToken: req => req.cookies.id_token,
-  }),
-);
-// Error handler for express-jwt
-app.use((err, req, res, next) => {
-  // eslint-disable-line no-unused-vars
-  if (err instanceof Jwt401Error) {
-    console.error('[express-jwt-error]', req.cookies.id_token);
-    // `clearCookie`, otherwise user can't use web-app until cookie expires
-    res.clearCookie('id_token');
-  }
+app.use(sessionItem);
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(Settings.docsPrefix, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use(Settings.apiPrefix, api);
+app.use(express.static(path.join(__dirname, "/public")));
+
+app.get(/^\/unsupported/, function(request, response) {
+  response.sendFile(path.resolve(__dirname, "public/unsupported.html"));
+});
+
+app.get(/^\/client/, function(request, response) {
+  response.sendFile(path.resolve(__dirname, "public/index.html"));
+});
+
+app.get("/", function(request, response) {
+  response.redirect("/client");
+});
+
+function logErrors(err, req, res, next) {
+  console.error(err.stack);
   next(err);
-});
-
-//app.use(passport.initialize());
-
-// app.get(
-//   '/login/facebook',
-//   passport.authenticate('facebook', {
-//     scope: ['email', 'user_location'],
-//     session: false,
-//   }),
-// );
-
-// app.get(
-//   '/login/facebook/return',
-//   passport.authenticate('facebook', {
-//     failureRedirect: '/login',
-//     session: false,
-//   }),
-//   (req, res) => {
-//     const expiresIn = 60 * 60 * 24 * 180; // 180 days
-//     const token = jwt.sign(req.user, config.auth.jwt.secret, { expiresIn });
-//     res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });
-//     res.redirect('/');
-//   },
-// );
-
-app.use('/client', express.static(path.join(__dirname, '/public')));
-
-app.use('/api/v1/', router);
-app.use('/', function (req, res, next) {
-  if (req.path === '/')
-    res.redirect('/client');
-  else {
-    const myError = new Error();
-    myError.status = 404;
-    next(myError);
-  }
-});
+}
+app.use(logErrors);
 
 httpErrorPages.express(app, {
-  lang: 'en_US',
-  footer: `<p>${pkg.description} - ${pkg.version} <a href=${pkg.url}>Contact me</a></p>`
+  lang: "en_US",
+  footer: getFooterMarkupLine()
 });
 
-// Error handling
-const pe = new PrettyError();
-pe.skipNodeFiles();
-pe.skipPackage('express');
+const listen = app.listen(Settings.port, () => {
+  console.info(`The server is running at http://localhost:${Settings.port}/`);
+});
 
+const shutdownManager = new GracefulShutdownManager(listen);
+const shutDown = async () => {
+  shutdownManager.terminate(() => {
+    console.info("Server is gracefully terminated");
+    Promise.resolve();
+  });
+};
+
+const shutDownEnabled = "shutDownEnabled";
+if (process.argv.find(a => a == shutDownEnabled) == undefined) {
+  process.on("SIGTERM", shutDown);
+  process.argv.push(shutDownEnabled);
+}
 // Hot Module Replacement
-// -----------------------------------------------------------------------------
 if (module.hot) {
   app.hot = module.hot;
-  module.hot.accept();
+  module.hot.accept("./api");
 }
 
-app.listen(config.port, () => {
-  console.info(`The server is running at http://localhost:${config.port}/`);
-});
-export default app;
+export default { app, listen, shutDown };

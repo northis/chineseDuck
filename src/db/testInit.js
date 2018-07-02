@@ -36,6 +36,7 @@ db.folders.insert(
         _id: getNextSequence("folderid"),
         name: testFolderName,
         owner_id: userId,
+        createDate: ISODate()
     }
 )
 var folderId = db.folders.find({ name: testFolderName })[0]._id;
