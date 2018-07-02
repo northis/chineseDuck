@@ -6,6 +6,7 @@ sessions/
 apiKeys.js
 npm-debug.log
 yarn-error.log
+.vscode/
 
 # Editor directories and files
 .idea
