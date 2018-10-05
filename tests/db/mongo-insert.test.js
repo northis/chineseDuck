@@ -17,9 +17,12 @@ before(done => {
   mongoServer
     .getConnectionString()
     .then(mongoUri => {
-      return mongoose.connect(mongoUri, err => {
-        if (err) done(err);
-      });
+      return mongoose.connect(
+        mongoUri,
+        err => {
+          if (err) done(err);
+        }
+      );
     })
     .then(() => done());
   modelsHolder.init();
@@ -74,6 +77,13 @@ describe("Initial set of tests", function() {
       translation: "велосипед",
       usage: "我有一个自行车",
       syllablesCount: 3,
+      files: [
+        {
+          height: 70,
+          width: 251,
+          fileType: models.FileTypeEnum.orig
+        }
+      ],
       score: {
         originalWordCount: 0,
         originalWordSuccessCount: 0,

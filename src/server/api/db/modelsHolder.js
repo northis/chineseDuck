@@ -3,7 +3,8 @@ import autoIncrement from "mongoose-plugin-autoinc";
 import {
   userSchema,
   folderSchema,
-  wordFileSchema,
+  // wordFileInfoSchemaOld,
+  wordFileInfoSchema,
   wordSchema,
   CollectionsEnum,
   ModelsEnum,
@@ -45,9 +46,14 @@ export class ModelsHolder {
     );
     this.wordFile = mongoose.model(
       ModelsEnum.wordFile,
-      new mongoose.Schema(wordFileSchema),
+      new mongoose.Schema(wordFileInfoSchema),
       CollectionsEnum.wordFiles
     );
+    // this.wordFileOld = mongoose.model(
+    //   ModelsEnum.wordFileOld,
+    //   new mongoose.Schema(wordFileInfoSchemaOld),
+    //   CollectionsEnum.wordFiles
+    // );
     this.session = mongoose.model(
       ModelsEnum.session,
       new mongoose.Schema(sessionSchema),

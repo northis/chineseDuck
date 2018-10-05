@@ -37,6 +37,12 @@ export interface IFolder {
   wordsCount?: number;
 }
 
+export interface IWordFile {
+  height: number;
+  width: number;
+  bytes: Buffer;
+}
+
 export interface IWord {
   _id?: number;
   owner_id?: number;
@@ -49,6 +55,7 @@ export interface IWord {
   folder_id: number;
   lastModified?: Date;
   score: IScore;
+  file: IWordFile;
 }
 
 export interface IScore {

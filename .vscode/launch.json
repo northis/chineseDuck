@@ -6,7 +6,15 @@
       "request": "launch",
       "name": "Launch via NPM",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run-script", "build-dev-run"],
+      "runtimeArgs": ["run-script", "build-dev-run-dbg"],
+      "port": 9229
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "DB scripts run",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run-script", "db-dev"],
       "port": 9229
     },
     {

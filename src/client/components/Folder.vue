@@ -376,29 +376,11 @@ export default class Folder extends Vue {
 </script>
 <style lang="scss" scoped>
 @import "../assets/styles/mainStyles.scss";
-.marginagble {
-  margin: $mainMargin;
-}
-
-.margin-top {
-  @extend .marginagble;
-  margin-bottom: 0;
-}
 
 .margin-noside {
   @extend .marginagble;
   margin-left: 0;
   margin-right: 0;
-}
-.nopadding {
-  padding: 0;
-}
-.nomargin {
-  margin: 0;
-}
-.col-sm-nopadding {
-  @extend .col-sm;
-  @extend .nopadding;
 }
 
 .highlightSearch {

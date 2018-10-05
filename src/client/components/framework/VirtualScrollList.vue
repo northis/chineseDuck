@@ -1,6 +1,6 @@
 <template>
   <virtual-list :size="100"
-                :remain="20">
+                :remain="100">
     <slot/>
   </virtual-list>
 </template>

@@ -62,3 +62,25 @@ a:hover {
 .darkColor {
   color: $hoverTextColor;
 }
+
+.marginagble {
+  margin: $mainMargin;
+}
+
+.nopadding {
+  padding: 0;
+}
+
+.nomargin {
+  margin: 0;
+}
+
+.col-sm-nopadding {
+  @extend .col-sm;
+  @extend .nopadding;
+}
+
+.margin-top {
+  @extend .marginagble;
+  margin-bottom: 0;
+}

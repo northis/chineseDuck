@@ -1,4 +1,6 @@
 import { mh } from "../../../server/api/db";
+import { isNullOrUndefined } from "util";
+import mongoose from "mongoose";
 
 /**
  * Operations on /word
@@ -166,18 +168,29 @@ export const rename = {
 };
 
 /**
- * Operations on /word/{wordId}/file/{fileTypeId}
+ * Operations on /word/file/{fileId}
  */
 export const file = {
   /**
    * summary: Get word&#39;s flash card as png binary
    * description:
-   * parameters: wordId, fileTypeId
+   * parameters: fileId
    * produces:
    * responses: 200, 400, 404
    */
-  get: function getWordCard(req, res, next) {
-    const idUser = req.session.passport.user;
-    res.status(404).send(404);
+  get: async function getWordCard(req, res, next) {
+    const fileId = req.params.fileId;
+
+    if (isNullOrUndefined(fileId) || !mongoose.Types.ObjectId.isValid(fileId))
+      return res.status(400).send("Bad file Id");
+
+    const result = await mh.wordFile.findById(fileId);
+
+    if (isNullOrUndefined(result))
+      return res.status(404).send("File not found");
+
+    const file = result.bytes;
+
+    res.status(200).send("data:image/png;base64," + file);
   }
 };

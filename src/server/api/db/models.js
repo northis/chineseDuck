@@ -34,6 +34,7 @@ export const CollectionsEnum = {
 export const ModelsEnum = {
   user: "user",
   wordFile: "wordFile",
+  // wordFileOld: "wordFileOld",
   folder: "folder",
   word: "word",
   session: "session"
@@ -53,11 +54,23 @@ export const userSchema = {
   currentFolder_id: Number
 };
 
-export const wordFileSchema = {
-  word_id: Number,
+export const wordFileBodySchema = {
+  id: mongoose.Schema.Types.ObjectId,
   createDate: { type: Date, default: new Date() },
-  bytes: Buffer,
   height: Number,
+  width: Number
+};
+
+export const wordFileInfoSchema = {
+  _id: mongoose.Schema.Types.ObjectId,
+  bytes: Buffer
+};
+
+export const wordFileInfoSchemaOld = {
+  _id: String,
+  createDate: { type: Date, default: new Date() },
+  height: Number,
+  word_id: Number,
   width: Number,
   fileType: {
     type: String,
@@ -82,6 +95,10 @@ export const wordSchema = {
   syllablesCount: { type: Number, min: 1, max: 8000 },
   folder_id: Number,
   lastModified: { type: Date, default: new Date() },
+  full: wordFileBodySchema,
+  trans: wordFileBodySchema,
+  pron: wordFileBodySchema,
+  orig: wordFileBodySchema,
   score: {
     originalWordCount: Number,
     originalWordSuccessCount: Number,
