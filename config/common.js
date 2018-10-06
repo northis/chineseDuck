@@ -1,5 +1,20 @@
 import pkg from "../package.json";
 
+let keys = {
+  telegramApiId: 0,
+  telegramAppKey: "0",
+  mongoDbString: "mongodb://user:password@localhost:27017/chineseDuck",
+  sessionsPass: "pass"
+};
+
+try {
+  keys = require("../keys.js").Keys;
+} catch (error) {
+  console.error(error);
+}
+
+export const Keys = keys;
+
 export const ModeEnum = {
   Development: "development",
   Production: "production",
@@ -51,9 +66,9 @@ export const DebugKeys = {
 };
 
 export const Settings = {
-  mongoDbString: "mongodb://apiUser:qipassword@localhost:27017/chineseDuck",
+  mongoDbString: keys.mongoDbString,
   port: 3000,
-  sessionsPass: "2%$&epZvC$dA_Hsd",
+  sessionsPass: keys.sessionsPass,
   apiPrefix: "/api/v1/",
   docsPrefix: "/api/docs/"
 };

@@ -1,11 +1,10 @@
 import MTProto from "telegram-mtproto";
-import { telegramApiId, telegramAppKey } from "../../../apiKeys";
-import { isDebug, DebugKeys } from "../../../config/common";
+import { isDebug, DebugKeys, Keys } from "../../../config/common";
 
 const api = {
   layer: 57,
   initConnection: 0x69796de9,
-  api_id: telegramApiId
+  api_id: Keys.telegramApiId
 };
 
 const server = {
@@ -28,8 +27,8 @@ export async function sendCode(phone) {
     return await client("auth.sendCode", {
       phone_number: normalPhone,
       current_number: false,
-      api_id: telegramApiId,
-      api_hash: telegramAppKey
+      api_id: Keys.telegramApiId,
+      api_hash: Keys.telegramAppKey
     });
   }
 }
