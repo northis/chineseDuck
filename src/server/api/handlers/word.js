@@ -191,6 +191,11 @@ export const file = {
 
     const file = result.bytes;
 
-    res.status(200).send("data:image/png;base64," + file);
+    var img = new Buffer(file.toString("binary"), "base64");
+    res.writeHead(200, {
+      "Content-Type": "image/png",
+      "Content-Length": img.length
+    });
+    res.end(img);
   }
 };

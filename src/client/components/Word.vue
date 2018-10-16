@@ -22,18 +22,19 @@
                  style="width: 100%" />
 
                  
-                     :width="word.file.width"
-                     :height="word.file.height" 
           </div> -->
         <app-virtualScrollList id="wordScroller"
                                class="list-group marginagble">
           <div class="list-group-item list-group-item-action flex-column align-items-start d-flex w-100 justify-content-between"
                v-for="word in words"
                :key="word._id">
-            <div class="container nopadding">
+            <div class="container nopadding"
+                 :width="word.full.width"
+                 :height="word.full.height">
               <div class="row">
                 <div class="col">
-                  <a :href="getImageUrl(word._id)" />
+                  <!-- TODO Relative path -->
+                  <a :href="getFileIdPath(word.full.id)" />
                 </div>
                 <div class="col">
                   {{word.originalWord}}
@@ -73,13 +74,15 @@ import { route, routes } from "../services/routeService";
   }
 })
 export default class Word extends Vue {
-  @State word: I.IWordState;
-  @Provide() IsLoading = false;
+  @State
+  word: I.IWordState;
+  @Provide()
+  IsLoading = false;
 
   counter = 0;
 
-  getImageUrl(wordId: number) {
-    return route(routes._word__wordId__file__fileTypeId_, wordId, "full");
+  getFileIdPath(idFile: string) {
+    return route(routes._word_file__fileId_, idFile);
   }
 
   loadImage(wordItem: I.IWord) {

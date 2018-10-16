@@ -29,18 +29,20 @@ export const CollectionsEnum = {
   wordFiles: "wordFiles",
   folders: "folders",
   words: "words",
-  sessions: "sessions"
+  sessions: "sessions",
+  idIncrement: "counters"
 };
 export const ModelsEnum = {
   user: "user",
   wordFile: "wordFile",
-  // wordFileOld: "wordFileOld",
+  idIncrement: "idIncrement",
   folder: "folder",
   word: "word",
   session: "session"
 };
 
 export const userSchema = {
+  _id: Number,
   username: String,
   tokenHash: String,
   lastCommand: String,
@@ -80,6 +82,7 @@ export const wordFileInfoSchemaOld = {
 };
 
 export const folderSchema = {
+  _id: Number,
   name: String,
   owner_id: Number,
   wordsCount: Number,
@@ -87,6 +90,7 @@ export const folderSchema = {
 };
 
 export const wordSchema = {
+  _id: Number,
   owner_id: Number,
   originalWord: String,
   pronunciation: String,
@@ -125,4 +129,9 @@ export const sessionSchema = {
       user: Number
     }
   }
+};
+
+export const idIncrementSchema = {
+  _id: { type: String, required: true },
+  seq: { type: Number, default: 0 }
 };

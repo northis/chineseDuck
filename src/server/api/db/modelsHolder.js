@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
-import autoIncrement from "mongoose-plugin-autoinc";
 import {
   userSchema,
   folderSchema,
-  // wordFileInfoSchemaOld,
+  idIncrementSchema,
   wordFileInfoSchema,
   wordSchema,
   CollectionsEnum,
@@ -19,15 +18,29 @@ export class ModelsHolder {
     const folderSchemaObj = new mongoose.Schema(folderSchema);
     const wordSchemaObj = new mongoose.Schema(wordSchema);
 
-    userSchemaObj.plugin(autoIncrement, ModelsEnum.user);
-    folderSchemaObj.plugin(autoIncrement, ModelsEnum.folder);
-    wordSchemaObj.plugin(autoIncrement, ModelsEnum.word);
-
     delete mongoose.connection.models[ModelsEnum.user];
     delete mongoose.connection.models[ModelsEnum.folder];
     delete mongoose.connection.models[ModelsEnum.word];
     delete mongoose.connection.models[ModelsEnum.wordFile];
     delete mongoose.connection.models[ModelsEnum.session];
+    delete mongoose.connection.models[ModelsEnum.idIncrement];
+
+    let mh = this;
+    wordSchemaObj.pre("validate", false, function(next) {
+      var item = this;
+      mh.idIncrement.findByIdAndUpdate("wordid", { $inc: { seq: 1 } }, function(
+        err,
+        counter
+      ) {
+        if (err) {
+          console.log(err);
+        }
+
+        const newId = counter.seq;
+        item._id = newId;
+        next();
+      });
+    });
 
     this.user = mongoose.model(
       ModelsEnum.user,
@@ -44,16 +57,16 @@ export class ModelsHolder {
       wordSchemaObj,
       CollectionsEnum.words
     );
+    this.idIncrement = mongoose.model(
+      ModelsEnum.idIncrement,
+      idIncrementSchema,
+      CollectionsEnum.idIncrement
+    );
     this.wordFile = mongoose.model(
       ModelsEnum.wordFile,
       new mongoose.Schema(wordFileInfoSchema),
       CollectionsEnum.wordFiles
     );
-    // this.wordFileOld = mongoose.model(
-    //   ModelsEnum.wordFileOld,
-    //   new mongoose.Schema(wordFileInfoSchemaOld),
-    //   CollectionsEnum.wordFiles
-    // );
     this.session = mongoose.model(
       ModelsEnum.session,
       new mongoose.Schema(sessionSchema),
@@ -66,4 +79,5 @@ export class ModelsHolder {
   wordFile;
   word;
   session;
+  idIncrement;
 }

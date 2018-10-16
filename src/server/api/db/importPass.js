@@ -61,5 +61,18 @@ async function CleanWordFiles() {
   console.info("cleaning is completed");
 }
 
+async function ShareWords(idUserFrom, idUserTo) {
+  const words = await mh.word.find({ owner_id: idUserFrom });
+
+  for (const word of words) {
+    const wordClone = JSON.parse(JSON.stringify(word));
+    wordClone.owner_id = idUserTo;
+    await mh.word.create(wordClone);
+  }
+  //await mh.word.insertMany(words);
+  console.info("creation is completed");
+}
+
+ShareWords(83276694, 100);
 // ProcessDb();
 // CleanWordFiles();
