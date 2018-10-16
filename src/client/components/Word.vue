@@ -34,18 +34,17 @@
               <div class="row">
                 <div class="col">
                   <!-- TODO Relative path -->
-                  <a :href="getFileIdPath(word.full.id)" />
+                  <img :src="getFileIdPath(word.full.id)"
+                       :height="word.full.height"
+                       :width="word.full.width" />
                 </div>
-                <div class="col">
-                  {{word.originalWord}}
 
-                </div>
                 <div class="col">
-                  {{word.pronunciation.replace(/\|/g," ")}}
-
-                </div>
-                <div class="col">
-                  {{word.translation}}
+                  <div class="d-flex flex-column mb-3">
+                    <div class="p-2">{{word.originalWord}}</div>
+                    <div class="p-2">{{word.pronunciation.replace(/\|/g," ")}}</div>
+                    <div class="p-2">{{word.translation}}</div>
+                  </div>
                 </div>
               </div>
             </div>
