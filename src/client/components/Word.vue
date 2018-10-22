@@ -33,7 +33,6 @@
                  :height="word.full.height">
               <div class="row">
                 <div class="col">
-                  <!-- TODO Relative path -->
                   <img :src="getFileIdPath(word.full.id)"
                        :height="word.full.height"
                        :width="word.full.width" />
@@ -41,9 +40,8 @@
 
                 <div class="col">
                   <div class="d-flex flex-column mb-3">
-                    <div class="p-2">{{word.originalWord}}</div>
-                    <div class="p-2">{{word.pronunciation.replace(/\|/g," ")}}</div>
-                    <div class="p-2">{{word.translation}}</div>
+                    <div class="p-2">{{word.originalWord}} | {{word.pronunciation.replace(/\|/g," ")}} | {{word.translation}}</div>
+                    <div class="p-2">{{scoreToString(word.score)}}</div>
                   </div>
                 </div>
               </div>
@@ -67,6 +65,7 @@ import word from "../store/word";
 import VirtualScrollList from "./framework/VirtualScrollList.vue";
 import { isNullOrUndefined } from "util";
 import { route, routes } from "../services/routeService";
+import { scoreToString } from "../services/convertService";
 @Component({
   components: {
     "app-virtualScrollList": VirtualScrollList
@@ -83,13 +82,13 @@ export default class Word extends Vue {
   getFileIdPath(idFile: string) {
     return route(routes._word_file__fileId_, idFile);
   }
+  scoreToString(score: I.IScore) {
+    return scoreToString(score);
+  }
 
   loadImage(wordItem: I.IWord) {
     this.counter++;
     console.info(this.counter);
-
-    // if (!isNullOrUndefined(wordItem.file))
-    //   this.store.dispatch(word.actions.fetchWordFile)(this.$store, wordItem);
   }
 
   mounted() {

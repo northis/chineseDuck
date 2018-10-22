@@ -1,7 +1,8 @@
 import { isNull, isNullOrUndefined } from "util";
 import * as rt from "../../shared/routes.gen";
 
-const prefix = window.location.origin + "/api/v1";
+// const prefix = window.location.origin + "/api/v1";
+const prefix = "/api/v1";
 
 const reqexMatches = function*(ptrnStr: RegExp, inputStr: string) {
   let match: RegExpExecArray | null = null;

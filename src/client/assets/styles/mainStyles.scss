@@ -1,6 +1,6 @@
 $backgroundColor: #e9ecef;
 $workColor: white;
-//$mainFont: "Aleo";
+$mainFont: "Segoe UI";
 $mainColor: #ffc40d !default;
 $textColor: #555;
 $mainSemiOpacity: 0.45;
@@ -26,7 +26,7 @@ $primary: $mainColor !default;
 @import "../../../../node_modules/bootstrap/scss/bootstrap";
 body,
 html {
-  //font-family: $mainFont, Georgia, "Times New Roman", Times, serif;
+  font-family: $mainFont, Georgia, "Times New Roman", Times, serif;
   color: $textColor;
   background-color: $backgroundColor; //@extend .fullSize;
 }
