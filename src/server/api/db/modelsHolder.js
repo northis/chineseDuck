@@ -11,7 +11,7 @@ import {
 } from "./models";
 
 export class ModelsHolder {
-  constructor() {}
+  constructor() { }
 
   init() {
     const userSchemaObj = new mongoose.Schema(userSchema);
@@ -26,9 +26,39 @@ export class ModelsHolder {
     delete mongoose.connection.models[ModelsEnum.idIncrement];
 
     let mh = this;
-    wordSchemaObj.pre("validate", false, function(next) {
+    wordSchemaObj.pre("validate", false, function (next) {
       var item = this;
-      mh.idIncrement.findByIdAndUpdate("wordid", { $inc: { seq: 1 } }, function(
+      mh.idIncrement.findByIdAndUpdate("wordid", { $inc: { seq: 1 } }, { upsert: true, new: true }, function (
+        err,
+        counter
+      ) {
+        if (err) {
+          console.log(err);
+        }
+
+        const newId = counter.seq;
+        item._id = newId;
+        next();
+      });
+    });
+    userSchemaObj.pre("validate", false, function (next) {
+      var item = this;
+      mh.idIncrement.findByIdAndUpdate("userid", { $inc: { seq: 1 } }, { upsert: true, new: true }, function (
+        err,
+        counter
+      ) {
+        if (err) {
+          console.log(err);
+        }
+
+        const newId = counter.seq;
+        item._id = newId;
+        next();
+      });
+    });
+    folderSchemaObj.pre("validate", false, function (next) {
+      var item = this;
+      mh.idIncrement.findByIdAndUpdate("folderid", { $inc: { seq: 1 } }, { upsert: true, new: true }, function (
         err,
         counter
       ) {

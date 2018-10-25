@@ -1,7 +1,7 @@
 import MongodbMemoryServer from "mongodb-memory-server";
 import mongoose from "mongoose";
 import { expect } from "chai";
-import { testWordImg } from "./fileB64";
+import { testWordImg } from "../db/fileB64";
 
 import * as models from "../../src/server/api/db/models";
 import { ModelsHolder } from "../../src/server/api/db/modelsHolder";
@@ -26,6 +26,7 @@ before(done => {
     })
     .then(() => done());
   modelsHolder.init();
+
 });
 
 after(() => {
@@ -33,12 +34,12 @@ after(() => {
   mongoServer.stop();
 });
 
-describe("Initial set of tests", function() {
+describe("Initial set of tests", function () {
   let userId = 0;
   let folderId = 0;
   let wordId = 0;
 
-  it("user", async function() {
+  it("user", async function () {
     let userObj = {
       username: testUserName,
       tokenHash: "tokenHash",
@@ -56,7 +57,7 @@ describe("Initial set of tests", function() {
     userId = insertedUser._id;
   });
 
-  it("folder", async function() {
+  it("folder", async function () {
     let folderObj = {
       name: testFolderName,
       owner_id: userId
@@ -70,20 +71,33 @@ describe("Initial set of tests", function() {
     expect(folderObj.testFolderName).to.eql(insertedFolder.testFolderName);
   });
 
-  it("word", async function() {
+  it("word", async function () {
     let wordObj = {
       originalWord: originalWordValue,
       pronunciation: "zi|xing|che",
       translation: "велосипед",
       usage: "我有一个自行车",
       syllablesCount: 3,
-      files: [
-        {
-          height: 70,
-          width: 251,
-          fileType: models.FileTypeEnum.orig
-        }
-      ],
+      full: {
+        height: 70,
+        width: 251,
+        fileType: models.FileTypeEnum.full
+      },
+      trans: {
+        height: 70,
+        width: 251,
+        fileType: models.FileTypeEnum.trans
+      },
+      pron: {
+        height: 70,
+        width: 251,
+        fileType: models.FileTypeEnum.pron
+      },
+      orig: {
+        height: 70,
+        width: 251,
+        fileType: models.FileTypeEnum.orig
+      },
       score: {
         originalWordCount: 0,
         originalWordSuccessCount: 0,
@@ -107,7 +121,7 @@ describe("Initial set of tests", function() {
     expect(wordObj.originalWord).to.eql(insertedWord.originalWord);
   });
 
-  it("wordFile", async function() {
+  it("wordFile", async function () {
     let wordFileObj = {
       word_id: wordId,
       height: 70,
