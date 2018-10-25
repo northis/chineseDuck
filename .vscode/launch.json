@@ -6,7 +6,10 @@
       "request": "launch",
       "name": "Launch via NPM",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run-script", "build-dev-run-dbg"],
+      "runtimeArgs": [
+        "run-script",
+        "build-dev-run-dbg"
+      ],
       "port": 9229
     },
     {
@@ -14,24 +17,22 @@
       "request": "launch",
       "name": "DB scripts run",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run-script", "db-dev"],
+      "runtimeArgs": [
+        "run-script",
+        "db-dev"
+      ],
       "port": 9229
     },
     {
-      "name": "Run ES6 Tests",
+      "name": "Run Tests",
       "type": "node",
       "request": "launch",
-      "cwd": "${workspaceRoot}",
-      "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
-      "args": [
-        "./tests/common/*.test.js",
-        "--require",
-        "@babel/polyfill",
-        "--compilers",
-        "js:@babel/register"
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run-script",
+        "test-dbg"
       ],
-      "runtimeArgs": ["--nolazy"],
-      "sourceMaps": true
+      "port": 9229
     },
     {
       "type": "node",

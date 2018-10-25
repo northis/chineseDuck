@@ -64,7 +64,6 @@ export const wordFileBodySchema = {
 };
 
 export const wordFileInfoSchema = {
-  _id: mongoose.Schema.Types.ObjectId,
   bytes: Buffer
 };
 

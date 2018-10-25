@@ -6,6 +6,7 @@
   "main": "server/index.js",
   "scripts": {
     "test": "mocha --compilers js:@babel/register --require @babel/polyfill --no-deprecation tests/run/*.test.js",
+    "test-dbg": "mocha --compilers js:@babel/register --require @babel/polyfill --no-deprecation --inspect-brk=9229 tests/run/*.test.js",
     "build-prod": "babel-node config/run start --mode production",
     "build-dev-run-dbg": "babel-node config/run start --mode development --nolazy --inspect-brk=9229 server/index.js",
     "build-dev-run": "babel-node config/run start --mode development",

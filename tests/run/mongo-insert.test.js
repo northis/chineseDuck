@@ -123,15 +123,11 @@ describe("Initial set of tests", function () {
 
   it("wordFile", async function () {
     let wordFileObj = {
-      word_id: wordId,
-      height: 70,
-      width: 251,
-      fileType: models.FileTypeEnum.orig,
       bytes: new Buffer(testWordImg, "base64")
     };
-    await modelsHolder.wordFile.create(wordFileObj);
+    let newWordFile = await modelsHolder.wordFile.create(wordFileObj);
     const insertedWordFile = await modelsHolder.wordFile.findOne({
-      word_id: wordId
+      _id: newWordFile._id
     });
     expect(wordFileObj.bytes).to.eql(insertedWordFile.bytes);
   });
