@@ -1,4 +1,5 @@
 import pkg from "../package.json";
+import { isNullOrUndefined } from "util";
 
 let keys = {
   telegramApiId: 0,
@@ -31,6 +32,9 @@ export function getMode() {
 
 export function isDebug() {
   return getMode() !== ModeEnum.Production;
+}
+export function isTest() {
+  return getMode() === ModeEnum.Test;
 }
 
 export function isVerbose() {

@@ -2,31 +2,24 @@ import MongodbMemoryServer from "mongodb-memory-server";
 import mongoose from "mongoose";
 import { expect } from "chai";
 import { testWordImg } from "../db/fileB64";
+import { Settings } from "../../config/common";
 
 import * as models from "../../src/server/api/db/models";
-import { ModelsHolder } from "../../src/server/api/db/modelsHolder";
 
-let mongoServer;
-let modelsHolder = new ModelsHolder();
 let testUserName = "testUser";
 let testFolderName = "testFolder";
 let originalWordValue = "自行车";
+let mongoServer = new MongodbMemoryServer();
+let modelsHolder = null;
 
 before(done => {
-  mongoServer = new MongodbMemoryServer();
-  mongoServer
-    .getConnectionString()
-    .then(mongoUri => {
-      return mongoose.connect(
-        mongoUri,
-        err => {
-          if (err) done(err);
-        }
-      );
-    })
-    .then(() => done());
-  modelsHolder.init();
+  console.log("before mongoose test call");
 
+  mongoServer.getConnectionString().then(mongoUri => {
+    Settings.mongoDbString = mongoUri;
+    modelsHolder = require("../../src/server/api/db/index").mh;
+    done();
+  });
 });
 
 after(() => {
@@ -34,12 +27,12 @@ after(() => {
   mongoServer.stop();
 });
 
-describe("Initial set of tests", function () {
+describe("mongoose models set of tests", function() {
   let userId = 0;
   let folderId = 0;
   let wordId = 0;
 
-  it("user", async function () {
+  it("user", async function() {
     let userObj = {
       username: testUserName,
       tokenHash: "tokenHash",
@@ -57,10 +50,12 @@ describe("Initial set of tests", function () {
     userId = insertedUser._id;
   });
 
-  it("folder", async function () {
+  it("folder", async function() {
     let folderObj = {
       name: testFolderName,
-      owner_id: userId
+      owner_id: userId,
+      wordsCount: 0,
+      activityDate: new Date()
     };
     await modelsHolder.folder.create(folderObj);
     const insertedFolder = await modelsHolder.folder.findOne({
@@ -71,7 +66,7 @@ describe("Initial set of tests", function () {
     expect(folderObj.testFolderName).to.eql(insertedFolder.testFolderName);
   });
 
-  it("word", async function () {
+  it("word", async function() {
     let wordObj = {
       originalWord: originalWordValue,
       pronunciation: "zi|xing|che",
@@ -121,7 +116,7 @@ describe("Initial set of tests", function () {
     expect(wordObj.originalWord).to.eql(insertedWord.originalWord);
   });
 
-  it("wordFile", async function () {
+  it("wordFile", async function() {
     let wordFileObj = {
       bytes: new Buffer(testWordImg, "base64")
     };
