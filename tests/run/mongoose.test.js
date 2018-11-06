@@ -1,5 +1,6 @@
 import { getModelsHolder } from "./_first.test";
 import { expect } from "chai";
+import mongoose from "mongoose";
 import { testWordImg } from "../db/fileB64";
 
 import * as models from "../../src/server/api/db/models";
@@ -14,12 +15,12 @@ before(done => {
   done();
 });
 
-describe("mongoose models set of tests", function() {
+describe("mongoose models set of tests", function () {
   let userId = 0;
   let folderId = 0;
   let wordId = 0;
 
-  it("user", async function() {
+  it("user", async function () {
     let userObj = {
       username: testUserName,
       tokenHash: "tokenHash",
@@ -35,9 +36,10 @@ describe("mongoose models set of tests", function() {
     });
     expect(userObj.username).to.eql(insertedUser.username);
     userId = insertedUser._id;
+    return Promise.resolve();
   });
 
-  it("folder", async function() {
+  it("folder", async function () {
     let folderObj = {
       name: testFolderName,
       owner_id: userId,
@@ -51,9 +53,10 @@ describe("mongoose models set of tests", function() {
     folderId = insertedFolder._id;
 
     expect(folderObj.testFolderName).to.eql(insertedFolder.testFolderName);
+    return Promise.resolve();
   });
 
-  it("word", async function() {
+  it("word", async function () {
     let wordObj = {
       originalWord: originalWordValue,
       pronunciation: "zi|xing|che",
@@ -101,9 +104,10 @@ describe("mongoose models set of tests", function() {
     wordId = insertedWord._id;
 
     expect(wordObj.originalWord).to.eql(insertedWord.originalWord);
+    return Promise.resolve();
   });
 
-  it("wordFile", async function() {
+  it("wordFile", async function () {
     let wordFileObj = {
       bytes: new Buffer(testWordImg, "base64")
     };
@@ -112,5 +116,6 @@ describe("mongoose models set of tests", function() {
       _id: newWordFile._id
     });
     expect(wordFileObj.bytes).to.eql(insertedWordFile.bytes);
+    return Promise.resolve();
   });
 });

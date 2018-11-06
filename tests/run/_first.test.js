@@ -1,7 +1,6 @@
 import MongodbMemoryServer from "mongodb-memory-server";
 import mongoose from "mongoose";
 import { Settings } from "../../config/common";
-const log = require("why-is-node-running"); // should be your first require
 
 let mongoServer = new MongodbMemoryServer();
 let app = null;
@@ -26,12 +25,15 @@ before(done => {
   });
 });
 
-after(() => {
-  shutDown();
-  mongoServer.stop();
-  setTimeout(() => {
-    log();
-  }, 5000);
+after(done => {
+
+  shutDown()
+    .then(() => mongoose.disconnect())
+    .then(() => mongoServer.stop())
+    .then(() => {
+      console.log("after");
+      done();
+    });
 });
 
 export const getExpressApp = () => {
