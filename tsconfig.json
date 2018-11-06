@@ -12,5 +12,13 @@
     "sourceRoot": "src",
     "allowJs": true
   },
-  "include": ["./src/**/*"]
+  "include": [
+    "./src/**/*",
+    "tests/run/_first.test.js",
+    "tests/run/first.test.js",
+    "tests/run/helper.js",
+    "tests/run/api.test.js",
+    "tests/run/mongoose.test1.js",
+    "tests/run/mongoose.test.js"
+  ]
 }

@@ -1,30 +1,17 @@
-import MongodbMemoryServer from "mongodb-memory-server";
-import mongoose from "mongoose";
+import { getModelsHolder } from "./_first.test";
 import { expect } from "chai";
 import { testWordImg } from "../db/fileB64";
-import { Settings } from "../../config/common";
 
 import * as models from "../../src/server/api/db/models";
 
 let testUserName = "testUser";
 let testFolderName = "testFolder";
 let originalWordValue = "自行车";
-let mongoServer = new MongodbMemoryServer();
 let modelsHolder = null;
 
 before(done => {
-  console.log("before mongoose test call");
-
-  mongoServer.getConnectionString().then(mongoUri => {
-    Settings.mongoDbString = mongoUri;
-    modelsHolder = require("../../src/server/api/db/index").mh;
-    done();
-  });
-});
-
-after(() => {
-  mongoose.disconnect();
-  mongoServer.stop();
+  modelsHolder = getModelsHolder();
+  done();
 });
 
 describe("mongoose models set of tests", function() {

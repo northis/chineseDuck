@@ -5,8 +5,8 @@
   "description": "Webpart of the Chinese Duck Bot system",
   "main": "server/index.js",
   "scripts": {
-    "test": "mocha --compilers js:@babel/register --require @babel/polyfill --no-deprecation tests/run/*.test.js",
-    "test-dbg": "mocha --compilers js:@babel/register --require @babel/polyfill --no-deprecation --inspect-brk=9229 tests/run/*.test.js",
+    "test": "mocha --compilers js:@babel/register --require @babel/polyfill --sort --no-deprecation tests/run/*.test.js",
+    "test-dbg": "mocha --compilers js:@babel/register --require @babel/polyfill --sort --no-deprecation --inspect-brk=9229 tests/run/*.test.js",
     "build-prod": "babel-node config/run start --mode production",
     "build-dev-run-dbg": "babel-node config/run start --mode development --nolazy --inspect-brk=9229 server/index.js",
     "build-dev-run": "babel-node config/run start --mode development",
@@ -109,6 +109,7 @@
     "webpack-hot-middleware": "^2.24.2",
     "webpack-merge": "^4.1.4",
     "webpack-node-externals": "^1.7.2",
+    "why-is-node-running": "^2.0.3",
     "write-file-webpack-plugin": "^4.4.1"
   },
   "dependencies": {
