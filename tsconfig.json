@@ -19,6 +19,6 @@
     "tests/run/helper.js",
     "tests/run/api.test.js",
     "tests/run/mongoose.test1.js",
-    "tests/run/mongoose.test.js"
+    "tests/run/mongoose.-test.js"
   ]
 }
