@@ -8,24 +8,21 @@ let app = null;
 let shutDown = null;
 let modelsHolder = null;
 
-before(done => {
-  mongoServer.getConnectionString().then(mongoUri => {
-    Settings.mongoDbString = mongoUri;
+before(async () => {
+  const mongoUri = await mongoServer.getConnectionString();
 
-    modelsHolder = require("../../src/server/api/db/index").mh;
-    let def = require("../../src/server/index").default;
-    app = def.app;
-    shutDown = def.shutDown;
+  Settings.mongoDbString = mongoUri;
 
-    init(modelsHolder).then(() => done());
-    // done();
-  });
+  modelsHolder = require("../../src/server/api/db/index").mh;
+  let def = require("../../src/server/index").default;
+  app = def.app;
+  shutDown = def.shutDown;
+
 });
 
-after(done => {
-  shutDown()
-    .then(() => mongoose.disconnect())
-    .then(() => done());
+after(async () => {
+  await shutDown();
+  await mongoose.disconnect();
 });
 
 export const getExpressApp = () => {

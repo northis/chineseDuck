@@ -2,29 +2,24 @@ import * as models from "../../src/server/api/db/models";
 import { testWordImg } from "../db/fileB64";
 
 export const userWrite = {
-    _id: 0,
     username: "userWrite",
     tokenHash: "$2b$10$xkwscjZQ.KM3uf1ZG2totO8RRfASADnADfyGNn6t3R5XDva0HKQ3y",
     lastCommand: "/LearnWriting",
     joinDate: new Date("2018-06-02T03:04:05"),
     who: models.RightEnum.write,
-    mode: models.GettingWordsStrategyEnum.Random,
-    currentFolder_id: 0
+    mode: models.GettingWordsStrategyEnum.Random
 };
 
 export const userAdmin = {
-    _id: 0,
     username: "userAdmin",
     tokenHash: "$2b$10$xkwscjZQ.KM3uf1ZG2totO8RRfASADnADfyGNn6t3R5XDva0HKQ3y",
     lastCommand: "/view",
     joinDate: new Date("2018-06-01T01:02:03"),
     who: models.RightEnum.admin,
-    mode: models.GettingWordsStrategyEnum.Random,
-    currentFolder_id: 0
+    mode: models.GettingWordsStrategyEnum.Random
 };
 
 export const wordBreakfast = {
-    _id: 0,
     owner_id: 0,
     originalWord: "早饭",
     pronunciation: "zǎo|fàn",
@@ -70,7 +65,6 @@ export const wordBreakfast = {
 };
 
 export const wordDinner = {
-    _id: 0,
     owner_id: 0,
     originalWord: "午饭",
     pronunciation: "wǔ|fàn",
@@ -116,7 +110,6 @@ export const wordDinner = {
 };
 
 export const wordSupper = {
-    _id: 0,
     owner_id: 0,
     originalWord: "晚饭",
     pronunciation: "wǎn|fàn",
@@ -162,7 +155,6 @@ export const wordSupper = {
 };
 
 export const folderTemplate = {
-    _id: 0,
     name: "folder Template",
     owner_id: 0,
     wordsCount: 0,
@@ -170,6 +162,5 @@ export const folderTemplate = {
 };
 
 export const wordFileInfoTemplate = {
-    _id: "",
     bytes: testWordImg
 };

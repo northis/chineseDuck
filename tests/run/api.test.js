@@ -4,6 +4,8 @@ import request from "supertest";
 import { assert } from "chai";
 import * as uj from "url-join";
 import * as rt from "../../src/shared/routes.gen";
+import { init } from "../db/testDbInit";
+
 const routes = rt.default;
 const urlJoin = uj.default;
 let app = null;
@@ -23,5 +25,10 @@ describe("web api tests", function () {
     console.log(response.status);
 
     // assert.ok(response.status === 200);
+  });
+
+  it("test 5", async () => {
+
+    await init();
   });
 });
