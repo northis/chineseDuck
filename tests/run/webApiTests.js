@@ -1,4 +1,4 @@
-import { getExpressApp } from "./_first.test";
+import { getExpressApp } from "./main.test";
 import { Settings } from "../../config/common";
 import request from "supertest";
 import { assert } from "chai";
@@ -8,27 +8,22 @@ import { init } from "../db/testDbInit";
 
 const routes = rt.default;
 const urlJoin = uj.default;
-let app = null;
 
-before(done => {
-  app = getExpressApp();
-  done();
-});
-
-describe("web api tests", function () {
+export default app => {
   const folderUrl = urlJoin(
     Settings.apiPrefix,
     routes._folder__folderId_.value.replace("{folderId}", 0)
   );
   it("test " + folderUrl, async () => {
+    console.log("describe 3");
     const response = await request(app).get(folderUrl);
     console.log(response.status);
+    console.log("describe 4");
 
     // assert.ok(response.status === 200);
   });
 
-  it("test 5", async () => {
-
-    await init();
-  });
-});
+  // it("test 5", async () => {
+  //   await init();
+  // });
+};

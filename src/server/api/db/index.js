@@ -2,6 +2,7 @@ import { ModelsHolder } from "./modelsHolder";
 import { Settings } from "../../../../config/common";
 import mongoose from "mongoose";
 
+console.log(Settings.mongoDbString);
 mongoose.connect(
   Settings.mongoDbString,
   { useNewUrlParser: true }
