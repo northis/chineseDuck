@@ -12,6 +12,14 @@ export const RightWeightEnum = {
   admin: 3
 };
 
+export const GettingWordsStrategyEnum = {
+  NewFirst: 1,
+  OldFirst: 2,
+  NewMostDifficult: 3,
+  OldMostDifficult: 4,
+  Random: 5
+};
+
 export const FileTypeEnum = {
   orig: "orig",
   pron: "pron",
@@ -57,7 +65,6 @@ export const userSchema = {
 };
 
 export const wordFileBodySchema = {
-  id: mongoose.Schema.Types.ObjectId,
   createDate: { type: Date, default: new Date() },
   height: Number,
   width: Number
@@ -106,7 +113,7 @@ export const wordSchema = {
     originalWordCount: Number,
     originalWordSuccessCount: Number,
     lastView: { type: Date, default: new Date() },
-    lastLearned: String,
+    lastLearned: { type: Date, default: new Date() },
     lastLearnMode: { type: String, enum: Object.values(LearnModeEnum) },
     isInLearnMode: Boolean,
     rightAnswerNumber: Number,
@@ -114,8 +121,7 @@ export const wordSchema = {
     pronunciationSuccessCount: Number,
     translationCount: Number,
     translationSuccessCount: Number,
-    viewCount: Number,
-    name: String
+    viewCount: Number
   }
 };
 

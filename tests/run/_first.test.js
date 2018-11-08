@@ -1,6 +1,7 @@
 import MongodbMemoryServer from "mongodb-memory-server";
 import mongoose from "mongoose";
 import { Settings } from "../../config/common";
+import { init } from "../db/testDbInit";
 
 let mongoServer = new MongodbMemoryServer();
 let app = null;
@@ -16,17 +17,14 @@ before(done => {
     app = def.app;
     shutDown = def.shutDown;
 
-    testInserts();
-    done();
+    init(modelsHolder).then(() => done());
+    // done();
   });
 });
-
-function testInserts() {}
 
 after(done => {
   shutDown()
     .then(() => mongoose.disconnect())
-    .then(() => mongoServer.stop())
     .then(() => done());
 });
 
