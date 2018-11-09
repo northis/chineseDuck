@@ -7,6 +7,7 @@ export default async () => {
   describe("entire tests", () => {
     before(async () => {
       console.log("before 1");
+      await require("../db/testDbInit").init();
       console.log("before 2");
     });
 
