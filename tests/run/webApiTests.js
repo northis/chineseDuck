@@ -1,10 +1,11 @@
-import { getExpressApp } from "./main.test";
 import { Settings } from "../../config/common";
 import request from "supertest";
 import { assert } from "chai";
 import * as uj from "url-join";
 import * as rt from "../../src/shared/routes.gen";
 import { init } from "../db/testDbInit";
+import * as srv from "../../src/server/index";
+
 
 const routes = rt.default;
 const urlJoin = uj.default;
@@ -16,7 +17,7 @@ export default app => {
   );
   it("test " + folderUrl, async () => {
     console.log("describe 3");
-    const response = await request(app).get(folderUrl);
+    const response = await request(srv.default.app).get(folderUrl);
     console.log(response.status);
     console.log("describe 4");
 
