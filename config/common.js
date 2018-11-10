@@ -1,4 +1,20 @@
 import pkg from "../package.json";
+import { isNullOrUndefined } from "util";
+
+let keys = {
+  telegramApiId: 0,
+  telegramAppKey: "0",
+  mongoDbString: "mongodb://user:password@localhost:27017/chineseDuck",
+  sessionsPass: "pass"
+};
+
+try {
+  keys = require("../keys.js").Keys;
+} catch (error) {
+  console.error(error);
+}
+
+export const Keys = keys;
 
 export const ModeEnum = {
   Development: "development",
@@ -16,6 +32,9 @@ export function getMode() {
 
 export function isDebug() {
   return getMode() !== ModeEnum.Production;
+}
+export function isTest() {
+  return getMode() === ModeEnum.Test;
 }
 
 export function isVerbose() {
@@ -46,14 +65,17 @@ export const DebugKeys = {
   phone_code_hash: "06ad2b144ebb09eacd",
   phone: "79200000000",
   phone_code: 43312,
+  user_id: 100,
   password_hash: "$2b$10$xkwscjZQ.KM3uf1ZG2totO8RRfASADnADfyGNn6t3R5XDva0HKQ3y",
   password: "5lJnlNrgDjeu"
 };
 
 export const Settings = {
-  mongoDbString: "mongodb://apiUser:qipassword@localhost:27017/chineseDuck",
+  mongoDbString: keys.mongoDbString,
   port: 3000,
-  sessionsPass: "2%$&epZvC$dA_Hsd",
+  sessionsPass: keys.sessionsPass,
   apiPrefix: "/api/v1/",
-  docsPrefix: "/api/docs/"
+  docsPrefix: "/api/docs/",
+  getLocalApiAddress: () =>
+    `http://localhost:${Settings.port}${Settings.apiPrefix}`
 };

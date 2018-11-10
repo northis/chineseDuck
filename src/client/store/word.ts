@@ -1,5 +1,5 @@
 import axios from "axios";
-import { isNullOrUndefined } from "util";
+import { isNull, isNullOrUndefined } from "util";
 import { ActionContext } from "vuex";
 import { route, routes } from "../services/routeService";
 import * as I from "../types/interfaces";
@@ -20,8 +20,8 @@ const actions = {
       const resp = await axios.get(
         route(routes._word_folder__folderId_, currentFolderId)
       );
-
       const data: I.IWord[] = resp.data;
+
       context.commit(mutations.setWords.name, data);
       return Promise.resolve();
     } catch (e) {

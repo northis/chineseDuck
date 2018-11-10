@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
-import autoIncrement from "mongoose-plugin-autoinc";
+import { DebugKeys } from "../../../../config/common";
 import {
   userSchema,
   folderSchema,
-  wordFileSchema,
+  idIncrementSchema,
+  wordFileInfoSchema,
   wordSchema,
   CollectionsEnum,
   ModelsEnum,
@@ -18,15 +19,70 @@ export class ModelsHolder {
     const folderSchemaObj = new mongoose.Schema(folderSchema);
     const wordSchemaObj = new mongoose.Schema(wordSchema);
 
-    userSchemaObj.plugin(autoIncrement, ModelsEnum.user);
-    folderSchemaObj.plugin(autoIncrement, ModelsEnum.folder);
-    wordSchemaObj.plugin(autoIncrement, ModelsEnum.word);
-
     delete mongoose.connection.models[ModelsEnum.user];
     delete mongoose.connection.models[ModelsEnum.folder];
     delete mongoose.connection.models[ModelsEnum.word];
     delete mongoose.connection.models[ModelsEnum.wordFile];
     delete mongoose.connection.models[ModelsEnum.session];
+    delete mongoose.connection.models[ModelsEnum.idIncrement];
+
+    let mh = this;
+    wordSchemaObj.pre("validate", false, function(next) {
+      var item = this;
+      mh.idIncrement.findByIdAndUpdate(
+        "wordid",
+        { $inc: { seq: 1 } },
+        { upsert: true, new: true },
+        function(err, counter) {
+          if (err) {
+            console.log(err);
+          }
+
+          const newId = counter.seq;
+          item._id = newId;
+          next();
+        }
+      );
+    });
+    userSchemaObj.pre("validate", false, function(next) {
+      var item = this;
+
+      if (DebugKeys.user_id == item._id) {
+        next();
+        return;
+      }
+      mh.idIncrement.findByIdAndUpdate(
+        "userid",
+        { $inc: { seq: 1 } },
+        { upsert: true, new: true },
+        function(err, counter) {
+          if (err) {
+            console.log(err);
+          }
+
+          const newId = counter.seq;
+          item._id = newId;
+          next();
+        }
+      );
+    });
+    folderSchemaObj.pre("validate", false, function(next) {
+      var item = this;
+      mh.idIncrement.findByIdAndUpdate(
+        "folderid",
+        { $inc: { seq: 1 } },
+        { upsert: true, new: true },
+        function(err, counter) {
+          if (err) {
+            console.log(err);
+          }
+
+          const newId = counter.seq;
+          item._id = newId;
+          next();
+        }
+      );
+    });
 
     this.user = mongoose.model(
       ModelsEnum.user,
@@ -43,9 +99,14 @@ export class ModelsHolder {
       wordSchemaObj,
       CollectionsEnum.words
     );
+    this.idIncrement = mongoose.model(
+      ModelsEnum.idIncrement,
+      idIncrementSchema,
+      CollectionsEnum.idIncrement
+    );
     this.wordFile = mongoose.model(
       ModelsEnum.wordFile,
-      new mongoose.Schema(wordFileSchema),
+      new mongoose.Schema(wordFileInfoSchema),
       CollectionsEnum.wordFiles
     );
     this.session = mongoose.model(
@@ -60,4 +121,5 @@ export class ModelsHolder {
   wordFile;
   word;
   session;
+  idIncrement;
 }

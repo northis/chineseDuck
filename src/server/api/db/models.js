@@ -12,6 +12,14 @@ export const RightWeightEnum = {
   admin: 3
 };
 
+export const GettingWordsStrategyEnum = {
+  NewFirst: 1,
+  OldFirst: 2,
+  NewMostDifficult: 3,
+  OldMostDifficult: 4,
+  Random: 5
+};
+
 export const FileTypeEnum = {
   orig: "orig",
   pron: "pron",
@@ -29,17 +37,20 @@ export const CollectionsEnum = {
   wordFiles: "wordFiles",
   folders: "folders",
   words: "words",
-  sessions: "sessions"
+  sessions: "sessions",
+  idIncrement: "counters"
 };
 export const ModelsEnum = {
   user: "user",
   wordFile: "wordFile",
+  idIncrement: "idIncrement",
   folder: "folder",
   word: "word",
   session: "session"
 };
 
 export const userSchema = {
+  _id: Number,
   username: String,
   tokenHash: String,
   lastCommand: String,
@@ -53,11 +64,22 @@ export const userSchema = {
   currentFolder_id: Number
 };
 
-export const wordFileSchema = {
-  word_id: Number,
+export const wordFileBodySchema = {
+  id: String,
   createDate: { type: Date, default: new Date() },
-  bytes: Buffer,
   height: Number,
+  width: Number
+};
+
+export const wordFileInfoSchema = {
+  bytes: Buffer
+};
+
+export const wordFileInfoSchemaOld = {
+  _id: String,
+  createDate: { type: Date, default: new Date() },
+  height: Number,
+  word_id: Number,
   width: Number,
   fileType: {
     type: String,
@@ -67,6 +89,7 @@ export const wordFileSchema = {
 };
 
 export const folderSchema = {
+  _id: Number,
   name: String,
   owner_id: Number,
   wordsCount: Number,
@@ -74,6 +97,7 @@ export const folderSchema = {
 };
 
 export const wordSchema = {
+  _id: Number,
   owner_id: Number,
   originalWord: String,
   pronunciation: String,
@@ -82,11 +106,15 @@ export const wordSchema = {
   syllablesCount: { type: Number, min: 1, max: 8000 },
   folder_id: Number,
   lastModified: { type: Date, default: new Date() },
+  full: wordFileBodySchema,
+  trans: wordFileBodySchema,
+  pron: wordFileBodySchema,
+  orig: wordFileBodySchema,
   score: {
     originalWordCount: Number,
     originalWordSuccessCount: Number,
     lastView: { type: Date, default: new Date() },
-    lastLearned: String,
+    lastLearned: { type: Date, default: new Date() },
     lastLearnMode: { type: String, enum: Object.values(LearnModeEnum) },
     isInLearnMode: Boolean,
     rightAnswerNumber: Number,
@@ -94,8 +122,7 @@ export const wordSchema = {
     pronunciationSuccessCount: Number,
     translationCount: Number,
     translationSuccessCount: Number,
-    viewCount: Number,
-    name: String
+    viewCount: Number
   }
 };
 
@@ -108,4 +135,9 @@ export const sessionSchema = {
       user: Number
     }
   }
+};
+
+export const idIncrementSchema = {
+  _id: { type: String, required: true },
+  seq: { type: Number, default: 0 }
 };

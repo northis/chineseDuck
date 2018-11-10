@@ -37,6 +37,17 @@ export interface IFolder {
   wordsCount?: number;
 }
 
+export interface IWordFile {
+  height: number;
+  width: number;
+  createDate: Date;
+  id: string;
+}
+export interface IFile {
+  id: string;
+  bytes: Buffer;
+}
+
 export interface IWord {
   _id?: number;
   owner_id?: number;

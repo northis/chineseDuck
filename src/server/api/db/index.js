@@ -1,8 +1,13 @@
 import { ModelsHolder } from "./modelsHolder";
-import { Settings } from "../../../../config/common";
+import { Settings, isTest } from "../../../../config/common";
 import mongoose from "mongoose";
 
-mongoose.connect(Settings.mongoDbString);
+console.log(Settings.mongoDbString);
+
+mongoose.connect(
+  Settings.mongoDbString,
+  { useNewUrlParser: true }
+);
 // mongoose.set("debug", function(collectionName, method, query, doc, options) {
 //   console.info(
 //     `collectionName: ${collectionName}; method: ${method}; query: ${JSON.stringify(

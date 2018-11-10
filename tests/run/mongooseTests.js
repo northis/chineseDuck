@@ -1,36 +1,15 @@
-import MongodbMemoryServer from "mongodb-memory-server";
-import mongoose from "mongoose";
 import { expect } from "chai";
-import { testWordImg } from "./fileB64";
+import mongoose from "mongoose";
+import { testWordImg } from "../db/fileB64";
+import { mh } from "../../src/server/api/db/index";
 
 import * as models from "../../src/server/api/db/models";
-import { ModelsHolder } from "../../src/server/api/db/modelsHolder";
 
-let mongoServer;
-let modelsHolder = new ModelsHolder();
 let testUserName = "testUser";
 let testFolderName = "testFolder";
 let originalWordValue = "自行车";
 
-before(done => {
-  mongoServer = new MongodbMemoryServer();
-  mongoServer
-    .getConnectionString()
-    .then(mongoUri => {
-      return mongoose.connect(mongoUri, err => {
-        if (err) done(err);
-      });
-    })
-    .then(() => done());
-  modelsHolder.init();
-});
-
-after(() => {
-  mongoose.disconnect();
-  mongoServer.stop();
-});
-
-describe("Initial set of tests", function() {
+export default () => {
   let userId = 0;
   let folderId = 0;
   let wordId = 0;
@@ -45,10 +24,8 @@ describe("Initial set of tests", function() {
       who: models.RightEnum.write,
       mode: "mode"
     };
-    await modelsHolder.user.create(userObj);
-    const insertedUser = await modelsHolder.user.findOne({
-      username: testUserName
-    });
+    await mh.user.create(userObj);
+    const insertedUser = await mh.user.findOne({ username: testUserName });
     expect(userObj.username).to.eql(insertedUser.username);
     userId = insertedUser._id;
   });
@@ -56,15 +33,16 @@ describe("Initial set of tests", function() {
   it("folder", async function() {
     let folderObj = {
       name: testFolderName,
-      owner_id: userId
+      owner_id: userId,
+      wordsCount: 0,
+      activityDate: new Date()
     };
-    await modelsHolder.folder.create(folderObj);
-    const insertedFolder = await modelsHolder.folder.findOne({
-      owner_id: userId
-    });
+    await mh.folder.create(folderObj);
+    const insertedFolder = await mh.folder.findOne({ owner_id: userId });
     folderId = insertedFolder._id;
 
     expect(folderObj.testFolderName).to.eql(insertedFolder.testFolderName);
+    return Promise.resolve();
   });
 
   it("word", async function() {
@@ -74,6 +52,26 @@ describe("Initial set of tests", function() {
       translation: "велосипед",
       usage: "我有一个自行车",
       syllablesCount: 3,
+      full: {
+        height: 70,
+        width: 251,
+        fileType: models.FileTypeEnum.full
+      },
+      trans: {
+        height: 70,
+        width: 251,
+        fileType: models.FileTypeEnum.trans
+      },
+      pron: {
+        height: 70,
+        width: 251,
+        fileType: models.FileTypeEnum.pron
+      },
+      orig: {
+        height: 70,
+        width: 251,
+        fileType: models.FileTypeEnum.orig
+      },
       score: {
         originalWordCount: 0,
         originalWordSuccessCount: 0,
@@ -88,27 +86,25 @@ describe("Initial set of tests", function() {
       owner_id: userId,
       folder_id: folderId
     };
-    await modelsHolder.word.create(wordObj);
-    const insertedWord = await modelsHolder.word.findOne({
+    await mh.word.create(wordObj);
+    const insertedWord = await mh.word.findOne({
       originalWord: originalWordValue
     });
     wordId = insertedWord._id;
 
     expect(wordObj.originalWord).to.eql(insertedWord.originalWord);
+    return Promise.resolve();
   });
 
   it("wordFile", async function() {
     let wordFileObj = {
-      word_id: wordId,
-      height: 70,
-      width: 251,
-      fileType: models.FileTypeEnum.orig,
       bytes: new Buffer(testWordImg, "base64")
     };
-    await modelsHolder.wordFile.create(wordFileObj);
-    const insertedWordFile = await modelsHolder.wordFile.findOne({
-      word_id: wordId
+    let newWordFile = await mh.wordFile.create(wordFileObj);
+    const insertedWordFile = await mh.wordFile.findOne({
+      _id: newWordFile._id
     });
     expect(wordFileObj.bytes).to.eql(insertedWordFile.bytes);
+    return Promise.resolve();
   });
-});
+};

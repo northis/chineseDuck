@@ -72,6 +72,32 @@ const folderControl = async (req, res, next) => {
   }
 };
 
+const wordControl = async (req, res, next) => {
+  const role = req.user.who;
+  const wordId = req.params.wordId;
+
+  if (!wordId) {
+    return errors.e400(next);
+  }
+  const word = await mh.word.findOne({ _id: wordId });
+
+  if (isNullOrUndefined(word)) {
+    return errors.e404(next, new Error("The word is not found"));
+  }
+
+  if (role == RightEnum.admin) {
+    return next();
+  }
+
+  const idUser = req.session.passport.user;
+
+  if (idUser == word.owner_id) {
+    return next();
+  } else {
+    return errors.e403(next, new Error("It is not your word"));
+  }
+};
+
 router
   .route(routes._user.express)
   .all(accessControl(routes._user))
@@ -96,6 +122,12 @@ router
   .all(accessControl(routes._folder))
   .get(folder.main.get)
   .post(folder.main.post);
+
+router
+  .route(routes._word_file__fileId_.express)
+  .all(accessControl(routes._word_file__fileId_))
+  //.all(wordControl)
+  .get(word.file.get);
 
 router
   .route(routes._folder__folderId_.express)
