@@ -17,6 +17,7 @@ const createUser = async userEntity => {
   const userDb = await mh.user.create(userEntity);
   const folder = testEntities.folderTemplate;
   folder.owner_id = userDb._id;
+  folder.wordsCount = 3;
   const folderDb = await mh.folder.create(folder);
 
   await mh.word.create(
