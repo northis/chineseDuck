@@ -14,8 +14,7 @@ export default () => {
   let folderId = 0;
   let wordId = 0;
 
-  it("user", async function () {
-    console.log("describe 1");
+  it("user", async function() {
     let userObj = {
       username: testUserName,
       tokenHash: "tokenHash",
@@ -29,10 +28,9 @@ export default () => {
     const insertedUser = await mh.user.findOne({ username: testUserName });
     expect(userObj.username).to.eql(insertedUser.username);
     userId = insertedUser._id;
-    console.log("describe 2");
   });
 
-  it("folder", async function () {
+  it("folder", async function() {
     let folderObj = {
       name: testFolderName,
       owner_id: userId,
@@ -47,7 +45,7 @@ export default () => {
     return Promise.resolve();
   });
 
-  it("word", async function () {
+  it("word", async function() {
     let wordObj = {
       originalWord: originalWordValue,
       pronunciation: "zi|xing|che",
@@ -98,7 +96,7 @@ export default () => {
     return Promise.resolve();
   });
 
-  it("wordFile", async function () {
+  it("wordFile", async function() {
     let wordFileObj = {
       bytes: new Buffer(testWordImg, "base64")
     };

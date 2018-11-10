@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { DebugKeys } from "../../../../config/common";
 import {
   userSchema,
   folderSchema,
@@ -11,7 +12,7 @@ import {
 } from "./models";
 
 export class ModelsHolder {
-  constructor() { }
+  constructor() {}
 
   init() {
     const userSchemaObj = new mongoose.Schema(userSchema);
@@ -26,50 +27,61 @@ export class ModelsHolder {
     delete mongoose.connection.models[ModelsEnum.idIncrement];
 
     let mh = this;
-    wordSchemaObj.pre("validate", false, function (next) {
+    wordSchemaObj.pre("validate", false, function(next) {
       var item = this;
-      mh.idIncrement.findByIdAndUpdate("wordid", { $inc: { seq: 1 } }, { upsert: true, new: true }, function (
-        err,
-        counter
-      ) {
-        if (err) {
-          console.log(err);
-        }
+      mh.idIncrement.findByIdAndUpdate(
+        "wordid",
+        { $inc: { seq: 1 } },
+        { upsert: true, new: true },
+        function(err, counter) {
+          if (err) {
+            console.log(err);
+          }
 
-        const newId = counter.seq;
-        item._id = newId;
-        next();
-      });
+          const newId = counter.seq;
+          item._id = newId;
+          next();
+        }
+      );
     });
-    userSchemaObj.pre("validate", false, function (next) {
+    userSchemaObj.pre("validate", false, function(next) {
       var item = this;
-      mh.idIncrement.findByIdAndUpdate("userid", { $inc: { seq: 1 } }, { upsert: true, new: true }, function (
-        err,
-        counter
-      ) {
-        if (err) {
-          console.log(err);
-        }
 
-        const newId = counter.seq;
-        item._id = newId;
+      if (DebugKeys.user_id == item._id) {
         next();
-      });
+        return;
+      }
+      mh.idIncrement.findByIdAndUpdate(
+        "userid",
+        { $inc: { seq: 1 } },
+        { upsert: true, new: true },
+        function(err, counter) {
+          if (err) {
+            console.log(err);
+          }
+
+          const newId = counter.seq;
+          item._id = newId;
+          next();
+        }
+      );
     });
-    folderSchemaObj.pre("validate", false, function (next) {
+    folderSchemaObj.pre("validate", false, function(next) {
       var item = this;
-      mh.idIncrement.findByIdAndUpdate("folderid", { $inc: { seq: 1 } }, { upsert: true, new: true }, function (
-        err,
-        counter
-      ) {
-        if (err) {
-          console.log(err);
-        }
+      mh.idIncrement.findByIdAndUpdate(
+        "folderid",
+        { $inc: { seq: 1 } },
+        { upsert: true, new: true },
+        function(err, counter) {
+          if (err) {
+            console.log(err);
+          }
 
-        const newId = counter.seq;
-        item._id = newId;
-        next();
-      });
+          const newId = counter.seq;
+          item._id = newId;
+          next();
+        }
+      );
     });
 
     this.user = mongoose.model(

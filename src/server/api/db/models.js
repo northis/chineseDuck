@@ -65,6 +65,7 @@ export const userSchema = {
 };
 
 export const wordFileBodySchema = {
+  id: String,
   createDate: { type: Date, default: new Date() },
   height: Number,
   width: Number

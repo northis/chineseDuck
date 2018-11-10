@@ -65,6 +65,7 @@ export const DebugKeys = {
   phone_code_hash: "06ad2b144ebb09eacd",
   phone: "79200000000",
   phone_code: 43312,
+  user_id: 100,
   password_hash: "$2b$10$xkwscjZQ.KM3uf1ZG2totO8RRfASADnADfyGNn6t3R5XDva0HKQ3y",
   password: "5lJnlNrgDjeu"
 };
