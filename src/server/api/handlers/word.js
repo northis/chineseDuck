@@ -14,11 +14,13 @@ export const main = {
    * responses: 200, 409
    */
   post: async function addWord(req, res, next) {
-    const word = await mh.word.create(req.body);
-    if (isNullOrUndefined(word))
-      return res.status(409).send("Word object already exists");
+    try {
+      const word = await mh.word.create(req.body);
+      return res.status(200).send(word);
 
-    res.status(200).send(word);
+    } catch (error) {
+      return res.status(409).send("Word object already exists");
+    }
   },
   /**
    * summary: Update an existing word

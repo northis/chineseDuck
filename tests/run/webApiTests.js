@@ -101,58 +101,13 @@ function testFolder() {
     assert.ok(response.status === 200);
     assert.ok(updatedFolder.name === folderDb.name);
 
-    response = await request(srv.default.app)
+    const response1 = await request(srv.default.app)
       .put(url)
       .set("Content-Type", "application/json")
       .send(updatedFolder);
 
-    assert.ok(response.status === 302 || response.status === 401);
+    assert.ok(response1.status === 401);
   });
-}
-
-function authorizeTests() {
-  const pathWildCardMapper = {
-    [PathWildcardEnum.folderId]: "0",
-    [PathWildcardEnum.fileId]: "123",
-    [PathWildcardEnum.id]: DebugKeys.user_id,
-    [PathWildcardEnum.userId]: DebugKeys.user_id,
-    [PathWildcardEnum.wordEntry]: testEntities.wordBreakfast.originalWord,
-    [PathWildcardEnum.wordId]: "0"
-  };
-
-  for (const key in routes) {
-    if (routes.hasOwnProperty(key)) {
-      const route = routes[key];
-
-      let template = route.value;
-      for (const keyWildcard in pathWildCardMapper) {
-        template = template.replace(
-          keyWildcard,
-          pathWildCardMapper[keyWildcard]
-        );
-      }
-
-      for (const keyAction in route.actions) {
-        if (route.actions.hasOwnProperty(keyAction)) {
-          const rights = route.actions[keyAction];
-          const minRouteWeight = Math.min(rights.map(a => RightWeightEnum[a]));
-
-          if (minRouteWeight > RightWeightEnum.read) {
-            const url = urlJoin(Settings.apiPrefix, template);
-
-            it(`${keyAction}: ${url}`, async () => {
-              let response = await request(srv.default.app)
-                [keyAction](encodeURIComponent(url))
-                .set("Content-Type", "application/json")
-                .send({});
-
-              assert.ok(response.status > 299 && response.status < 500);
-            });
-          }
-        }
-      }
-    }
-  }
 }
 
 function testWord() {
@@ -182,11 +137,16 @@ function testWord() {
       .set("Cookie", [cookieAdmin])
       .send(newWord);
     assert.ok(response.status === 409);
+
+    // response = await request(srv.default.app)
+    //   .post(url)
+    //   .set("Content-Type", "application/json")
+    //   .send(newWord);
+    // assert.ok(response.status === 401);
   });
 }
 
 export default () => {
-  describe("authorize tests", authorizeTests);
   testUser();
   testFolder();
   testWord();

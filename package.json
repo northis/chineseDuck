@@ -83,7 +83,7 @@
     "less-loader": "^4.1.0",
     "mini-css-extract-plugin": "^0.4.3",
     "mocha": "^5.2.0",
-    "mongodb-memory-server": "^1.9.3",
+    "mongodb-memory-server": "^2.7.0",
     "node-sass": "^4.9.3",
     "openapi-schema-to-json-schema": "^2.2.0",
     "postcss-loader": "^2.1.6",

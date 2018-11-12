@@ -19,13 +19,13 @@ router.route(routes._user_logout.express).get(user.logout.get);
 
 router.use(privateRoutesFilter, (req, res, next) => {
   if (!req.isAuthenticated()) {
-    return res.status(401).redirect("/");
+    return res.status(401).send(res, "You have not rights to open it. Authorize, please.");
   }
   next();
 });
 const accessControl = path => (req, res, next) => {
   if (!req.isAuthenticated()) {
-    return res.status(401).redirect("/");
+    return errors.e401(next, new Error("You have not rights to open it. Authorize, please."));
   }
 
   try {
