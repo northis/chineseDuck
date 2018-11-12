@@ -126,7 +126,6 @@ router
 router
   .route(routes._word_file__fileId_.express)
   .all(accessControl(routes._word_file__fileId_))
-  //.all(wordControl)
   .get(word.file.get);
 
 router
@@ -135,5 +134,11 @@ router
   .all(folderControl)
   .delete(folder.id.delete)
   .put(folder.id.put);
+
+router
+  .route(routes._word.express)
+  .all(accessControl(routes._word))
+  //.all(wordControl)
+  .post(word.main.post);
 
 export default router;

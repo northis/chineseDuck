@@ -14,6 +14,7 @@ import * as testEntities from "../db/testEntities";
 const routes = rt.default;
 const urlJoin = uj.default;
 let cookie = "";
+let cookieAdmin = "";
 
 function testUser() {
   it(routes._user_auth.value, async () => {
@@ -31,7 +32,7 @@ function testUser() {
 
   it(routes._user_login.value, async () => {
     const url = urlJoin(Settings.apiPrefix, routes._user_login.value);
-    const response = await request(srv.default.app)
+    let response = await request(srv.default.app)
       .post(url)
       .set("Content-Type", "application/json")
       .send({
@@ -43,9 +44,24 @@ function testUser() {
 
     assert.ok(response.status === 200);
 
-    const cookieRaw = response.header["set-cookie"];
+    let cookieRaw = response.header["set-cookie"];
     assert.ok(cookieRaw.length > 0);
     cookie = cookieRaw[0];
+
+    response = await request(srv.default.app)
+      .post(url)
+      .set("Content-Type", "application/json")
+      .send({
+        id: DebugKeys.admin_id + "",
+        code: DebugKeys.password,
+        remember: true
+      });
+
+    assert.ok(response.status === 200);
+
+    cookieRaw = response.header["set-cookie"];
+    assert.ok(cookieRaw.length > 0);
+    cookieAdmin = cookieRaw[0];
   });
 }
 function testFolder() {
@@ -139,8 +155,39 @@ function authorizeTests() {
   }
 }
 
+function testWord() {
+  it(routes._word.value, async () => {
+    const url = urlJoin(Settings.apiPrefix, routes._word.value);
+
+    let newWord = testEntities.wordSupper;
+    let folderDb = await mh.folder.findOne({ owner_id: DebugKeys.user_id });
+
+    newWord.owner_id = DebugKeys.user_id;
+    newWord.folder_id = folderDb._id;
+
+    let response = await request(srv.default.app)
+      .post(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookieAdmin])
+      .send(newWord);
+
+    newWord = await mh.word.findOne({ _id: response.body._id });
+
+    assert.ok(response.status === 200);
+    assert.ok(newWord._id === response.body._id);
+
+    response = await request(srv.default.app)
+      .post(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookieAdmin])
+      .send(newWord);
+    assert.ok(response.status === 409);
+  });
+}
+
 export default () => {
+  describe("authorize tests", authorizeTests);
   testUser();
   testFolder();
-  describe("authorize tests", authorizeTests);
+  testWord();
 };

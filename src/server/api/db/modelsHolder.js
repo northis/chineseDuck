@@ -47,7 +47,7 @@ export class ModelsHolder {
     userSchemaObj.pre("validate", false, function(next) {
       var item = this;
 
-      if (DebugKeys.user_id == item._id) {
+      if (DebugKeys.user_id == item._id || DebugKeys.admin_id == item._id) {
         next();
         return;
       }

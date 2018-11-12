@@ -24,17 +24,17 @@ const createUser = async userEntity => {
     await setWord(testEntities.wordBreakfast, userDb._id, folderDb._id)
   );
 
-  await mh.word.create(
-    await setWord(testEntities.wordDinner, userDb._id, folderDb._id)
-  );
-  await mh.word.create(
-    await setWord(testEntities.wordSupper, userDb._id, folderDb._id)
-  );
+  // await mh.word.create(
+  //   await setWord(testEntities.wordDinner, userDb._id, folderDb._id)
+  // );
+  // await mh.word.create(
+  //   await setWord(testEntities.wordSupper, userDb._id, folderDb._id)
+  // );
 
   return userDb;
 };
 
-async function setWord(word, idUser, idFolder) {
+export async function setWord(word, idUser, idFolder) {
   let wordFile = await mh.wordFile.create(testEntities.wordFileInfoTemplate);
   word.full.id = wordFile._id;
   wordFile = await mh.wordFile.create(testEntities.wordFileInfoTemplate);
