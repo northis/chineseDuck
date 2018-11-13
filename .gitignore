@@ -6,6 +6,9 @@ sessions/
 npm-debug.log
 yarn-error.log
 .vscode/
+.vs/
+bin/
+obj/
 
 # Editor directories and files
 .idea

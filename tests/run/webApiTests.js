@@ -151,6 +151,11 @@ function testWord() {
       .send(newWord);
     assert.ok(response.status === 403);
   });
+
+  it(routes._word__wordId_.value, async () => {
+    const url = urlJoin(Settings.apiPrefix, routes._word.value);
+
+  });
 }
 
 export default () => {
