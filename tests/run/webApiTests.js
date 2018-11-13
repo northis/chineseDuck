@@ -101,12 +101,12 @@ function testFolder() {
     assert.ok(response.status === 200);
     assert.ok(updatedFolder.name === folderDb.name);
 
-    const response1 = await request(srv.default.app)
+    response = await request(srv.default.app)
       .put(url)
       .set("Content-Type", "application/json")
       .send(updatedFolder);
 
-    assert.ok(response1.status === 401);
+    assert.ok(response.status === 401);
   });
 }
 
@@ -138,11 +138,18 @@ function testWord() {
       .send(newWord);
     assert.ok(response.status === 409);
 
-    // response = await request(srv.default.app)
-    //   .post(url)
-    //   .set("Content-Type", "application/json")
-    //   .send(newWord);
-    // assert.ok(response.status === 401);
+    response = await request(srv.default.app)
+      .post(url)
+      .set("Content-Type", "application/json")
+      .send(newWord);
+    assert.ok(response.status === 401);
+
+    response = await request(srv.default.app)
+      .post(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie])
+      .send(newWord);
+    assert.ok(response.status === 403);
   });
 }
 
