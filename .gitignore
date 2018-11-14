@@ -15,6 +15,5 @@ obj/
 *.suo
 *.ntvs*
 *.njsproj
-*.sln
 apiKeys.js
 keys.js
