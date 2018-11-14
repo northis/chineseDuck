@@ -119,7 +119,7 @@ namespace chineseDuck.pinyin4net.tests {
 
         #endregion
 
-        public string[] TestCharWithMultiplePronunciations(
+        public string[] TestCharWithMultiplePronunciations (
             char ch, HanyuPinyinToneType toneType,
             HanyuPinyinVCharType vcharType, HanyuPinyinCaseType caseType) {
             var format = new HanyuPinyinOutputFormat {
@@ -143,7 +143,8 @@ namespace chineseDuck.pinyin4net.tests {
         [Test]
         [Description ("Test null input")]
         public void TestNullInput () {
-            PinyinHelper.ToHanyuPinyinStringArray ('李', null);
+
+            Assert.Throws<ArgumentNullException> (() => PinyinHelper.ToHanyuPinyinStringArray ('李', null));
         }
 
         [Test]
@@ -185,7 +186,7 @@ namespace chineseDuck.pinyin4net.tests {
         [TestCase ('云', ExpectedResult = "yún")]
         [TestCase ('黄', ExpectedResult = "huáng")]
         [TestCase ('渊', ExpectedResult = "yuān")]
-        [TestCase ('儿', ExpectedResult = "ér")]
+        [TestCase ('儿', ExpectedResult = "er")]
         //  Traditional Chinese
         [TestCase ('呂', ExpectedResult = "lǚ")]
         [TestCase ('來', ExpectedResult = "lái")]
@@ -204,16 +205,13 @@ namespace chineseDuck.pinyin4net.tests {
 
         #endregion
 
-        public void TestToneMark (char ch) {
+        public string TestToneMark (char ch) {
             var format = new HanyuPinyinOutputFormat {
             ToneType = HanyuPinyinToneType.WithToneMark,
             VCharType = HanyuPinyinVCharType.WithUUnicode
             };
 
-            Assert.Throws<ArgumentNullException>(() =>
-            {
-                var t = PinyinHelper.ToHanyuPinyinStringArray(ch, format)[0];
-            });
+            return PinyinHelper.ToHanyuPinyinStringArray (ch, format) [0];
         }
 
         [Test]
@@ -226,7 +224,7 @@ namespace chineseDuck.pinyin4net.tests {
                 VCharType = vcharType
             };
 
-            Assert.Throws<InvalidHanyuPinyinFormatException>(() => PinyinHelper.ToHanyuPinyinStringArray(ch, format));
+            Assert.Throws<InvalidHanyuPinyinFormatException> (() => PinyinHelper.ToHanyuPinyinStringArray (ch, format));
         }
 
         [Test]
