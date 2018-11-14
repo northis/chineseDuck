@@ -13,8 +13,14 @@ export const main = {
    * produces:
    * responses: 200, 409
    */
-  post: function addWord(req, res, next) {
-    res.status(404).send(404);
+  post: async function addWord(req, res, next) {
+    try {
+      const word = await mh.word.create(req.body);
+      return res.status(200).send(word);
+
+    } catch (error) {
+      return res.status(409).send("Word object already exists");
+    }
   },
   /**
    * summary: Update an existing word
@@ -112,6 +118,7 @@ export const folderId = {
     });
     res.status(200).send("Words have been moved");
   },
+
   /**
    * summary: Get words by folder id
    * description:
@@ -119,7 +126,6 @@ export const folderId = {
    * produces:
    * responses: 200
    */
-
   get: async function getWordsFolderId(req, res, next) {
     const idUser = req.session.passport.user;
     const folderId = req.params.folderId;
@@ -162,8 +168,18 @@ export const rename = {
    * produces:
    * responses: 400, 404
    */
-  put: function renameWord(req, res, next) {
-    res.status(404).send(404);
+  put: async function renameWord(req, res, next) {
+    const wordId = req.params.wordId;
+    const newTranslation = req.body.newTranslation;
+    const idUser = req.session.passport.user;
+
+    const word = await mh.word.updateOne(
+      { _id: wordId, owner_id: idUser },
+      { translation: newTranslation }
+    );
+    if (isNullOrUndefined(word))
+      return res.status(404).send("Word is not found");
+    res.json(word);
   }
 };
 

@@ -19,13 +19,13 @@ router.route(routes._user_logout.express).get(user.logout.get);
 
 router.use(privateRoutesFilter, (req, res, next) => {
   if (!req.isAuthenticated()) {
-    return res.status(401).redirect("/");
+    return errors.e401(res, "You have not rights to open it. Authorize, please.");
   }
   next();
 });
 const accessControl = path => (req, res, next) => {
   if (!req.isAuthenticated()) {
-    return res.status(401).redirect("/");
+    return errors.e401(res, "You have not rights to open it. Authorize, please.");
   }
 
   try {
@@ -37,12 +37,12 @@ const accessControl = path => (req, res, next) => {
     const roleWeight = RightWeightEnum[role];
 
     if (roleWeight < minRouteWeight) {
-      errors.e403(next);
+      errors.e403(res);
     } else {
       next();
     }
   } catch (e) {
-    errors.e403(next, e);
+    errors.e403(res, e);
   }
 };
 
@@ -56,7 +56,7 @@ const folderControl = async (req, res, next) => {
   const folder = await mh.folder.findOne({ _id: folderId });
 
   if (isNullOrUndefined(folder)) {
-    return errors.e404(next, new Error("The folder is not found"));
+    return errors.e404(res, "The folder is not found");
   }
 
   if (role == RightEnum.admin) {
@@ -68,7 +68,7 @@ const folderControl = async (req, res, next) => {
   if (idUser == folder.owner_id) {
     return next();
   } else {
-    return errors.e403(next, new Error("It is not your folder"));
+    return errors.e403(res, "It is not your folder");
   }
 };
 
@@ -82,7 +82,7 @@ const wordControl = async (req, res, next) => {
   const word = await mh.word.findOne({ _id: wordId });
 
   if (isNullOrUndefined(word)) {
-    return errors.e404(next, new Error("The word is not found"));
+    return errors.e404(res, "The word is not found");
   }
 
   if (role == RightEnum.admin) {
@@ -94,7 +94,7 @@ const wordControl = async (req, res, next) => {
   if (idUser == word.owner_id) {
     return next();
   } else {
-    return errors.e403(next, new Error("It is not your word"));
+    return errors.e403(res, "It is not your word");
   }
 };
 
@@ -126,7 +126,6 @@ router
 router
   .route(routes._word_file__fileId_.express)
   .all(accessControl(routes._word_file__fileId_))
-  //.all(wordControl)
   .get(word.file.get);
 
 router
@@ -135,5 +134,11 @@ router
   .all(folderControl)
   .delete(folder.id.delete)
   .put(folder.id.put);
+
+router
+  .route(routes._word.express)
+  .all(accessControl(routes._word))
+  //.all(wordControl)
+  .post(word.main.post);
 
 export default router;

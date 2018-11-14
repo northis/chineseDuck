@@ -1,21 +1,21 @@
-export function e400(nextFunc, error) {
-  e(nextFunc, 400, error);
+import { isNullOrUndefined } from "util";
+
+export function e400(res, errorText) {
+  e(res, 400, errorText);
 }
-export function e401(nextFunc, error) {
-  e(nextFunc, 401, error);
+export function e401(res, errorText) {
+  e(res, 401, errorText);
 }
-export function e403(nextFunc, error) {
-  e(nextFunc, 403, error);
+export function e403(res, errorText) {
+  e(res, 403, errorText);
 }
-export function e404(nextFunc, error) {
-  e(nextFunc, 404, error);
+export function e404(res, errorTextText) {
+  e(res, 404, errorTextText);
 }
-export function e500(nextFunc, error) {
-  e(nextFunc, 500, error);
+export function e500(res, errorTextText) {
+  e(res, 500, errorTextText);
 }
 
-function e(nextFunc, eNum, error) {
-  const myError = error ? error : new Error();
-  myError.status = eNum;
-  nextFunc(myError);
+function e(res, eNum, errorTextText) {
+  res.status(eNum).send(errorTextText || eNum);
 }

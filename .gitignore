@@ -6,12 +6,14 @@ sessions/
 npm-debug.log
 yarn-error.log
 .vscode/
+.vs/
+bin/
+obj/
 
 # Editor directories and files
 .idea
 *.suo
 *.ntvs*
 *.njsproj
-*.sln
 apiKeys.js
 keys.js

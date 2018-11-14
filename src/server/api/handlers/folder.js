@@ -129,7 +129,6 @@ export const id = {
           new: true
         }
       );
-      console.info(result);
       res.status(status).send(result);
     } catch (e) {
       catchUniqueName(res, e);

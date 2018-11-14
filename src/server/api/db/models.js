@@ -26,6 +26,17 @@ export const FileTypeEnum = {
   trans: "trans",
   full: "full"
 };
+
+export const PathWildcardEnum = {
+  folderId: "{folderId}",
+  wordId: "{wordId}",
+  userId: "{userId}",
+  wordEntry: "{wordEntry}",
+  fileId: "{fileId}",
+  userId: "{userId}",
+  id: "{id}"
+};
+
 export const LearnModeEnum = {
   OriginalWord: "OriginalWord",
   Translation: "Translation",

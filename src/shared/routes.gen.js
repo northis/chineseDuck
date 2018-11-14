@@ -1,6 +1,6 @@
 export default { _word:
    { value: '/word',
-     actions: { put: ["admin"], post: ["admin"] },
+     actions: { post: ["admin"], put: ["admin"] },
      express: '/word' },
   _word_import:
    { value: '/word/import',
@@ -8,7 +8,7 @@ export default { _word:
      express: '/word/import' },
   _word_folder__folderId_:
    { value: '/word/folder/{folderId}',
-     actions: { get: ["read"], put: ["write"] },
+     actions: { put: ["write"], get: ["write"] },
      express: '/word/folder/:folderId' },
   _word__wordId__rename:
    { value: '/word/{wordId}/rename',
@@ -20,11 +20,11 @@ export default { _word:
      express: '/word/:wordId/score' },
   _word__wordId_:
    { value: '/word/{wordId}',
-     actions: { get: ["read"], delete: ["write"] },
+     actions: { get: ["write"], delete: ["write"] },
      express: '/word/:wordId' },
   _word_user__userId__search__wordEntry_:
    { value: '/word/user/{userId}/search/{wordEntry}',
-     actions: { get: ["read"] },
+     actions: { get: ["write"] },
      express: '/word/user/:userId/search/:wordEntry' },
   _word_file__fileId_:
    { value: '/word/file/{fileId}',
@@ -32,7 +32,7 @@ export default { _word:
      express: '/word/file/:fileId' },
   _folder:
    { value: '/folder',
-     actions: { get: ["read"], post: ["write"] },
+     actions: { post: ["write"], get: ["write"] },
      express: '/folder' },
   _folder_user__userId_:
    { value: '/folder/user/{userId}',
@@ -40,11 +40,11 @@ export default { _word:
      express: '/folder/user/:userId' },
   _folder__folderId_:
    { value: '/folder/{folderId}',
-     actions: { put: ["write"], delete: ["write"] },
+     actions: { delete: ["write"], put: ["write"] },
      express: '/folder/:folderId' },
   _user:
    { value: '/user',
-     actions: { get: ["read"], post: ["admin"] },
+     actions: { post: ["admin"], get: ["write"] },
      express: '/user' },
   _user_auth:
    { value: '/user/auth',
@@ -56,7 +56,7 @@ export default { _word:
      express: '/user/login' },
   _user_logout:
    { value: '/user/logout',
-     actions: { get: ["read","write"] },
+     actions: { get: ["write"] },
      express: '/user/logout' },
   _user__id_:
    { value: '/user/{id}',
