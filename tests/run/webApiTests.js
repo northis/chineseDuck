@@ -77,10 +77,7 @@ function testFolder() {
     assert.ok(response.body.length >= 2);
   });
 
-
-  it(`${routes._folder.value} - post`, async () => {
-
-  });
+  it(`${routes._folder.value} - post`, async () => {});
 
   it(`${routes._folder__folderId_.value} - put`, async () => {
     let folderDb = await mh.folder.findOne({ owner_id: DebugKeys.user_id });
@@ -114,14 +111,11 @@ function testFolder() {
     assert.ok(response.status === 401);
   });
 
-
-  it(`${routes._folder__folderId_.value} - delete`, async () => {
-  });
+  it(`${routes._folder__folderId_.value} - delete`, async () => {});
 }
 
 function testWord() {
   it(`${routes._word.value} - post`, async () => {
-
     const url = urlJoin(Settings.apiPrefix, routes._word.value);
     let newWord = testEntities.wordSupper;
     let folderDb = await mh.folder.findOne({ owner_id: DebugKeys.user_id });
@@ -162,17 +156,26 @@ function testWord() {
   });
 
   it(`${routes._word.value} - put`, async () => {
-
     const url = urlJoin(Settings.apiPrefix, routes._word.value);
-    const word = await mh.word.findOne({ owner_id: DebugKeys.user_id });
+    let word = await mh.word.findOne({ owner_id: DebugKeys.user_id });
+    const wordToUpdate = testEntities.wordDinner;
+    const id = word._id;
+    wordToUpdate._id = id;
 
     let response = await request(srv.default.app)
       .put(url)
       .set("Content-Type", "application/json")
-      .set("Cookie", [cookie])
-      .send(word);
+      .set("Cookie", [cookieAdmin])
+      .send(wordToUpdate);
 
     assert.ok(response.status === 200);
+
+    word = await mh.word.findOne({ _id: id });
+    assert.ok(wordToUpdate.originalWord === word.originalWord);
+    assert.ok(wordToUpdate.pronunciation === word.pronunciation);
+    assert.ok(wordToUpdate.translation === word.translation);
+    assert.ok(wordToUpdate.usage === word.usage);
+    assert.ok(wordToUpdate.syllablesCount === word.syllablesCount);
   });
 }
 

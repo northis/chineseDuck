@@ -18,7 +18,6 @@ export const main = {
     try {
       const word = await mh.word.create(req.body);
       return res.status(200).send(word);
-
     } catch (error) {
       return errors.e409(res, "Word object already exists");
     }
@@ -31,7 +30,6 @@ export const main = {
    * responses: 400, 404, 405
    */
   put: async function updateWord(req, res, next) {
-
     try {
       const newWord = req.body;
       const newWordId = newWord._id;
@@ -40,22 +38,33 @@ export const main = {
         return errors.e400(res, "Wrong id has been provided");
       }
 
-      const wordDb = await mh.folder.findOneAndUpdate(
+      const updatedWord = {
+        originalWord: newWord.originalWord,
+        pronunciation: newWord.pronunciation,
+        translation: newWord.translation,
+        usage: newWord.usage,
+        syllablesCount: newWord.syllablesCount,
+        folder_id: newWord.folder_id,
+        lastModified: Date.now()
+      };
+
+      if (!isNullOrUndefined(newWord.full)) updatedWord.full = newWord.full;
+      if (!isNullOrUndefined(newWord.trans)) updatedWord.trans = newWord.trans;
+      if (!isNullOrUndefined(newWord.pron)) updatedWord.pron = newWord.pron;
+      if (!isNullOrUndefined(newWord.orig)) updatedWord.orig = newWord.orig;
+
+      if (!isNullOrUndefined(newWord.score)) updatedWord.score = newWord.score;
+
+      const wordDb = await mh.word.findOneAndUpdate(
         { _id: newWord._id },
-        {
-          name: newWord.name,
-          activityDate: Date.now()
-        },
-        {
-          new: true
-        }
+        updatedWord,
+        { new: true }
       );
       if (isNullOrUndefined(wordDb)) {
         return errors.e404(res, "We have not such word");
       }
 
       return res.status(200).send(wordDb);
-
     } catch (error) {
       return errors.e405(res, "Something goes wrong on word updating");
     }
