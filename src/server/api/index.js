@@ -138,7 +138,8 @@ router
 router
   .route(routes._word.express)
   .all(accessControl(routes._word))
+  .post(word.main.post)
   //.all(wordControl)
-  .post(word.main.post);
+  .put(word.main.put);
 
 export default router;

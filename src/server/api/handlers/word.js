@@ -1,6 +1,7 @@
 import { mh } from "../../../server/api/db";
 import { isNullOrUndefined } from "util";
 import mongoose from "mongoose";
+import * as errors from "../../errors";
 
 /**
  * Operations on /word
@@ -19,7 +20,7 @@ export const main = {
       return res.status(200).send(word);
 
     } catch (error) {
-      return res.status(409).send("Word object already exists");
+      return errors.e409(res, "Word object already exists");
     }
   },
   /**
@@ -29,8 +30,35 @@ export const main = {
    * produces:
    * responses: 400, 404, 405
    */
-  put: function updateWord(req, res, next) {
-    res.status(404).send(404);
+  put: async function updateWord(req, res, next) {
+
+    try {
+      const newWord = req.body;
+      const newWordId = newWord._id;
+
+      if (isNullOrUndefined(newWordId)) {
+        return errors.e400(res, "Wrong id has been provided");
+      }
+
+      const wordDb = await mh.folder.findOneAndUpdate(
+        { _id: newWord._id },
+        {
+          name: newWord.name,
+          activityDate: Date.now()
+        },
+        {
+          new: true
+        }
+      );
+      if (isNullOrUndefined(wordDb)) {
+        return errors.e404(res, "We have not such word");
+      }
+
+      return res.status(200).send(wordDb);
+
+    } catch (error) {
+      return errors.e405(res, "Something goes wrong on word updating");
+    }
   }
 };
 /**

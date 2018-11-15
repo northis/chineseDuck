@@ -17,7 +17,7 @@ let cookie = "";
 let cookieAdmin = "";
 
 function testUser() {
-  it(routes._user_auth.value, async () => {
+  it(`${routes._user_auth.value} - post`, async () => {
     const url = urlJoin(Settings.apiPrefix, routes._user_auth.value);
     const response = await request(srv.default.app)
       .post(url)
@@ -30,7 +30,7 @@ function testUser() {
     assert.ok(resTest.hash == DebugKeys.phone_code_hash);
   });
 
-  it(routes._user_login.value, async () => {
+  it(`${routes._user_login.value} - post`, async () => {
     const url = urlJoin(Settings.apiPrefix, routes._user_login.value);
     let response = await request(srv.default.app)
       .post(url)
@@ -65,7 +65,7 @@ function testUser() {
   });
 }
 function testFolder() {
-  it(routes._folder.value, async () => {
+  it(`${routes._folder.value} - get`, async () => {
     const url = urlJoin(Settings.apiPrefix, routes._folder.value);
 
     const response = await request(srv.default.app)
@@ -77,7 +77,12 @@ function testFolder() {
     assert.ok(response.body.length >= 2);
   });
 
-  it(routes._folder__folderId_.value, async () => {
+
+  it(`${routes._folder.value} - post`, async () => {
+
+  });
+
+  it(`${routes._folder__folderId_.value} - put`, async () => {
     let folderDb = await mh.folder.findOne({ owner_id: DebugKeys.user_id });
 
     const url = urlJoin(
@@ -108,12 +113,16 @@ function testFolder() {
 
     assert.ok(response.status === 401);
   });
+
+
+  it(`${routes._folder__folderId_.value} - delete`, async () => {
+  });
 }
 
 function testWord() {
-  it(routes._word.value, async () => {
-    const url = urlJoin(Settings.apiPrefix, routes._word.value);
+  it(`${routes._word.value} - post`, async () => {
 
+    const url = urlJoin(Settings.apiPrefix, routes._word.value);
     let newWord = testEntities.wordSupper;
     let folderDb = await mh.folder.findOne({ owner_id: DebugKeys.user_id });
 
@@ -152,9 +161,18 @@ function testWord() {
     assert.ok(response.status === 403);
   });
 
-  it(routes._word__wordId_.value, async () => {
-    const url = urlJoin(Settings.apiPrefix, routes._word.value);
+  it(`${routes._word.value} - put`, async () => {
 
+    const url = urlJoin(Settings.apiPrefix, routes._word.value);
+    const word = await mh.word.findOne({ owner_id: DebugKeys.user_id });
+
+    let response = await request(srv.default.app)
+      .put(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie])
+      .send(word);
+
+    assert.ok(response.status === 200);
   });
 }
 
