@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as errors from "../errors";
 import * as user from "./handlers/user";
+import * as service from "./handlers/service";
 import * as word from "./handlers/word";
 import * as folder from "./handlers/folder";
 import * as rt from "../../shared/routes.gen";
@@ -16,16 +17,23 @@ var router = Router();
 router.route(routes._user_auth.value).post(user.auth.post);
 router.route(routes._user_login.value).post(user.login.post);
 router.route(routes._user_logout.express).get(user.logout.get);
+router.route(routes._service_datetime.express).get(service.main.get);
 
 router.use(privateRoutesFilter, (req, res, next) => {
   if (!req.isAuthenticated()) {
-    return errors.e401(res, "You have not rights to open it. Authorize, please.");
+    return errors.e401(
+      res,
+      "You have not rights to open it. Authorize, please."
+    );
   }
   next();
 });
 const accessControl = path => (req, res, next) => {
   if (!req.isAuthenticated()) {
-    return errors.e401(res, "You have not rights to open it. Authorize, please.");
+    return errors.e401(
+      res,
+      "You have not rights to open it. Authorize, please."
+    );
   }
 
   try {
@@ -139,7 +147,7 @@ router
   .route(routes._word.express)
   .all(accessControl(routes._word))
   .post(word.main.post)
-  //.all(wordControl)
   .put(word.main.put);
+//.all(wordControl)
 
 export default router;

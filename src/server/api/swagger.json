@@ -1,1179 +1,1246 @@
 {
-  "openapi" : "3.0.0",
-  "servers" : [ {
-    "url" : "https://udd3r.com/api/v1/"
-  } ],
-  "info" : {
-    "description" : "Chinese Duck Bot Api",
-    "version" : "1.1.1-oas3",
-    "title" : "Chinese Duck Bot Api",
-    "termsOfService" : "https://udd3r.com/terms/",
-    "contact" : {
-      "email" : "north@live.ru"
+  "openapi": "3.0.0",
+  "servers": [
+    {
+      "url": "https://udd3r.com/api/v1/"
+    }
+  ],
+  "info": {
+    "description": "Chinese Duck Bot Api",
+    "version": "1.1.1-oas3",
+    "title": "Chinese Duck Bot Api",
+    "termsOfService": "https://udd3r.com/terms/",
+    "contact": {
+      "email": "north@live.ru"
     },
-    "license" : {
-      "name" : "Apache 2.0",
-      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
-  "tags" : [ {
-    "name" : "word",
-    "description" : "Dictionary item"
-  }, {
-    "name" : "user",
-    "description" : "Operations about user"
-  }, {
-    "name" : "service",
-    "description" : "System service operations"
-  }, {
-    "name" : "folder",
-    "description" : "User folder for words"
-  } ],
-  "paths" : {
-    "/word" : {
-      "post" : {
-        "tags" : [ "word" ],
-        "summary" : "Add a new word to the store",
-        "operationId" : "addWord",
-        "responses" : {
-          "200" : {
-            "description" : "Updated"
+  "tags": [
+    {
+      "name": "word",
+      "description": "Dictionary item"
+    },
+    {
+      "name": "user",
+      "description": "Operations about user"
+    },
+    {
+      "name": "service",
+      "description": "System service operations"
+    },
+    {
+      "name": "folder",
+      "description": "User folder for words"
+    }
+  ],
+  "paths": {
+    "/word": {
+      "post": {
+        "tags": ["word"],
+        "summary": "Add a new word to the store",
+        "operationId": "addWord",
+        "responses": {
+          "200": {
+            "description": "Updated"
           },
-          "409" : {
-            "description" : "Word object already exists"
+          "409": {
+            "description": "Word object already exists"
           }
         },
-        "security" : [ {
-          "cookieAuth" : [ "admin" ]
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/Word"
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Word"
               }
             }
           },
-          "description" : "Word object that needs to be added to the store",
-          "required" : true
+          "description": "Word object that needs to be added to the store",
+          "required": true
         }
       },
-      "put" : {
-        "tags" : [ "word" ],
-        "summary" : "Update an existing word",
-        "operationId" : "updateWord",
-        "responses" : {
-          "400" : {
-            "description" : "Invalid ID supplied"
+      "put": {
+        "tags": ["word"],
+        "summary": "Update an existing word",
+        "operationId": "updateWord",
+        "responses": {
+          "400": {
+            "description": "Invalid ID supplied"
           },
-          "404" : {
-            "description" : "Word not found"
+          "404": {
+            "description": "Word not found"
           },
-          "405" : {
-            "description" : "Validation error"
+          "405": {
+            "description": "Validation error"
           }
         },
-        "security" : [ {
-          "cookieAuth" : [ "admin" ]
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/Word"
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Word"
               }
             }
           },
-          "description" : "Word object that needs to be updated in the store",
-          "required" : true
+          "description": "Word object that needs to be updated in the store",
+          "required": true
         }
       }
     },
-    "/word/import" : {
-      "post" : {
-        "tags" : [ "word" ],
-        "summary" : "Imports new words to the store from a csv file",
-        "operationId" : "importWord",
-        "responses" : {
-          "200" : {
-            "description" : "Uploaded"
-          },
-          "409" : {
-            "description" : "Word object already exists"
-          },
-          "413" : {
-            "description" : "File too big"
-          }
-        },
-        "security" : [ {
-          "cookieAuth" : [ "write" ]
-        } ],
-        "requestBody" : {
-          "content" : {
-            "text/plain" : {
-              "schema" : {
-                "type" : "string",
-                "format" : "binary"
-              }
+    "/word/folder/{folderId}": {
+      "put": {
+        "tags": ["word", "folder"],
+        "summary": "Move words to another folder",
+        "operationId": "moveWordsToFolder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "folderId",
+            "description": "Folder id to move in",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
             }
-          },
-          "description" : "csv file",
-          "required" : true
-        }
-      }
-    },
-    "/word/folder/{folderId}" : {
-      "put" : {
-        "tags" : [ "word", "folder" ],
-        "summary" : "Move words to another folder",
-        "operationId" : "moveWordsToFolder",
-        "parameters" : [ {
-          "in" : "path",
-          "name" : "folderId",
-          "description" : "Folder id to move in",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
           }
-        } ],
-        "responses" : {
-          "400" : {
-            "description" : "Invalid ID supplied"
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid ID supplied"
           },
-          "404" : {
-            "description" : "Folder not found"
+          "404": {
+            "description": "Folder not found"
           }
         },
-        "security" : [ {
-          "cookieAuth" : [ "write" ]
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "type" : "array",
-                "items" : {
-                  "type" : "integer",
-                  "format" : "int64"
+        "security": [
+          {
+            "cookieAuth": ["write"]
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
                 }
               }
             }
           },
-          "description" : "Word ids",
-          "required" : true
+          "description": "Word ids",
+          "required": true
         }
       },
-      "get" : {
-        "tags" : [ "word", "folder" ],
-        "description" : "Get words by folder id",
-        "operationId" : "getWordsFolderId",
-        "parameters" : [ {
-          "name" : "folderId",
-          "in" : "path",
-          "description" : "Folder id",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+      "get": {
+        "tags": ["word", "folder"],
+        "description": "Get words by folder id",
+        "operationId": "getWordsFolderId",
+        "parameters": [
+          {
+            "name": "folderId",
+            "in": "path",
+            "description": "Folder id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/Word"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Word"
                   }
                 }
               }
             }
           },
-          "404" : {
-            "description" : "Folder is not found"
+          "404": {
+            "description": "Folder is not found"
           }
         },
-        "security" : [ {
-          "cookieAuth" : [ "write" ]
-        } ]
+        "security": [
+          {
+            "cookieAuth": ["write"]
+          }
+        ]
       }
     },
-    "/word/{wordId}/rename" : {
-      "put" : {
-        "tags" : [ "word" ],
-        "summary" : "Rename words with another translation",
-        "operationId" : "renameWord",
-        "responses" : {
-          "400" : {
-            "description" : "Invalid ID supplied"
+    "/word/{wordId}/rename": {
+      "put": {
+        "tags": ["word"],
+        "summary": "Rename words with another translation",
+        "operationId": "renameWord",
+        "responses": {
+          "400": {
+            "description": "Invalid ID supplied"
           },
-          "404" : {
-            "description" : "Word not found"
+          "404": {
+            "description": "Word not found"
           }
         },
-        "security" : [ {
-          "cookieAuth" : [ "write" ]
-        } ],
-        "parameters" : [ {
-          "in" : "path",
-          "name" : "wordId",
-          "description" : "Word id to reaname",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+        "security": [
+          {
+            "cookieAuth": ["write"]
           }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "type" : "string"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "wordId",
+            "description": "Word id to reaname",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
               }
             }
           },
-          "description" : "New translation",
-          "required" : true
+          "description": "New translation",
+          "required": true
         }
       }
     },
-    "/word/{wordId}/score" : {
-      "put" : {
-        "tags" : [ "word" ],
-        "summary" : "Update user's score for word",
-        "operationId" : "scoreWord",
-        "responses" : {
-          "200" : {
-            "description" : "Score updated"
+    "/word/{wordId}/score": {
+      "put": {
+        "tags": ["word"],
+        "summary": "Update user's score for word",
+        "operationId": "scoreWord",
+        "responses": {
+          "200": {
+            "description": "Score updated"
           },
-          "201" : {
-            "description" : "Score created"
+          "201": {
+            "description": "Score created"
           },
-          "400" : {
-            "description" : "Invalid ID supplied"
+          "400": {
+            "description": "Invalid ID supplied"
           },
-          "404" : {
-            "description" : "Word not found"
+          "404": {
+            "description": "Word not found"
           }
         },
-        "security" : [ {
-          "cookieAuth" : [ "admin" ]
-        } ],
-        "parameters" : [ {
-          "in" : "path",
-          "name" : "wordId",
-          "description" : "Word id to reaname",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+        "security": [
+          {
+            "cookieAuth": ["admin"]
           }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/Score"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "wordId",
+            "description": "Word id to reaname",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Score"
               }
             }
           },
-          "description" : "Score object that needs to be updated in the word",
-          "required" : true
+          "description": "Score object that needs to be updated in the word",
+          "required": true
         }
       }
     },
-    "/word/{wordId}" : {
-      "get" : {
-        "tags" : [ "word" ],
-        "description" : "Get word by id",
-        "operationId" : "getWordId",
-        "parameters" : [ {
-          "name" : "wordId",
-          "in" : "path",
-          "description" : "Word id",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+    "/word/{wordId}": {
+      "get": {
+        "tags": ["word"],
+        "description": "Get word by id",
+        "operationId": "getWordId",
+        "parameters": [
+          {
+            "name": "wordId",
+            "in": "path",
+            "description": "Word id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Word"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Word"
                 }
               }
             }
           },
-          "400" : {
-            "description" : "Invalid ID supplied"
+          "400": {
+            "description": "Invalid ID supplied"
           },
-          "404" : {
-            "description" : "Word is not found"
+          "404": {
+            "description": "Word is not found"
           }
         },
-        "security" : [ {
-          "cookieAuth" : [ "write" ]
-        } ]
+        "security": [
+          {
+            "cookieAuth": ["write"]
+          }
+        ]
       },
-      "delete" : {
-        "tags" : [ "word" ],
-        "summary" : "Delete word",
-        "operationId" : "deleteWord",
-        "parameters" : [ {
-          "name" : "wordId",
-          "in" : "path",
-          "description" : "Word id to delete",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+      "delete": {
+        "tags": ["word"],
+        "summary": "Delete word",
+        "operationId": "deleteWord",
+        "parameters": [
+          {
+            "name": "wordId",
+            "in": "path",
+            "description": "Word id to delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
-        } ],
-        "responses" : {
-          "400" : {
-            "description" : "Invalid ID supplied"
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid ID supplied"
           },
-          "403" : {
-            "description" : "You have no rights to do this"
+          "403": {
+            "description": "You have no rights to do this"
           },
-          "404" : {
-            "description" : "Word is not found"
+          "404": {
+            "description": "Word is not found"
           }
         },
-        "security" : [ {
-          "cookieAuth" : [ "write" ]
-        } ]
+        "security": [
+          {
+            "cookieAuth": ["write"]
+          }
+        ]
       }
     },
-    "/word/user/{userId}/search/{wordEntry}" : {
-      "get" : {
-        "tags" : [ "word" ],
-        "summary" : "Get words by word or character for user",
-        "description" : "Get words by wordEntry for user",
-        "operationId" : "getWordsByUser",
-        "parameters" : [ {
-          "name" : "wordEntry",
-          "in" : "path",
-          "description" : "Word entry",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
+    "/word/user/{userId}/search/{wordEntry}": {
+      "get": {
+        "tags": ["word"],
+        "summary": "Get words by word or character for user",
+        "description": "Get words by wordEntry for user",
+        "operationId": "getWordsByUser",
+        "parameters": [
+          {
+            "name": "wordEntry",
+            "in": "path",
+            "description": "Word entry",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User entry to match",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
-        }, {
-          "name" : "userId",
-          "in" : "path",
-          "description" : "User entry to match",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "content" : {
-              "*/*" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/Word"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Word"
                   }
                 }
               }
             }
           },
-          "400" : {
-            "description" : "Invalid ID supplied"
+          "400": {
+            "description": "Invalid ID supplied"
           },
-          "404" : {
-            "description" : "No words found"
+          "404": {
+            "description": "No words found"
           }
         },
-        "security" : [ {
-          "cookieAuth" : [ "write" ]
-        } ]
+        "security": [
+          {
+            "cookieAuth": ["write"]
+          }
+        ]
       }
     },
-    "/word/file/{fileId}" : {
-      "get" : {
-        "tags" : [ "word" ],
-        "summary" : "Get word's flash card as png binary",
-        "operationId" : "getWordCard",
-        "parameters" : [ {
-          "name" : "fileId",
-          "in" : "path",
-          "description" : "File id",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
+    "/word/file/{fileId}": {
+      "get": {
+        "tags": ["word"],
+        "summary": "Get word's flash card as png binary",
+        "operationId": "getWordCard",
+        "parameters": [
+          {
+            "name": "fileId",
+            "in": "path",
+            "description": "File id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "content" : {
-              "*/*" : {
-                "schema" : {
-                  "type" : "string",
-                  "format" : "byte"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string",
+                  "format": "byte"
                 }
               }
             }
           },
-          "400" : {
-            "description" : "Invalid ID supplied"
+          "400": {
+            "description": "Invalid ID supplied"
           },
-          "404" : {
-            "description" : "Flash card is not found"
+          "404": {
+            "description": "Flash card is not found"
           }
         },
-        "security" : [ {
-          "cookieAuth" : [ "read" ]
-        } ]
+        "security": [
+          {
+            "cookieAuth": ["read"]
+          }
+        ]
       }
     },
-    "/folder" : {
-      "post" : {
-        "tags" : [ "folder" ],
-        "summary" : "Create folder",
-        "operationId" : "createFolder",
-        "responses" : {
-          "201" : {
-            "description" : "Folder is created"
+    "/folder": {
+      "post": {
+        "tags": ["folder"],
+        "summary": "Create folder",
+        "operationId": "createFolder",
+        "responses": {
+          "201": {
+            "description": "Folder is created"
           },
-          "409" : {
-            "description" : "Folder name already exists"
+          "409": {
+            "description": "Folder name already exists"
           }
         },
-        "security" : [ {
-          "cookieAuth" : [ "write" ]
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/Folder"
+        "security": [
+          {
+            "cookieAuth": ["write"]
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Folder"
               }
             }
           },
-          "description" : "Created folder object",
-          "required" : true
+          "description": "Created folder object",
+          "required": true
         }
       },
-      "get" : {
-        "tags" : [ "folder" ],
-        "summary" : "Get folders for current user",
-        "operationId" : "getFoldersForCurrentUser",
-        "responses" : {
-          "default" : {
-            "description" : "successful operation",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/Folder"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "cookieAuth" : [ "write" ]
-        } ]
-      }
-    },
-    "/folder/user/{userId}" : {
-      "get" : {
-        "tags" : [ "folder" ],
-        "summary" : "Get folders for user",
-        "operationId" : "getFoldersForUser",
-        "parameters" : [ {
-          "in" : "path",
-          "name" : "userId",
-          "description" : "User id",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "400" : {
-            "description" : "Invalid ID supplied"
-          },
-          "404" : {
-            "description" : "User is not found"
-          },
-          "default" : {
-            "description" : "successful operation",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/Folder"
+      "get": {
+        "tags": ["folder"],
+        "summary": "Get folders for current user",
+        "operationId": "getFoldersForCurrentUser",
+        "responses": {
+          "default": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Folder"
                   }
                 }
               }
             }
           }
         },
-        "security" : [ {
-          "cookieAuth" : [ "admin" ]
-        } ]
+        "security": [
+          {
+            "cookieAuth": ["write"]
+          }
+        ]
       }
     },
-    "/folder/{folderId}" : {
-      "delete" : {
-        "tags" : [ "folder" ],
-        "summary" : "Delete folder",
-        "operationId" : "deleteFolder",
-        "parameters" : [ {
-          "in" : "path",
-          "name" : "folderId",
-          "description" : "The folder id that needs to be deleted.",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Deleted"
-          },
-          "403" : {
-            "description" : "Access denied"
-          },
-          "404" : {
-            "description" : "Folder not found"
-          }
-        },
-        "security" : [ {
-          "cookieAuth" : [ "write" ]
-        } ]
-      },
-      "put" : {
-        "tags" : [ "folder" ],
-        "summary" : "Update folder (rename)",
-        "operationId" : "updateFolder",
-        "parameters" : [ {
-          "in" : "path",
-          "name" : "folderId",
-          "description" : "The folder id that needs to be deleted.",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "400" : {
-            "description" : "Invalid folder name"
-          },
-          "404" : {
-            "description" : "Folder not found"
-          },
-          "409" : {
-            "description" : "Folder name already exists"
-          }
-        },
-        "security" : [ {
-          "cookieAuth" : [ "write" ]
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/Folder"
-              }
+    "/folder/user/{userId}": {
+      "get": {
+        "tags": ["folder"],
+        "summary": "Get folders for user",
+        "operationId": "getFoldersForUser",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "description": "User id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
             }
-          },
-          "description" : "folder with new name",
-          "required" : true
-        }
-      }
-    },
-    "/user" : {
-      "post" : {
-        "tags" : [ "user" ],
-        "summary" : "Create user",
-        "operationId" : "createUser",
-        "responses" : {
-          "default" : {
-            "description" : "successful operation"
           }
-        },
-        "security" : [ {
-          "cookieAuth" : [ "admin" ]
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/User"
-              }
-            }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid ID supplied"
           },
-          "description" : "Created user object",
-          "required" : true
-        }
-      },
-      "get" : {
-        "tags" : [ "user" ],
-        "summary" : "Get user according to token in header",
-        "operationId" : "getUserByToken",
-        "parameters" : [ {
-          "name" : "connect.sid",
-          "in" : "cookie",
-          "description" : "user token",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/User"
-                }
-              }
-            }
+          "404": {
+            "description": "User is not found"
           },
-          "401" : {
-            "description" : "Invalid auth data"
-          },
-          "404" : {
-            "description" : "User not found"
-          }
-        },
-        "security" : [ {
-          "cookieAuth" : [ "write" ]
-        } ]
-      }
-    },
-    "/user/auth" : {
-      "post" : {
-        "tags" : [ "user" ],
-        "summary" : "Send the auth code to user via sms",
-        "operationId" : "authUser",
-        "responses" : {
-          "200" : {
-            "description" : "Auth code sent, hash in object",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ApiUser"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Invalid phone supplied"
-          },
-          "404" : {
-            "description" : "Phone number is not registred"
-          }
-        },
-        "security" : [ {
-          "cookieAuth" : [ "read" ]
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "type" : "string"
-              }
-            }
-          },
-          "description" : "The user phone for auth",
-          "required" : true
-        }
-      }
-    },
-    "/user/login" : {
-      "post" : {
-        "tags" : [ "user" ],
-        "summary" : "Logs user into the system",
-        "operationId" : "loginUser",
-        "responses" : {
-          "200" : {
-            "description" : "Successfully authenticated. The session ID is returned in a cookie named `JSESSIONID`. You need to include this cookie in subsequent requests."
-          },
-          "400" : {
-            "description" : "Invalid phone/code supplied"
-          },
-          "404" : {
-            "description" : "Phone number is not registred"
-          }
-        },
-        "security" : [ {
-          "cookieAuth" : [ "read" ]
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/ApiUser"
-              }
-            }
-          },
-          "description" : "The user object for auth",
-          "required" : true
-        }
-      }
-    },
-    "/user/logout" : {
-      "get" : {
-        "tags" : [ "user" ],
-        "summary" : "Erase the user token, so user have to recreate it next time",
-        "operationId" : "logoutUser",
-        "responses" : {
-          "200" : {
-            "description" : "the user's token has been erased"
-          }
-        },
-        "security" : [ {
-          "cookieAuth" : [ "write" ]
-        } ]
-      }
-    },
-    "/user/{id}" : {
-      "get" : {
-        "tags" : [ "user" ],
-        "summary" : "Get user by user id",
-        "operationId" : "getUserById",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The user id that needs to be fetched. Use 0 for testing.",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/User"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "User not found"
-          }
-        },
-        "security" : [ {
-          "cookieAuth" : [ "admin" ]
-        } ]
-      },
-      "put" : {
-        "tags" : [ "user" ],
-        "summary" : "Update user",
-        "description" : "This can only be done by the logged in user.",
-        "operationId" : "updateUser",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The user id that needs to be updated.",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "400" : {
-            "description" : "Invalid user supplied"
-          },
-          "404" : {
-            "description" : "User not found"
-          }
-        },
-        "security" : [ {
-          "cookieAuth" : [ "admin" ]
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/User"
-              }
-            }
-          },
-          "description" : "Updated user object",
-          "required" : true
-        }
-      },
-      "delete" : {
-        "tags" : [ "user" ],
-        "summary" : "Delete user",
-        "description" : "This can only be done by the logged in user.",
-        "operationId" : "deleteUser",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The user id that needs to be deleted.",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "400" : {
-            "description" : "Invalid user id supplied"
-          },
-          "404" : {
-            "description" : "User not found"
-          }
-        },
-        "security" : [ {
-          "cookieAuth" : [ "admin" ]
-        } ]
-      }
-    },
-    "/user/currentFolder/{folderId}" : {
-      "put" : {
-        "tags" : [ "user", "folder" ],
-        "summary" : "Set current folder for user",
-        "description" : "This can only be done by the logged in user.",
-        "operationId" : "setCurrentFolder",
-        "parameters" : [ {
-          "name" : "folderId",
-          "in" : "path",
-          "description" : "The user id that needs to be updated.",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "Updated"
-          },
-          "403" : {
-            "description" : "Access denied"
-          },
-          "404" : {
-            "description" : "Folder not found"
-          }
-        },
-        "security" : [ {
-          "cookieAuth" : [ "write" ]
-        } ]
-      }
-    },
-    "/service/datetime" : {
-      "get" : {
-        "tags" : [ "service" ],
-        "summary" : "Get system datetime",
-        "operationId" : "getDatetime",
-        "responses" : {
-          "200" : {
-            "description" : "current server dt",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "string",
-                  "format" : "date-time"
+          "default": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Folder"
+                  }
                 }
               }
             }
           }
         },
-        "security" : [ {
-          "cookieAuth" : [ "admin" ]
-        } ]
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ]
+      }
+    },
+    "/folder/{folderId}": {
+      "delete": {
+        "tags": ["folder"],
+        "summary": "Delete folder",
+        "operationId": "deleteFolder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "folderId",
+            "description": "The folder id that needs to be deleted.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted"
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Folder not found"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["write"]
+          }
+        ]
+      },
+      "put": {
+        "tags": ["folder"],
+        "summary": "Update folder (rename)",
+        "operationId": "updateFolder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "folderId",
+            "description": "The folder id that needs to be deleted.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid folder name"
+          },
+          "404": {
+            "description": "Folder not found"
+          },
+          "409": {
+            "description": "Folder name already exists"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["write"]
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Folder"
+              }
+            }
+          },
+          "description": "folder with new name",
+          "required": true
+        }
+      }
+    },
+    "/user": {
+      "post": {
+        "tags": ["user"],
+        "summary": "Create user",
+        "operationId": "createUser",
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "description": "Created user object",
+          "required": true
+        }
+      },
+      "get": {
+        "tags": ["user"],
+        "summary": "Get user according to token in header",
+        "operationId": "getUserByToken",
+        "parameters": [
+          {
+            "name": "connect.sid",
+            "in": "cookie",
+            "description": "user token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid auth data"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["write"]
+          }
+        ]
+      }
+    },
+    "/user/auth": {
+      "post": {
+        "tags": ["user"],
+        "summary": "Send the auth code to user via sms",
+        "operationId": "authUser",
+        "responses": {
+          "200": {
+            "description": "Auth code sent, hash in object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiUser"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid phone supplied"
+          },
+          "404": {
+            "description": "Phone number is not registred"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["read"]
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "The user phone for auth",
+          "required": true
+        }
+      }
+    },
+    "/user/login": {
+      "post": {
+        "tags": ["user"],
+        "summary": "Logs user into the system",
+        "operationId": "loginUser",
+        "responses": {
+          "200": {
+            "description": "Successfully authenticated. The session ID is returned in a cookie named `JSESSIONID`. You need to include this cookie in subsequent requests."
+          },
+          "400": {
+            "description": "Invalid phone/code supplied"
+          },
+          "404": {
+            "description": "Phone number is not registred"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["read"]
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApiUser"
+              }
+            }
+          },
+          "description": "The user object for auth",
+          "required": true
+        }
+      }
+    },
+    "/user/logout": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Erase the user token, so user have to recreate it next time",
+        "operationId": "logoutUser",
+        "responses": {
+          "200": {
+            "description": "the user's token has been erased"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["write"]
+          }
+        ]
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Get user by user id",
+        "operationId": "getUserById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The user id that needs to be fetched. Use 0 for testing.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ]
+      },
+      "put": {
+        "tags": ["user"],
+        "summary": "Update user",
+        "description": "This can only be done by the logged in user.",
+        "operationId": "updateUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The user id that needs to be updated.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid user supplied"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "description": "Updated user object",
+          "required": true
+        }
+      },
+      "delete": {
+        "tags": ["user"],
+        "summary": "Delete user",
+        "description": "This can only be done by the logged in user.",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The user id that needs to be deleted.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid user id supplied"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ]
+      }
+    },
+    "/user/currentFolder/{folderId}": {
+      "put": {
+        "tags": ["user", "folder"],
+        "summary": "Set current folder for user",
+        "description": "This can only be done by the logged in user.",
+        "operationId": "setCurrentFolder",
+        "parameters": [
+          {
+            "name": "folderId",
+            "in": "path",
+            "description": "The user id that needs to be updated.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Updated"
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Folder not found"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["write"]
+          }
+        ]
+      }
+    },
+    "/service/datetime": {
+      "get": {
+        "tags": ["service"],
+        "summary": "Get system datetime",
+        "operationId": "getDatetime",
+        "responses": {
+          "200": {
+            "description": "current server dt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ]
       }
     }
   },
-  "security" : [ {
-    "cookieAuth" : [ "read", "write", "admin" ]
-  } ],
-  "components" : {
-    "securitySchemes" : {
-      "cookieAuth" : {
-        "type" : "apiKey",
-        "in" : "cookie",
-        "name" : "connect.sid"
+  "security": [
+    {
+      "cookieAuth": ["read", "write", "admin"]
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "connect.sid"
       }
     },
-    "schemas" : {
-      "User" : {
-        "type" : "object",
-        "required" : [ "_id", "username", "joinDate", "who" ],
-        "properties" : {
-          "_id" : {
-            "type" : "integer",
-            "format" : "int64"
+    "schemas": {
+      "User": {
+        "type": "object",
+        "required": ["_id", "username", "joinDate", "who"],
+        "properties": {
+          "_id": {
+            "type": "integer",
+            "format": "int64"
           },
-          "currentFolder_id" : {
-            "type" : "integer",
-            "format" : "int64"
+          "currentFolder_id": {
+            "type": "integer",
+            "format": "int64"
           },
-          "username" : {
-            "type" : "string"
+          "username": {
+            "type": "string"
           },
-          "tokenHash" : {
-            "type" : "string"
+          "tokenHash": {
+            "type": "string"
           },
-          "lastCommand" : {
-            "type" : "string"
+          "lastCommand": {
+            "type": "string"
           },
-          "joinDate" : {
-            "type" : "string",
-            "format" : "date-time"
+          "joinDate": {
+            "type": "string",
+            "format": "date-time"
           },
-          "who" : {
-            "type" : "string",
-            "enum" : [ "read", "write", "admin" ]
+          "who": {
+            "type": "string",
+            "enum": ["read", "write", "admin"]
           },
-          "mode" : {
-            "type" : "string"
+          "mode": {
+            "type": "string"
           }
         },
-        "xml" : {
-          "name" : "User"
+        "xml": {
+          "name": "User"
         }
       },
-      "Folder" : {
-        "type" : "object",
-        "required" : [ "_id", "name", "owner_id" ],
-        "properties" : {
-          "_id" : {
-            "type" : "integer",
-            "format" : "int64"
+      "Folder": {
+        "type": "object",
+        "required": ["_id", "name", "owner_id"],
+        "properties": {
+          "_id": {
+            "type": "integer",
+            "format": "int64"
           },
-          "owner_id" : {
-            "type" : "integer",
-            "format" : "int64"
+          "owner_id": {
+            "type": "integer",
+            "format": "int64"
           },
-          "name" : {
-            "type" : "string"
+          "name": {
+            "type": "string"
           },
-          "owner" : {
-            "$ref" : "#/components/schemas/User"
+          "owner": {
+            "$ref": "#/components/schemas/User"
           },
-          "activityDate" : {
-            "type" : "string",
-            "format" : "date-time"
+          "activityDate": {
+            "type": "string",
+            "format": "date-time"
           },
-          "wordsCount" : {
-            "type" : "integer",
-            "format" : "int32"
+          "wordsCount": {
+            "type": "integer",
+            "format": "int32"
           }
         },
-        "xml" : {
-          "name" : "Folder"
+        "xml": {
+          "name": "Folder"
         }
       },
-      "Score" : {
-        "type" : "object",
-        "required" : [ "lastView", "isInLearnMode" ],
-        "properties" : {
-          "originalWordCount" : {
-            "type" : "integer",
-            "format" : "int32"
+      "Score": {
+        "type": "object",
+        "required": ["lastView", "isInLearnMode"],
+        "properties": {
+          "originalWordCount": {
+            "type": "integer",
+            "format": "int32"
           },
-          "originalWordSuccessCount" : {
-            "type" : "integer",
-            "format" : "int32"
+          "originalWordSuccessCount": {
+            "type": "integer",
+            "format": "int32"
           },
-          "lastView" : {
-            "type" : "string",
-            "format" : "datetime"
+          "lastView": {
+            "type": "string",
+            "format": "datetime"
           },
-          "lastLearned" : {
-            "type" : "string",
-            "format" : "date-time"
+          "lastLearned": {
+            "type": "string",
+            "format": "date-time"
           },
-          "lastLearnMode" : {
-            "type" : "string"
+          "lastLearnMode": {
+            "type": "string"
           },
-          "isInLearnMode" : {
-            "type" : "boolean"
+          "isInLearnMode": {
+            "type": "boolean"
           },
-          "rightAnswerNumber" : {
-            "type" : "integer",
-            "format" : "int32"
+          "rightAnswerNumber": {
+            "type": "integer",
+            "format": "int32"
           },
-          "pronunciationCount" : {
-            "type" : "integer",
-            "format" : "int32"
+          "pronunciationCount": {
+            "type": "integer",
+            "format": "int32"
           },
-          "pronunciationSuccessCount" : {
-            "type" : "integer",
-            "format" : "int32"
+          "pronunciationSuccessCount": {
+            "type": "integer",
+            "format": "int32"
           },
-          "translationCount" : {
-            "type" : "integer",
-            "format" : "int32"
+          "translationCount": {
+            "type": "integer",
+            "format": "int32"
           },
-          "translationSuccessCount" : {
-            "type" : "integer",
-            "format" : "int32"
+          "translationSuccessCount": {
+            "type": "integer",
+            "format": "int32"
           },
-          "viewCount" : {
-            "type" : "integer",
-            "format" : "int32"
+          "viewCount": {
+            "type": "integer",
+            "format": "int32"
           },
-          "name" : {
-            "type" : "string"
+          "name": {
+            "type": "string"
           }
         },
-        "xml" : {
-          "name" : "Score"
+        "xml": {
+          "name": "Score"
         }
       },
-      "Word" : {
-        "type" : "object",
-        "required" : [ "_id", "originalWord", "translation", "syllablesCount", "owner_id", "folder_id", "lastModified" ],
-        "properties" : {
-          "_id" : {
-            "type" : "integer",
-            "format" : "int64"
+      "Word": {
+        "type": "object",
+        "required": [
+          "_id",
+          "originalWord",
+          "translation",
+          "syllablesCount",
+          "owner_id",
+          "folder_id",
+          "lastModified"
+        ],
+        "properties": {
+          "_id": {
+            "type": "integer",
+            "format": "int64"
           },
-          "owner_id" : {
-            "type" : "integer",
-            "format" : "int64"
+          "owner_id": {
+            "type": "integer",
+            "format": "int64"
           },
-          "originalWord" : {
-            "type" : "string",
-            "example" : "自行车"
+          "originalWord": {
+            "type": "string",
+            "example": "自行车"
           },
-          "pronunciation" : {
-            "type" : "string",
-            "example" : "zì|xíng|chē"
+          "pronunciation": {
+            "type": "string",
+            "example": "zì|xíng|chē"
           },
-          "translation" : {
-            "type" : "string",
-            "example" : "велосипед"
+          "translation": {
+            "type": "string",
+            "example": "велосипед"
           },
-          "usage" : {
-            "type" : "string",
-            "example" : "我有自行车"
+          "usage": {
+            "type": "string",
+            "example": "我有自行车"
           },
-          "syllablesCount" : {
-            "type" : "integer",
-            "example" : 3
+          "syllablesCount": {
+            "type": "integer",
+            "example": 3
           },
-          "score" : {
-            "$ref" : "#/components/schemas/Score"
+          "score": {
+            "$ref": "#/components/schemas/Score"
           },
-          "full" : {
-            "$ref" : "#/components/schemas/WordFile"
+          "full": {
+            "$ref": "#/components/schemas/WordFile"
           },
-          "orig" : {
-            "$ref" : "#/components/schemas/WordFile"
+          "orig": {
+            "$ref": "#/components/schemas/WordFile"
           },
-          "pron" : {
-            "$ref" : "#/components/schemas/WordFile"
+          "pron": {
+            "$ref": "#/components/schemas/WordFile"
           },
-          "trans" : {
-            "$ref" : "#/components/schemas/WordFile"
+          "trans": {
+            "$ref": "#/components/schemas/WordFile"
           },
-          "folder_id" : {
-            "type" : "integer",
-            "format" : "int64"
+          "folder_id": {
+            "type": "integer",
+            "format": "int64"
           },
-          "lastModified" : {
-            "type" : "string",
-            "format" : "date-time"
+          "lastModified": {
+            "type": "string",
+            "format": "date-time"
           }
         },
-        "xml" : {
-          "name" : "Word"
+        "xml": {
+          "name": "Word"
         }
       },
-      "WordFile" : {
-        "type" : "object",
-        "required" : [ "_id", "word_id", "createDate" ],
-        "properties" : {
-          "_id" : {
-            "type" : "integer",
-            "format" : "int64"
+      "WordFile": {
+        "type": "object",
+        "required": ["_id", "word_id", "createDate"],
+        "properties": {
+          "_id": {
+            "type": "integer",
+            "format": "int64"
           },
-          "word_id" : {
-            "type" : "integer",
-            "format" : "int64"
+          "word_id": {
+            "type": "integer",
+            "format": "int64"
           },
-          "createDate" : {
-            "type" : "string",
-            "format" : "date-time"
+          "createDate": {
+            "type": "string",
+            "format": "date-time"
           },
-          "height" : {
-            "type" : "integer"
+          "height": {
+            "type": "integer"
           },
-          "width" : {
-            "type" : "integer"
+          "width": {
+            "type": "integer"
           }
         },
-        "xml" : {
-          "name" : "WordFile"
+        "xml": {
+          "name": "WordFile"
         }
       },
-      "ApiUser" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "string"
+      "ApiUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
           },
-          "code" : {
-            "type" : "string"
+          "code": {
+            "type": "string"
           },
-          "hash" : {
-            "type" : "string"
+          "hash": {
+            "type": "string"
           },
-          "remember" : {
-            "type" : "boolean"
+          "remember": {
+            "type": "boolean"
           }
         },
-        "xml" : {
-          "name" : "ApiUser"
+        "xml": {
+          "name": "ApiUser"
         }
       }
     },
-    "responses" : {
-      "200" : {
-        "description" : "OK"
+    "responses": {
+      "200": {
+        "description": "OK"
       },
-      "201" : {
-        "description" : "Created"
+      "201": {
+        "description": "Created"
       },
-      "400" : {
-        "description" : "Bad request"
+      "400": {
+        "description": "Bad request"
       },
-      "401" : {
-        "description" : "Not authenticated"
+      "401": {
+        "description": "Not authenticated"
       },
-      "403" : {
-        "description" : "Access token does not have the required scope"
+      "403": {
+        "description": "Access token does not have the required scope"
       },
-      "409" : {
-        "description" : "Conflict"
+      "409": {
+        "description": "Conflict"
       },
-      "500" : {
-        "description" : "Server error"
+      "500": {
+        "description": "Server error"
       }
     }
   }

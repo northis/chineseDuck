@@ -9,7 +9,7 @@ const catchUniqueName = (res, error) => {
       .send(
         "A folder with that name already exists. Release you imagination and try again."
       );
-  else res.status(500).send(error.message);
+  else res.status(500).send(error.message); //TODO change codes
 };
 
 /**

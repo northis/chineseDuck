@@ -144,8 +144,8 @@ export const folderId = {
     const folderId = req.params.folderId;
     const idUser = req.session.passport.user;
 
-    if (typeof idWordArray != "array")
-      return res.status(400).send("Bad words id array");
+    if (!Array.isArray(idWordArray))
+      return errors.e400(res, "Bad words id array");
 
     idWordArray.forEach(async id => {
       await mh.word.update(
@@ -214,8 +214,7 @@ export const rename = {
       { _id: wordId, owner_id: idUser },
       { translation: newTranslation }
     );
-    if (isNullOrUndefined(word))
-      return res.status(404).send("Word is not found");
+    if (isNullOrUndefined(word)) return errors.e404(res, "Word is not found");
     res.json(word);
   }
 };
@@ -235,12 +234,11 @@ export const file = {
     const fileId = req.params.fileId;
 
     if (isNullOrUndefined(fileId) || !mongoose.Types.ObjectId.isValid(fileId))
-      return res.status(400).send("Bad file Id");
+      return errors.e400(res, "Bad file Id");
 
     const result = await mh.wordFile.findById(fileId);
 
-    if (isNullOrUndefined(result))
-      return res.status(404).send("File not found");
+    if (isNullOrUndefined(result)) return errors.e404(res, "File not found");
 
     const file = result.bytes;
 

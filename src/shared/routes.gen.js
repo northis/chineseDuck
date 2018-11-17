@@ -2,10 +2,6 @@ export default { _word:
    { value: '/word',
      actions: { post: ["admin"], put: ["admin"] },
      express: '/word' },
-  _word_import:
-   { value: '/word/import',
-     actions: { post: ["write"] },
-     express: '/word/import' },
   _word_folder__folderId_:
    { value: '/word/folder/{folderId}',
      actions: { put: ["write"], get: ["write"] },
