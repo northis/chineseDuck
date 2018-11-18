@@ -11,6 +11,7 @@ import * as srv from "../../src/server/index";
 import mh from "../../src/server/api/db";
 import * as testEntities from "../db/testEntities";
 import * as moment from "moment";
+import { isNullOrUndefined } from "util";
 
 const routes = rt.default;
 const urlJoin = uj.default;
@@ -223,6 +224,14 @@ function testWord() {
         word.trans.createDate.getTime()
     );
     assert.ok(wordToUpdate.trans.width === word.trans.width);
+
+    wordToUpdate._id = "notAnumber";
+    response = await request(srv.default.app)
+      .put(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookieAdmin])
+      .send(wordToUpdate);
+    assert.ok(response.status === 400);
   });
 
   it(`${routes._word_folder__folderId_.value} - put`, async () => {
@@ -308,6 +317,225 @@ function testWord() {
       .get(url)
       .set("Content-Type", "application/json");
     assert.ok(response.status === 401);
+  });
+
+  it(`${routes._word__wordId__rename.value} - put`, async () => {
+    let wordsDb = await mh.word.find({ owner_id: DebugKeys.user_id });
+
+    let wordDbId = wordsDb[0]._id;
+    let url = urlJoin(
+      Settings.apiPrefix,
+      routes._word__wordId__rename.value.replace(
+        PathWildcardEnum.wordId,
+        wordDbId
+      )
+    );
+
+    const newTranslation = wordsDb[1].translation;
+    let response = await request(srv.default.app)
+      .put(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie])
+      .send({ newTranslation: newTranslation });
+
+    let wordDb = await mh.word.findOne({ _id: wordDbId });
+    assert.ok(response.status === 200);
+    assert.ok(wordDb.translation === newTranslation);
+
+    wordDb = await mh.word.findOne({ owner_id: DebugKeys.admin_id });
+
+    url = urlJoin(
+      Settings.apiPrefix,
+      routes._word__wordId__rename.value.replace(
+        PathWildcardEnum.wordId,
+        wordDb._id
+      )
+    );
+
+    response = await request(srv.default.app)
+      .put(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie])
+      .send({ newTranslation: newTranslation });
+    assert.ok(response.status === 403);
+
+    url = urlJoin(
+      Settings.apiPrefix,
+      routes._word__wordId__rename.value.replace(
+        PathWildcardEnum.wordId,
+        DebugKeys.not_existing_word_id
+      )
+    );
+
+    response = await request(srv.default.app)
+      .put(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie])
+      .send({ newTranslation: newTranslation });
+    assert.ok(response.status === 404);
+
+    url = urlJoin(
+      Settings.apiPrefix,
+      routes._word__wordId__rename.value.replace(
+        PathWildcardEnum.wordId,
+        "notAnumber"
+      )
+    );
+
+    response = await request(srv.default.app)
+      .put(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie])
+      .send({ newTranslation: newTranslation });
+    assert.ok(response.status === 400);
+
+    response = await request(srv.default.app)
+      .put(url)
+      .set("Content-Type", "application/json")
+      .send({ newTranslation: newTranslation });
+    assert.ok(response.status === 401);
+  });
+
+  it(`${routes._word__wordId__score.value} - put`, async () => {
+    let wordDb = await mh.word.findOne({ owner_id: DebugKeys.user_id });
+    let wordId = wordDb._id;
+    let url = urlJoin(
+      Settings.apiPrefix,
+      routes._word__wordId__score.value.replace(PathWildcardEnum.wordId, wordId)
+    );
+
+    let newScore = testEntities.wordDinner.score;
+    newScore.originalWordCount++;
+
+    let response = await request(srv.default.app)
+      .put(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookieAdmin])
+      .send(JSON.stringify(newScore));
+    wordDb = await mh.word.findOne({ _id: wordId });
+
+    assert.ok(response.status === 200);
+    assert.ok(newScore.originalWordCount === wordDb.score.originalWordCount);
+  });
+
+  it(`${routes._word__wordId_.value} - get`, async () => {
+    let wordDb = await mh.word.findOne({ owner_id: DebugKeys.user_id });
+    let wordId = wordDb._id;
+
+    let url = urlJoin(
+      Settings.apiPrefix,
+      routes._word__wordId_.value.replace(PathWildcardEnum.wordId, wordId)
+    );
+
+    let response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie]);
+    wordDb = await mh.word.findOne({ _id: wordId });
+
+    assert.ok(response.status === 200);
+    assert.ok(wordDb.originalWord === response.body.originalWord);
+
+    url = urlJoin(
+      Settings.apiPrefix,
+      routes._word__wordId_.value.replace(
+        PathWildcardEnum.wordId,
+        DebugKeys.not_existing_word_id
+      )
+    );
+
+    response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie]);
+    assert.ok(response.status === 404);
+
+    wordDb = await mh.word.findOne({ owner_id: DebugKeys.admin_id });
+    wordId = wordDb._id;
+
+    url = urlJoin(
+      Settings.apiPrefix,
+      routes._word__wordId_.value.replace(PathWildcardEnum.wordId, wordId)
+    );
+
+    response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie]);
+    assert.ok(response.status === 403);
+
+    response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "application/json");
+    assert.ok(response.status === 401);
+  });
+
+  it(`${routes._word__wordId_.value} - delete`, async () => {
+    let wordDb = await mh.word.findOne({ owner_id: DebugKeys.user_id });
+    let wordId = wordDb._id;
+
+    let url = urlJoin(
+      Settings.apiPrefix,
+      routes._word__wordId_.value.replace(PathWildcardEnum.wordId, wordId)
+    );
+    let response = await request(srv.default.app)
+      .delete(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie]);
+    wordDb = await mh.word.findOne({ _id: wordId });
+
+    assert.ok(response.status === 200);
+    assert.ok(isNullOrUndefined(wordDb));
+
+    response = await request(srv.default.app)
+      .delete(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie]);
+    assert.ok(response.status === 404);
+
+    wordDb = await mh.word.findOne({ owner_id: DebugKeys.admin_id });
+    wordId = wordDb._id;
+
+    url = urlJoin(
+      Settings.apiPrefix,
+      routes._word__wordId_.value.replace(PathWildcardEnum.wordId, wordId)
+    );
+    response = await request(srv.default.app)
+      .delete(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie]);
+    assert.ok(response.status === 403);
+
+    response = await request(srv.default.app)
+      .delete(url)
+      .set("Content-Type", "application/json");
+    assert.ok(response.status === 401);
+  });
+
+  it(`${
+    routes._word_user__userId__search__wordEntry_.value
+  } - get`, async () => {
+    let wordDb = await mh.word.findOne({
+      owner_id: DebugKeys.user_id,
+      originalWord: testEntities.wordSupper.originalWord
+    });
+
+    let url = urlJoin(
+      Settings.apiPrefix,
+      routes._word_user__userId__search__wordEntry_.value
+        .replace(PathWildcardEnum.userId, DebugKeys.user_id)
+        .replace(
+          PathWildcardEnum.wordEntry,
+          testEntities.wordBreakfast.translation
+          //encodeURIComponent(testEntities.wordSupper.originalWord.slice(1)) // 饭
+        )
+    );
+    let response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookieAdmin]);
+    assert.ok(response.status === 200);
+    assert.ok(response.body[0]._id === wordDb._id);
   });
 }
 

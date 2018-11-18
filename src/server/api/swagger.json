@@ -236,12 +236,6 @@
         "summary": "Update user's score for word",
         "operationId": "scoreWord",
         "responses": {
-          "200": {
-            "description": "Score updated"
-          },
-          "201": {
-            "description": "Score created"
-          },
           "400": {
             "description": "Invalid ID supplied"
           },
@@ -395,16 +389,13 @@
               }
             }
           },
-          "400": {
-            "description": "Invalid ID supplied"
-          },
-          "404": {
-            "description": "No words found"
+          "403": {
+            "description": "You have no rights to do this"
           }
         },
         "security": [
           {
-            "cookieAuth": ["write"]
+            "cookieAuth": ["admin"]
           }
         ]
       }

@@ -1,4 +1,5 @@
 import { mh } from "../../../server/api/db";
+import * as models from "../../../server/api/db/models";
 import { isNullOrUndefined } from "util";
 import mongoose from "mongoose";
 import * as errors from "../../errors";
@@ -34,7 +35,7 @@ export const main = {
       const newWord = req.body;
       const newWordId = newWord._id;
 
-      if (isNullOrUndefined(newWordId)) {
+      if (isNaN(newWordId)) {
         return errors.e400(res, "Wrong id has been provided");
       }
 
@@ -81,8 +82,11 @@ export const wordId = {
    * produces: application/json
    * responses: 200, 400, 404
    */
-  get: function getWordId(req, res, next) {
-    res.status(404).send(404);
+  get: async function getWordId(req, res, next) {
+    const wordId = req.params.wordId;
+
+    let wordDb = await mh.word.findOne({ _id: wordId });
+    return res.status(200).send(wordDb);
   },
   /**
    * summary: Delete word
@@ -91,24 +95,11 @@ export const wordId = {
    * produces:
    * responses: 400, 403, 404
    */
-  delete: function deleteWord(req, res, next) {
-    res.status(404).send(404);
-  }
-};
+  delete: async function deleteWord(req, res, next) {
+    const wordId = req.params.wordId;
 
-/**
- * Operations on /word/import
- */
-export const importWord = {
-  /**
-   * summary: Imports new words to the store from a csv file
-   * description:
-   * parameters: body
-   * produces:
-   * responses: 200, 409, 413
-   */
-  post: function importWord(req, res, next) {
-    res.status(404).send(404);
+    let delRes = await mh.word.findByIdAndRemove({ _id: wordId });
+    return res.status(200).send(delRes);
   }
 };
 
@@ -123,8 +114,22 @@ export const search = {
    * produces:
    * responses: 200, 400, 404
    */
-  get: function getWordsByUser(req, res, next) {
-    res.status(404).send(404);
+  get: async function getWordsByUser(req, res, next) {
+    const userId = req.params.userId;
+    const wordEntry = req.params.wordEntry;
+
+    let user = await mh.user.findOne({
+      _id: userId
+    });
+
+    if (isNullOrUndefined(user)) return errors.e404(res, "User is not found");
+
+    let words = await mh.word.find({
+      $text: { $search: wordEntry },
+      owner_id: userId,
+      folder_id: user.currentFolder_id
+    });
+    res.json(words);
   }
 };
 
@@ -187,10 +192,14 @@ export const score = {
    * description:
    * parameters: body, wordId
    * produces:
-   * responses: 200, 201, 400, 404
+   * responses: 200, 400, 404
    */
-  put: function scoreWord(req, res, next) {
-    res.status(404).send(404);
+  put: async function scoreWord(req, res, next) {
+    const wordId = req.params.wordId;
+    const score = req.body;
+
+    const word = await mh.word.updateOne({ _id: wordId }, { score: score });
+    res.json(word);
   }
 };
 
@@ -208,13 +217,11 @@ export const rename = {
   put: async function renameWord(req, res, next) {
     const wordId = req.params.wordId;
     const newTranslation = req.body.newTranslation;
-    const idUser = req.session.passport.user;
 
     const word = await mh.word.updateOne(
-      { _id: wordId, owner_id: idUser },
+      { _id: wordId },
       { translation: newTranslation }
     );
-    if (isNullOrUndefined(word)) return errors.e404(res, "Word is not found");
     res.json(word);
   }
 };

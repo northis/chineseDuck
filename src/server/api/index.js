@@ -58,6 +58,10 @@ const folderControl = async (req, res, next) => {
   const role = req.user.who;
   const folderId = req.params.folderId;
 
+  if (isNaN(folderId)) {
+    return errors.e400(res, "Invalid ID supplied");
+  }
+
   if (folderId == 0) {
     return next();
   }
@@ -84,8 +88,8 @@ const wordControl = async (req, res, next) => {
   const role = req.user.who;
   const wordId = req.params.wordId;
 
-  if (!wordId) {
-    return errors.e400(next);
+  if (isNaN(wordId)) {
+    return errors.e400(res, "Invalid ID supplied");
   }
   const word = await mh.word.findOne({ _id: wordId });
 
@@ -103,6 +107,32 @@ const wordControl = async (req, res, next) => {
     return next();
   } else {
     return errors.e403(res, "It is not your word");
+  }
+};
+
+const userControl = async (req, res, next) => {
+  const role = req.user.who;
+  const userId = req.params.userId;
+
+  if (isNaN(userId)) {
+    return errors.e400(res, "Invalid ID supplied");
+  }
+  const user = await mh.user.findOne({ _id: userId });
+
+  if (isNullOrUndefined(user)) {
+    return errors.e404(res, "The user is not found");
+  }
+
+  if (role == RightEnum.admin) {
+    return next();
+  }
+
+  const idUser = req.session.passport.user;
+
+  if (idUser === user._id) {
+    return next();
+  } else {
+    return errors.e403(res, "Wrong user id");
   }
 };
 
@@ -148,6 +178,30 @@ router
   .all(accessControl(routes._word))
   .post(word.main.post)
   .put(word.main.put);
-//.all(wordControl)
+
+router
+  .route(routes._word__wordId__rename.express)
+  .all(accessControl(routes._word__wordId__rename))
+  .all(wordControl)
+  .put(word.rename.put);
+
+router
+  .route(routes._word__wordId__score.express)
+  .all(accessControl(routes._word__wordId__score))
+  .all(wordControl)
+  .put(word.score.put);
+
+router
+  .route(routes._word__wordId_.express)
+  .all(accessControl(routes._word__wordId_))
+  .all(wordControl)
+  .get(word.wordId.get)
+  .delete(word.wordId.delete);
+
+router
+  .route(routes._word_user__userId__search__wordEntry_.express)
+  .all(accessControl(routes._word_user__userId__search__wordEntry_))
+  .all(userControl)
+  .get(word.search.get);
 
 export default router;

@@ -20,7 +20,7 @@ export default { _word:
      express: '/word/:wordId' },
   _word_user__userId__search__wordEntry_:
    { value: '/word/user/{userId}/search/{wordEntry}',
-     actions: { get: ["write"] },
+     actions: { get: ["admin"] },
      express: '/word/user/:userId/search/:wordEntry' },
   _word_file__fileId_:
    { value: '/word/file/{fileId}',

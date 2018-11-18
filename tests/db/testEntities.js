@@ -9,7 +9,8 @@ export const userWrite = {
   lastCommand: "/LearnWriting",
   joinDate: new Date("2018-06-02T03:04:05"),
   who: models.RightEnum.write,
-  mode: models.GettingWordsStrategyEnum.Random
+  mode: models.GettingWordsStrategyEnum.Random,
+  currentFolder_id: 0
 };
 
 export const userAdmin = {
@@ -19,7 +20,8 @@ export const userAdmin = {
   lastCommand: "/view",
   joinDate: new Date("2018-06-01T01:02:03"),
   who: models.RightEnum.admin,
-  mode: models.GettingWordsStrategyEnum.Random
+  mode: models.GettingWordsStrategyEnum.Random,
+  currentFolder_id: 0
 };
 
 export const wordBreakfast = {
