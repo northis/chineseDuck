@@ -142,18 +142,89 @@ function testFolder() {
     assert.ok(response.status === 401);
   });
 
-  it(`${routes._folder_user__userId_.value} - get`, async () => {});
-  it(`${routes._folder_user__userId_.value} - post`, async () => {});
+  it(`${routes._folder_user__userId_.value} - get`, async () => {
+    let foldersDb = await mh.folder.find({ owner_id: DebugKeys.user_id });
+
+    const url = urlJoin(
+      Settings.apiPrefix,
+      routes._folder_user__userId_.value.replace(
+        PathWildcardEnum.userId,
+        DebugKeys.user_id
+      )
+    );
+
+    let response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie]);
+    assert.ok(response.status === 403);
+
+    response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookieAdmin]);
+    assert.ok(response.status === 200);
+
+    foldersDb.forEach(folder => {
+      assert.ok(response.body.some(a => a._id === folder._id));
+    });
+    assert.ok(response.body.some(a => a._id === 0));
+
+    response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "application/json");
+    assert.ok(response.status === 401);
+  });
+
+  it(`${routes._folder_user__userId_.value} - post`, async () => {
+    const url = urlJoin(
+      Settings.apiPrefix,
+      routes._folder_user__userId_.value.replace(
+        PathWildcardEnum.userId,
+        DebugKeys.user_id
+      )
+    );
+    const folder = testEntities.folderTemplate;
+
+    folder.name = DebugKeys.not_existing_file_id;
+    folder.owner_id = DebugKeys.user_id;
+
+    let response = await request(srv.default.app)
+      .post(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie])
+      .send({});
+    assert.ok(response.status === 403);
+
+    response = await request(srv.default.app)
+      .post(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookieAdmin])
+      .send(folder);
+    assert.ok(response.status === 200);
+    let folderDb = await mh.folder.findOne({
+      _id: response.body._id
+    });
+    assert.ok(!isNullOrUndefined(folderDb));
+
+    response = await request(srv.default.app)
+      .post(url)
+      .set("Content-Type", "application/json")
+      .send({});
+    assert.ok(response.status === 401);
+  });
 
   it(`${routes._folder__folderId_.value} - delete`, async () => {
     let folderDb = await mh.folder.findOne({ owner_id: DebugKeys.admin_id });
+    let folderId = folderDb._id;
     let url = urlJoin(
       Settings.apiPrefix,
       routes._folder__folderId_.value.replace(
         PathWildcardEnum.folderId,
-        folderDb._id
+        folderId
       )
     );
+
     let response = await request(srv.default.app)
       .delete(url)
       .set("Content-Type", "application/json")
@@ -171,6 +242,7 @@ function testFolder() {
     assert.ok(isNullOrUndefined(folderDb));
 
     folderDb = await mh.folder.findOne({ owner_id: DebugKeys.user_id });
+    folderId = folderDb._id;
     url = urlJoin(
       Settings.apiPrefix,
       routes._folder__folderId_.value.replace(
@@ -184,8 +256,11 @@ function testFolder() {
       .set("Cookie", [cookieAdmin])
       .send({});
     folderDb = await mh.folder.findOne({ owner_id: DebugKeys.user_id });
+    const wordDb = await mh.word.findOne({ folder_id: folderId });
+
     assert.ok(response.status === 200);
     assert.ok(isNullOrUndefined(folderDb));
+    assert.ok(isNullOrUndefined(wordDb));
 
     response = await request(srv.default.app)
       .delete(url)

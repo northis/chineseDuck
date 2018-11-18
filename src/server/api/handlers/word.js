@@ -9,6 +9,13 @@ const catchUniqueName = (res, error) => {
   else errors.e500(res, error.message);
 };
 
+const updateWordCount = async folderId => {
+  if (folderId !== 0) {
+    const wordsCount = await mh.word.count({ folder_id: folderId });
+    await mh.folder.updateOne({ _id: folderId }, { wordsCount: wordsCount });
+  }
+};
+
 /**
  * Operations on /word
  */
@@ -23,6 +30,9 @@ export const main = {
   post: async function addWord(req, res, next) {
     try {
       const word = await mh.word.create(req.body);
+
+      await updateWordCount(word.folder_id);
+
       return res.status(200).send(word);
     } catch (error) {
       catchUniqueName(res, error);
@@ -69,6 +79,7 @@ export const main = {
       if (isNullOrUndefined(wordDb)) {
         return errors.e404(res, "We have not such word");
       }
+      await updateWordCount(wordDb.folder_id);
 
       return res.status(200).send(wordDb);
     } catch (error) {
@@ -103,7 +114,10 @@ export const wordId = {
   delete: async function deleteWord(req, res, next) {
     const wordId = req.params.wordId;
 
+    const word = await mh.word.findOne({ _id: wordId });
     let delRes = await mh.word.findByIdAndRemove({ _id: wordId });
+    await updateWordCount(word.folder_id);
+
     return res.status(200).send(delRes);
   }
 };
@@ -161,11 +175,16 @@ export const folderId = {
       return errors.e400(res, "Bad words id array");
 
     idWordArray.forEach(async id => {
-      await mh.word.update(
+      const word = await mh.word.findOne({ _id: id });
+      await mh.word.updateOne(
         { _id: id, owner_id: idUser },
         { folder_id: folderId }
       );
+      await updateWordCount(word.folder_id);
     });
+
+    await updateWordCount(folderId);
+
     res.status(200).send("Words have been moved");
   },
 

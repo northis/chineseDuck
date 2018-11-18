@@ -12,6 +12,64 @@ const catchUniqueName = (res, error) => {
   else errors.e500(res, error.message);
 };
 
+const createFolderByUser = async (req, res, idUser) => {
+  const name = req.body.name;
+  const wordsCount = req.body.wordsCount || 0;
+
+  if (!folderVal.folder.name.regex.test(name)) {
+    return errors.e400(res, "Bad folder name");
+  }
+
+  try {
+    const folderDb = await mh.folder.create({
+      name: name,
+      owner_id: idUser,
+      activityDate: new Date(),
+      wordsCount: wordsCount
+    });
+    res.status(200).send(folderDb);
+  } catch (e) {
+    catchUniqueName(res, e);
+  }
+};
+
+const getFoldersByUser = async (req, res, idUser) => {
+  const result = await mh.folder
+    .find({ owner_id: idUser }, { owner_id: false })
+    .sort({ activityDate: -1 });
+
+  const defWordsCount = await mh.word.count({
+    owner_id: idUser,
+    folder_id: defaultFolderId
+  });
+
+  const defWordsTheLastest = await mh.word
+    .find({
+      owner_id: idUser,
+      folder_id: defaultFolderId
+    })
+    .sort({ createDate: -1 })
+    .select("createDate")
+    .limit(1);
+  let defWordsDate = Date.now();
+
+  if (defWordsTheLastest.length != 0)
+    defWordsDate = defWordsTheLastest[0].createDate;
+
+  const defaultFolder = {
+    _id: defaultFolderId,
+    wordsCount: defWordsCount,
+    name: "Default",
+    activityDate: defWordsDate
+  };
+
+  const resArray = [defaultFolder].concat(result);
+  res.json(resArray);
+  // .cursor()
+  // .pipe(JSONStream.stringify())
+  // .pipe(res.type("json"));
+};
+
 /**
  * Operations on /folder
  */
@@ -24,23 +82,8 @@ export const main = {
    * responses: 200, 409, 200
    */
   post: async function createFolder(req, res, next) {
-    const name = req.body.name;
     const idUser = req.session.passport.user;
-
-    if (!folderVal.folder.name.regex.test(name)) {
-      errors.e400(res, "Bad folder name");
-      return;
-    }
-
-    try {
-      const folderDb = await mh.folder.create({
-        name: name,
-        owner_id: idUser
-      });
-      res.status(200).send(folderDb);
-    } catch (e) {
-      catchUniqueName(res, e);
-    }
+    await createFolderByUser(req, res, idUser);
   },
   /**
    * summary: Get folders for current user
@@ -51,38 +94,7 @@ export const main = {
 
   get: async function getFoldersForCurrentUser(req, res) {
     const idUser = req.session.passport.user;
-    const result = await mh.folder
-      .find({ owner_id: idUser }, { owner_id: false })
-      .sort({ activityDate: -1 });
-
-    const defWordsCount = await mh.word.count({
-      owner_id: idUser,
-      folder_id: defaultFolderId
-    });
-
-    const defWordsTheLastest = await mh.word
-      .find({
-        owner_id: idUser,
-        folder_id: defaultFolderId
-      })
-      .sort({ createDate: -1 })
-      .select("createDate")
-      .limit(1);
-    let defWordsDate = Date.now();
-
-    if (defWordsTheLastest.length != 0)
-      defWordsDate = defWordsTheLastest[0].createDate;
-
-    const defaultFolder = {
-      _id: defaultFolderId,
-      wordsCount: defWordsCount,
-      name: "Default",
-      activityDate: defWordsDate
-    };
-    res.json([defaultFolder].concat(result));
-    // .cursor()
-    // .pipe(JSONStream.stringify())
-    // .pipe(res.type("json"));
+    await getFoldersByUser(req, res, idUser);
   }
 };
 
@@ -100,7 +112,9 @@ export const id = {
 
     if (result.n < 1) return errors.e404(res, "Folder is not found.");
 
-    res.status(200).send(result);
+    // TODO Yes, it should be wrapped by a transaction, but i am not sure it is really need to be here these days. May be i will add it in the future.
+    await mh.word.deleteMany({ folder_id: folderId });
+    res.status(200).send("Deleted");
   },
   /**
    * summary: Update folder (rename)
@@ -143,57 +157,12 @@ export const user = {
    * responses: 200, 409, 200
    */
   post: async function createFolder(req, res, next) {
-    const name = req.body.name;
-    const idUser = req.body.userId;
-
-    if (!folderVal.folder.name.regex.test(name)) {
-      return errors.e400(res, "Bad folder name");
-    }
-
-    try {
-      const folderDb = await mh.folder.create({
-        name: name,
-        owner_id: idUser
-      });
-      res.status(200).send(folderDb);
-    } catch (e) {
-      catchUniqueName(res, e);
-    }
+    const idUser = req.params.userId;
+    await createFolderByUser(req, res, idUser);
   },
 
   get: async function getFoldersForCurrentUser(req, res) {
-    const idUser = req.session.passport.user;
-    const result = await mh.folder
-      .find({ owner_id: idUser }, { owner_id: false })
-      .sort({ activityDate: -1 });
-
-    const defWordsCount = await mh.word.count({
-      owner_id: idUser,
-      folder_id: defaultFolderId
-    });
-
-    const defWordsTheLastest = await mh.word
-      .find({
-        owner_id: idUser,
-        folder_id: defaultFolderId
-      })
-      .sort({ createDate: -1 })
-      .select("createDate")
-      .limit(1);
-    let defWordsDate = Date.now();
-
-    if (defWordsTheLastest.length != 0)
-      defWordsDate = defWordsTheLastest[0].createDate;
-
-    const defaultFolder = {
-      _id: defaultFolderId,
-      wordsCount: defWordsCount,
-      name: "Default",
-      activityDate: defWordsDate
-    };
-    res.json([defaultFolder].concat(result));
-    // .cursor()
-    // .pipe(JSONStream.stringify())
-    // .pipe(res.type("json"));
+    const idUser = req.params.userId;
+    await getFoldersByUser(req, res, idUser);
   }
 };
