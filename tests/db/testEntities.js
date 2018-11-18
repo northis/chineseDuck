@@ -34,21 +34,25 @@ export const wordBreakfast = {
   folder_id: 0,
   lastModified: new Date("2018-06-01T06:05:06"),
   full: {
+    id: "",
     createDate: new Date("2018-06-01T05:05:05"),
     height: 145,
     width: 251
   },
   trans: {
+    id: "",
     createDate: new Date("2018-06-01T05:05:06"),
     height: 145,
     width: 251
   },
   pron: {
+    id: "",
     createDate: new Date("2018-06-01T05:05:07"),
     height: 145,
     width: 251
   },
   orig: {
+    id: "",
     createDate: new Date("2018-06-01T05:05:08"),
     height: 145,
     width: 251

@@ -68,6 +68,8 @@ export const DebugKeys = {
   user_id: 100,
   admin_id: 101,
   not_existing_word_id: 1000,
+  not_existing_file_id: "0bf1754ff5702c56dc023d5c",
+  notAnumber: "notAnumber",
   password_hash: "$2b$10$xkwscjZQ.KM3uf1ZG2totO8RRfASADnADfyGNn6t3R5XDva0HKQ3y",
   password: "5lJnlNrgDjeu"
 };

@@ -8,7 +8,7 @@ import { Settings } from "../../config/common";
 
 export default async () => {
   describe("entire tests", () => {
-    before(async () => {
+    beforeEach(async () => {
       await require("../db/testDbInit").init();
     });
 
@@ -31,6 +31,10 @@ export default async () => {
     //     });
     //   });
     // });
+
+    afterEach(async () => {
+      await require("../db/testDbInit").wipeCollections();
+    });
 
     after(async () => {
       await srv.default.shutDown();

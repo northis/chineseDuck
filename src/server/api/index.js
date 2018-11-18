@@ -19,6 +19,11 @@ router.route(routes._user_login.value).post(user.login.post);
 router.route(routes._user_logout.express).get(user.logout.get);
 router.route(routes._service_datetime.express).get(service.main.get);
 
+router
+  .route(routes._word_file__fileId_.express)
+  // .all(accessControl(routes._word_file__fileId_))
+  .get(word.file.get);
+
 router.use(privateRoutesFilter, (req, res, next) => {
   if (!req.isAuthenticated()) {
     return errors.e401(
@@ -162,9 +167,11 @@ router
   .post(folder.main.post);
 
 router
-  .route(routes._word_file__fileId_.express)
-  .all(accessControl(routes._word_file__fileId_))
-  .get(word.file.get);
+  .route(routes._folder_user__userId_.express)
+  .all(accessControl(routes._folder_user__userId_))
+  .all(userControl)
+  .get(folder.user.get)
+  .post(folder.user.post);
 
 router
   .route(routes._folder__folderId_.express)

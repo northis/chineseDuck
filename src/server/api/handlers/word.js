@@ -4,6 +4,11 @@ import { isNullOrUndefined } from "util";
 import mongoose from "mongoose";
 import * as errors from "../../errors";
 
+const catchUniqueName = (res, error) => {
+  if (error.code == 11000) errors.e409(res, "Word object already exists.");
+  else errors.e500(res, error.message);
+};
+
 /**
  * Operations on /word
  */
@@ -20,7 +25,7 @@ export const main = {
       const word = await mh.word.create(req.body);
       return res.status(200).send(word);
     } catch (error) {
-      return errors.e409(res, "Word object already exists");
+      catchUniqueName(res, error);
     }
   },
   /**
@@ -28,7 +33,7 @@ export const main = {
    * description:
    * parameters: body
    * produces:
-   * responses: 400, 404, 405
+   * responses: 400, 404
    */
   put: async function updateWord(req, res, next) {
     try {
@@ -67,7 +72,7 @@ export const main = {
 
       return res.status(200).send(wordDb);
     } catch (error) {
-      return errors.e405(res, "Something goes wrong on word updating");
+      catchUniqueName(res, error);
     }
   }
 };
@@ -125,7 +130,10 @@ export const search = {
     if (isNullOrUndefined(user)) return errors.e404(res, "User is not found");
 
     let words = await mh.word.find({
-      $text: { $search: wordEntry },
+      originalWord: {
+        $regex: wordEntry,
+        $options: "i"
+      },
       owner_id: userId,
       folder_id: user.currentFolder_id
     });

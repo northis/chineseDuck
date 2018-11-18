@@ -87,8 +87,7 @@ export class ModelsHolder {
     folderSchemaObj.index({ owner_id: 1, name: "text" }, { unique: true });
     wordSchemaObj.index(
       { originalWord: "text", owner_id: 1 },
-      { unique: true },
-      { language_override: "hans" }
+      { unique: true }
     );
     wordSchemaObj.index({ lastModified: -1 });
     wordSchemaObj.index({ folder_id: 1 });

@@ -448,7 +448,7 @@
         "summary": "Create folder",
         "operationId": "createFolder",
         "responses": {
-          "201": {
+          "200": {
             "description": "Folder is created"
           },
           "409": {
@@ -541,6 +541,47 @@
             "cookieAuth": ["admin"]
           }
         ]
+      },
+      "post": {
+        "tags": ["folder"],
+        "summary": "Create folder",
+        "operationId": "createFolderForUser",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "description": "User id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Folder is created"
+          },
+          "409": {
+            "description": "Folder name already exists"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Folder"
+              }
+            }
+          },
+          "description": "Created folder object",
+          "required": true
+        }
       }
     },
     "/folder/{folderId}": {
