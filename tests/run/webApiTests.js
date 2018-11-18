@@ -18,6 +18,13 @@ const urlJoin = uj.default;
 let cookie = "";
 let cookieAdmin = "";
 
+export default () => {
+  testUser();
+  testFolder();
+  testWord();
+  testService();
+};
+
 function testUser() {
   it(`${routes._user_auth.value} - post`, async () => {
     const url = urlJoin(Settings.apiPrefix, routes._user_auth.value);
@@ -64,6 +71,51 @@ function testUser() {
     cookieRaw = response.header["set-cookie"];
     assert.ok(cookieRaw.length > 0);
     cookieAdmin = cookieRaw[0];
+  });
+
+  it(`${routes._user_currentFolder__folderId_.value} - put`, async () => {
+    let folderDb = await mh.folder.findOne({ owner_id: DebugKeys.user_id });
+
+    let url = urlJoin(
+      Settings.apiPrefix,
+      routes._folder__folderId_.value.replace(
+        PathWildcardEnum.folderId,
+        folderDb._id
+      )
+    );
+
+    let response = await request(srv.default.app)
+      .put(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie])
+      .send({});
+    const userDb = await mh.user.findOne({ _id: DebugKeys.user_id });
+
+    assert.ok(response.status === 200);
+    assert.ok(folderDb._id === userDb.currentFolder_id);
+
+    folderDb = await mh.folder.findOne({ owner_id: DebugKeys.admin_id });
+
+    url = urlJoin(
+      Settings.apiPrefix,
+      routes._folder__folderId_.value.replace(
+        PathWildcardEnum.folderId,
+        folderDb._id
+      )
+    );
+
+    response = await request(srv.default.app)
+      .put(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie])
+      .send({});
+    assert.ok(response.status === 403);
+
+    response = await request(srv.default.app)
+      .put(url)
+      .set("Content-Type", "application/json")
+      .send({});
+    assert.ok(response.status === 401);
   });
 }
 function testFolder() {
@@ -763,10 +815,3 @@ function testService() {
     assert.ok(sinceLastSec < 60);
   });
 }
-
-export default () => {
-  testUser();
-  testFolder();
-  testWord();
-  testService();
-};

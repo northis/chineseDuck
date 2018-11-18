@@ -175,10 +175,9 @@ export const currentfolder = {
    * description:
    * parameters:
    * produces: application/json
-   * responses: 201, 403
+   * responses: 200, 403
    */
   put: async function setFolder(req, res, next) {
-    const status = 201;
     const folderId = req.params.folderId;
     const userId = req.session.passport.user;
 
@@ -186,6 +185,6 @@ export const currentfolder = {
       { _id: userId },
       { currentFolder_id: folderId }
     );
-    return res.status(status).send("Updated");
+    return res.status(200).send("Updated");
   }
 };
