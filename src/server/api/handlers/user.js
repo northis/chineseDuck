@@ -4,6 +4,17 @@ import mh from "../../../server/api/db";
 import { isNullOrUndefined } from "util";
 import { sendCode, signIn } from "../../services/telegram";
 import { RightEnum } from "../../../server/api/db/models";
+
+
+const catchUniqueName = (res, error) => {
+  if (error.code == 11000)
+    errors.e409(
+      res,
+      "A user with that id already exists."
+    );
+  else errors.e500(res, error.message);
+};
+
 /**
  * Operations on /user
  */
@@ -15,9 +26,23 @@ export const main = {
    * produces: application/json
    * responses: default
    */
-  post: function createUser(req, res, next) {
-    var status = 200;
-    res.status(404);
+  post: async function createUser(req, res, next) {
+    const user = req.body;
+
+    if (isNaN(user._id))
+      return errors.e400(res, "You have to specify an id (_id field) for the user");
+
+    try {
+      if (isNullOrUndefined(user.joinDate))
+        user.joinDate = new Date();
+
+      user.currentFolder_id = 0;
+      const userDb = await mh.user.create(user);
+
+      res.status(200).send(userDb);
+    } catch (e) {
+      catchUniqueName(res, e);
+    }
   },
   /**
    * summary: Get user according to token in header
@@ -32,7 +57,7 @@ export const main = {
     const id = req.session.passport.user;
 
     const usr = await mh.user.findOne({ _id: id });
-    if (isNullOrUndefined(usr)) return res.status(404).send("User not found");
+    if (isNullOrUndefined(usr)) return errors.e404(res, "User not found");
 
     return res.status(status).send(
       JSON.stringify({
@@ -52,7 +77,7 @@ export const id = {
    * produces: application/json
    * responses: 200, 404
    */
-  get: function getUserById(req, res, next) {
+  get: async function getUserById(req, res, next) {
     var status = 200;
     res.status(404);
   },
@@ -62,7 +87,7 @@ export const id = {
    * parameters: id, body
    * produces: application/json
    * responses: 400, 404
-   */ put: function updateUser(req, res, next) {
+   */ put: async function updateUser(req, res, next) {
     var status = 200;
     res.status(404);
   },
@@ -72,7 +97,7 @@ export const id = {
    * parameters: id
    * produces: application/json
    * responses: 400, 404
-   */ delete: function deleteUser(req, res, next) {
+   */ delete: async function deleteUser(req, res, next) {
     var status = 200;
     res.status(404);
   }
@@ -104,7 +129,7 @@ export const login = {
             .status(status)
             .send("You were authenticated & logged in!\n");
         } else {
-          errors.e400(next, err);
+          errors.e400(res, err);
         }
       });
     })(req, res, next);
@@ -128,7 +153,7 @@ export const auth = {
       req.body.phone.length > 20 ||
       !req.body.phone.startsWith("+")
     ) {
-      errors.e400(next);
+      errors.e400(res);
       return;
     }
 
@@ -136,7 +161,7 @@ export const auth = {
     let result = await sendCode(req.body.phone);
 
     if (result.phone_code_hash === "") {
-      errors.e404(next);
+      errors.e404(res);
     } else {
       return res
         .status(status)

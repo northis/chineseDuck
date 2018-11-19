@@ -49,16 +49,16 @@ export function isAnalyze() {
 export function getFooterMarkupLine() {
   return `<p>${pkg.description} - ${pkg.version} | <a href=${
     pkg.url
-  }>Contact me</a> | <a href=${
+    }>Contact me</a> | <a href=${
     pkg.homepage
-  }>GitHub</a> | <a href=/api/docs>Api</a></p>`;
+    }>GitHub</a> | <a href=/api/docs>Api</a></p>`;
 }
 export function getFooterMarkup() {
   return `<p>${pkg.description} - ${pkg.version}</p> <p><a href=${
     pkg.url
-  }>Contact me</a> | <a href=${
+    }>Contact me</a> | <a href=${
     pkg.homepage
-  }>GitHub</a> | <a href=/api/docs>Api</a></p>`;
+    }>GitHub</a> | <a href=/api/docs>Api</a></p>`;
 }
 
 export const DebugKeys = {
@@ -67,6 +67,7 @@ export const DebugKeys = {
   phone_code: 43312,
   user_id: 100,
   admin_id: 101,
+  other_user_id: 102,
   not_existing_word_id: 1000,
   not_existing_file_id: "0bf1754ff5702c56dc023d5c",
   notAnumber: "notAnumber",
