@@ -4,6 +4,13 @@ import mh from "../../../server/api/db";
 import { isNullOrUndefined } from "util";
 import { sendCode, signIn } from "../../services/telegram";
 import { RightEnum } from "../../../server/api/db/models";
+
+const catchUniqueName = (res, error) => {
+  if (error.code == 11000)
+    errors.e409(res, "A user with that id already exists.");
+  else errors.e500(res, error.message);
+};
+
 /**
  * Operations on /user
  */
@@ -15,9 +22,25 @@ export const main = {
    * produces: application/json
    * responses: default
    */
-  post: function createUser(req, res, next) {
-    var status = 200;
-    res.status(404);
+  post: async function createUser(req, res, next) {
+    const user = req.body;
+
+    if (isNaN(user._id))
+      return errors.e400(
+        res,
+        "You have to specify an id (_id field) for the user"
+      );
+
+    try {
+      if (isNullOrUndefined(user.joinDate)) user.joinDate = new Date();
+
+      user.currentFolder_id = 0;
+      const userDb = await mh.user.create(user);
+
+      res.status(200).send(userDb);
+    } catch (e) {
+      catchUniqueName(res, e);
+    }
   },
   /**
    * summary: Get user according to token in header
@@ -32,7 +55,7 @@ export const main = {
     const id = req.session.passport.user;
 
     const usr = await mh.user.findOne({ _id: id });
-    if (isNullOrUndefined(usr)) return res.status(404).send("User not found");
+    if (isNullOrUndefined(usr)) return errors.e404(res, "User not found");
 
     return res.status(status).send(
       JSON.stringify({
@@ -52,19 +75,37 @@ export const id = {
    * produces: application/json
    * responses: 200, 404
    */
-  get: function getUserById(req, res, next) {
-    var status = 200;
-    res.status(404);
+  get: async function getUserById(req, res, next) {
+    const userId = req.params.userId;
+    const userDb = await mh.user.findOne({ _id: userId });
+
+    res.json(userDb);
   },
+
   /**
    * summary: Update user
    * description: This can only be done by the logged in user.
    * parameters: id, body
    * produces: application/json
    * responses: 400, 404
-   */ put: function updateUser(req, res, next) {
-    var status = 200;
-    res.status(404);
+   */
+  put: async function updateUser(req, res, next) {
+    const user = req.body;
+    const userId = req.params.userId;
+
+    const result = await mh.user.updateOne(
+      { _id: userId },
+      {
+        username: user.username,
+        tokenHash: user.username,
+        lastCommand: user.lastCommand,
+        who: user.who,
+        mode: user.mode,
+        currentFolder_id: user.currentFolder_id
+      }
+    );
+
+    res.status(200).send(result);
   },
   /**
    * summary: Delete user
@@ -72,9 +113,11 @@ export const id = {
    * parameters: id
    * produces: application/json
    * responses: 400, 404
-   */ delete: function deleteUser(req, res, next) {
-    var status = 200;
-    res.status(404);
+   */ delete: async function deleteUser(req, res, next) {
+    const userId = req.params.userId;
+
+    const result = await mh.user.deleteOne({ _id: userId });
+    res.status(200).send(result);
   }
 };
 /**
@@ -104,7 +147,7 @@ export const login = {
             .status(status)
             .send("You were authenticated & logged in!\n");
         } else {
-          errors.e400(next, err);
+          errors.e400(res, err);
         }
       });
     })(req, res, next);
@@ -128,7 +171,7 @@ export const auth = {
       req.body.phone.length > 20 ||
       !req.body.phone.startsWith("+")
     ) {
-      errors.e400(next);
+      errors.e400(res);
       return;
     }
 
@@ -136,7 +179,7 @@ export const auth = {
     let result = await sendCode(req.body.phone);
 
     if (result.phone_code_hash === "") {
-      errors.e404(next);
+      errors.e404(res);
     } else {
       return res
         .status(status)
@@ -175,10 +218,9 @@ export const currentfolder = {
    * description:
    * parameters:
    * produces: application/json
-   * responses: 201, 403
+   * responses: 200, 403
    */
   put: async function setFolder(req, res, next) {
-    const status = 201;
     const folderId = req.params.folderId;
     const userId = req.session.passport.user;
 
@@ -186,6 +228,6 @@ export const currentfolder = {
       { _id: userId },
       { currentFolder_id: folderId }
     );
-    return res.status(status).send("Updated");
+    return res.status(200).send("Updated");
   }
 };

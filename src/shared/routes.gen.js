@@ -2,10 +2,6 @@ export default { _word:
    { value: '/word',
      actions: { post: ["admin"], put: ["admin"] },
      express: '/word' },
-  _word_import:
-   { value: '/word/import',
-     actions: { post: ["write"] },
-     express: '/word/import' },
   _word_folder__folderId_:
    { value: '/word/folder/{folderId}',
      actions: { put: ["write"], get: ["write"] },
@@ -24,7 +20,7 @@ export default { _word:
      express: '/word/:wordId' },
   _word_user__userId__search__wordEntry_:
    { value: '/word/user/{userId}/search/{wordEntry}',
-     actions: { get: ["write"] },
+     actions: { get: ["admin"] },
      express: '/word/user/:userId/search/:wordEntry' },
   _word_file__fileId_:
    { value: '/word/file/{fileId}',
@@ -36,7 +32,7 @@ export default { _word:
      express: '/folder' },
   _folder_user__userId_:
    { value: '/folder/user/{userId}',
-     actions: { get: ["admin"] },
+     actions: { get: ["admin"], post: ["admin"] },
      express: '/folder/user/:userId' },
   _folder__folderId_:
    { value: '/folder/{folderId}',
@@ -58,10 +54,10 @@ export default { _word:
    { value: '/user/logout',
      actions: { get: ["write"] },
      express: '/user/logout' },
-  _user__id_:
-   { value: '/user/{id}',
+  _user__userId_:
+   { value: '/user/{userId}',
      actions: { get: ["admin"], put: ["admin"], delete: ["admin"] },
-     express: '/user/:id' },
+     express: '/user/:userId' },
   _user_currentFolder__folderId_:
    { value: '/user/currentFolder/{folderId}',
      actions: { put: ["write"] },

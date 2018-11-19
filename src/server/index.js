@@ -12,10 +12,18 @@ import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./api/swagger.json";
 import passport from "./security/passport";
 import sessionItem from "./security/session";
-import { Settings } from "../../config/common";
+import { Settings, isDebug } from "../../config/common";
 import { GracefulShutdownManager } from "@moebius/http-graceful-shutdown";
 
 const app = express();
+
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render("error", {
+    message: err.message,
+    error: isDebug() ? err : {}
+  });
+});
 
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
