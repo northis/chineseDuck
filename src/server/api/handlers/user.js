@@ -5,13 +5,9 @@ import { isNullOrUndefined } from "util";
 import { sendCode, signIn } from "../../services/telegram";
 import { RightEnum } from "../../../server/api/db/models";
 
-
 const catchUniqueName = (res, error) => {
   if (error.code == 11000)
-    errors.e409(
-      res,
-      "A user with that id already exists."
-    );
+    errors.e409(res, "A user with that id already exists.");
   else errors.e500(res, error.message);
 };
 
@@ -30,11 +26,13 @@ export const main = {
     const user = req.body;
 
     if (isNaN(user._id))
-      return errors.e400(res, "You have to specify an id (_id field) for the user");
+      return errors.e400(
+        res,
+        "You have to specify an id (_id field) for the user"
+      );
 
     try {
-      if (isNullOrUndefined(user.joinDate))
-        user.joinDate = new Date();
+      if (isNullOrUndefined(user.joinDate)) user.joinDate = new Date();
 
       user.currentFolder_id = 0;
       const userDb = await mh.user.create(user);
@@ -78,18 +76,36 @@ export const id = {
    * responses: 200, 404
    */
   get: async function getUserById(req, res, next) {
-    var status = 200;
-    res.status(404);
+    const userId = req.params.userId;
+    const userDb = await mh.user.findOne({ _id: userId });
+
+    res.json(userDb);
   },
+
   /**
    * summary: Update user
    * description: This can only be done by the logged in user.
    * parameters: id, body
    * produces: application/json
    * responses: 400, 404
-   */ put: async function updateUser(req, res, next) {
-    var status = 200;
-    res.status(404);
+   */
+  put: async function updateUser(req, res, next) {
+    const user = req.body;
+    const userId = req.params.userId;
+
+    const result = await mh.user.updateOne(
+      { _id: userId },
+      {
+        username: user.username,
+        tokenHash: user.username,
+        lastCommand: user.lastCommand,
+        who: user.who,
+        mode: user.mode,
+        currentFolder_id: user.currentFolder_id
+      }
+    );
+
+    res.status(200).send(result);
   },
   /**
    * summary: Delete user
@@ -98,8 +114,10 @@ export const id = {
    * produces: application/json
    * responses: 400, 404
    */ delete: async function deleteUser(req, res, next) {
-    var status = 200;
-    res.status(404);
+    const userId = req.params.userId;
+
+    const result = await mh.user.deleteOne({ _id: userId });
+    res.status(200).send(result);
   }
 };
 /**

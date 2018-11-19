@@ -544,7 +544,7 @@
       },
       "post": {
         "tags": ["folder"],
-        "summary": "Create folder",
+        "summary": "Create folder for specified user",
         "operationId": "createFolderForUser",
         "parameters": [
           {
@@ -822,14 +822,14 @@
         ]
       }
     },
-    "/user/{id}": {
+    "/user/{userId}": {
       "get": {
         "tags": ["user"],
         "summary": "Get user by user id",
         "operationId": "getUserById",
         "parameters": [
           {
-            "name": "id",
+            "name": "userId",
             "in": "path",
             "description": "The user id that needs to be fetched. Use 0 for testing.",
             "required": true,
@@ -867,7 +867,7 @@
         "operationId": "updateUser",
         "parameters": [
           {
-            "name": "id",
+            "name": "userId",
             "in": "path",
             "description": "The user id that needs to be updated.",
             "required": true,
@@ -953,7 +953,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Updated"
           },
           "403": {

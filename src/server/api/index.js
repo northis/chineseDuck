@@ -148,6 +148,14 @@ router
   .post(user.main.post);
 
 router
+  .route(routes._user__userId_.express)
+  .all(accessControl(routes._user__userId_))
+  .all(userControl)
+  .get(user.id.get)
+  .put(user.id.put)
+  .delete(user.id.delete);
+
+router
   .route(routes._user_currentFolder__folderId_.express)
   .all(accessControl(routes._user_currentFolder__folderId_))
   .all(folderControl)

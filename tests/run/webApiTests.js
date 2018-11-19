@@ -118,7 +118,6 @@ function testUser() {
     assert.ok(response.status === 401);
   });
 
-
   it(`${routes._user.value} - post`, async () => {
     const url = urlJoin(Settings.apiPrefix, routes._user.value);
     const user = testEntities.userWrite;
@@ -146,6 +145,96 @@ function testUser() {
       .post(url)
       .set("Content-Type", "application/json")
       .send(user);
+    assert.ok(response.status === 401);
+  });
+
+  it(`${routes._user__userId_.value} - get`, async () => {
+    let userDb = await mh.user.findOne({ _id: DebugKeys.user_id });
+
+    const url = urlJoin(
+      Settings.apiPrefix,
+      routes._user__userId_.value.replace(PathWildcardEnum.userId, userDb._id)
+    );
+
+    let response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie]);
+    assert.ok(response.status === 403);
+
+    response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookieAdmin]);
+    assert.ok(response.status === 200);
+    assert.ok(response.body.username === userDb.username);
+
+    response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "application/json");
+    assert.ok(response.status === 401);
+  });
+
+  it(`${routes._user__userId_.value} - put`, async () => {
+    let userDb = await mh.user.findOne({ _id: DebugKeys.user_id });
+
+    userDb.username = DebugKeys.not_existing_file_id;
+    const url = urlJoin(
+      Settings.apiPrefix,
+      routes._user__userId_.value.replace(PathWildcardEnum.userId, userDb._id)
+    );
+
+    let response = await request(srv.default.app)
+      .put(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie])
+      .send({});
+    assert.ok(response.status === 403);
+
+    response = await request(srv.default.app)
+      .put(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookieAdmin])
+      .send(userDb);
+    assert.ok(response.status === 200);
+    userDb = await mh.user.findOne({ _id: DebugKeys.user_id });
+    assert.ok(userDb.username === DebugKeys.not_existing_file_id);
+
+    response = await request(srv.default.app)
+      .put(url)
+      .set("Content-Type", "application/json")
+      .send(userDb);
+
+    assert.ok(response.status === 401);
+  });
+  it(`${routes._user__userId_.value} - delete`, async () => {
+    let userDb = await mh.user.findOne({ _id: DebugKeys.user_id });
+    const url = urlJoin(
+      Settings.apiPrefix,
+      routes._user__userId_.value.replace(PathWildcardEnum.userId, userDb._id)
+    );
+
+    let response = await request(srv.default.app)
+      .delete(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie])
+      .send({});
+    assert.ok(response.status === 403);
+
+    response = await request(srv.default.app)
+      .delete(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookieAdmin])
+      .send({});
+    assert.ok(response.status === 200);
+    userDb = await mh.user.findOne({ _id: DebugKeys.user_id });
+    assert.ok(isNullOrUndefined(userDb));
+
+    response = await request(srv.default.app)
+      .delete(url)
+      .set("Content-Type", "application/json")
+      .send({});
+
     assert.ok(response.status === 401);
   });
 }
@@ -427,21 +516,21 @@ function testWord() {
     );
     assert.ok(
       wordToUpdate.score.translationSuccessCount ===
-      word.score.translationSuccessCount
+        word.score.translationSuccessCount
     );
     assert.ok(
       wordToUpdate.score.pronunciationCount === word.score.pronunciationCount
     );
     assert.ok(
       wordToUpdate.score.pronunciationSuccessCount ===
-      word.score.pronunciationSuccessCount
+        word.score.pronunciationSuccessCount
     );
     assert.ok(
       wordToUpdate.score.originalWordCount === word.score.originalWordCount
     );
     assert.ok(
       wordToUpdate.score.originalWordSuccessCount ===
-      word.score.originalWordSuccessCount
+        word.score.originalWordSuccessCount
     );
 
     assert.ok(wordToUpdate.full.height === word.full.height);
@@ -462,7 +551,7 @@ function testWord() {
     assert.ok(wordToUpdate.trans.height === word.trans.height);
     assert.ok(
       wordToUpdate.trans.createDate.getTime() ===
-      word.trans.createDate.getTime()
+        word.trans.createDate.getTime()
     );
     assert.ok(wordToUpdate.trans.width === word.trans.width);
 
@@ -797,39 +886,39 @@ function testWord() {
 
   it(`${
     routes._word_user__userId__search__wordEntry_.value
-    } - get`, async () => {
-      let wordDb = await mh.word.findOne({
-        owner_id: DebugKeys.user_id,
-        originalWord: testEntities.wordDinner.originalWord
-      });
-
-      let url = urlJoin(
-        Settings.apiPrefix,
-        routes._word_user__userId__search__wordEntry_.value
-          .replace(PathWildcardEnum.userId, DebugKeys.user_id)
-          .replace(
-            PathWildcardEnum.wordEntry,
-            encodeURIComponent(testEntities.wordDinner.originalWord.slice(1)) // 饭
-          )
-      );
-      let response = await request(srv.default.app)
-        .get(url)
-        .set("Content-Type", "application/json")
-        .set("Cookie", [cookieAdmin]);
-      assert.ok(response.status === 200);
-      assert.ok(response.body.some(a => a._id === wordDb._id));
-
-      response = await request(srv.default.app)
-        .get(url)
-        .set("Content-Type", "application/json")
-        .set("Cookie", [cookie]);
-      assert.ok(response.status === 403);
-
-      response = await request(srv.default.app)
-        .get(url)
-        .set("Content-Type", "application/json");
-      assert.ok(response.status === 401);
+  } - get`, async () => {
+    let wordDb = await mh.word.findOne({
+      owner_id: DebugKeys.user_id,
+      originalWord: testEntities.wordDinner.originalWord
     });
+
+    let url = urlJoin(
+      Settings.apiPrefix,
+      routes._word_user__userId__search__wordEntry_.value
+        .replace(PathWildcardEnum.userId, DebugKeys.user_id)
+        .replace(
+          PathWildcardEnum.wordEntry,
+          encodeURIComponent(testEntities.wordDinner.originalWord.slice(1)) // 饭
+        )
+    );
+    let response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookieAdmin]);
+    assert.ok(response.status === 200);
+    assert.ok(response.body.some(a => a._id === wordDb._id));
+
+    response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie]);
+    assert.ok(response.status === 403);
+
+    response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "application/json");
+    assert.ok(response.status === 401);
+  });
 }
 
 function testService() {
