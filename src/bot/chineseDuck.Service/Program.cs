@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace chineseDuck.Service {
+namespace ChineseDuck.BotService {
     class Program {
         static void Main (string[] args) {
             Console.WriteLine ("Hello World!");

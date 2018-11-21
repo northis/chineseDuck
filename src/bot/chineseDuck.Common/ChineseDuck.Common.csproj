@@ -5,9 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="Resources\unicode_to_hanyu_pinyin.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <PackageReference Include="log4net" Version="2.0.8" />
   </ItemGroup>
 
 </Project>
