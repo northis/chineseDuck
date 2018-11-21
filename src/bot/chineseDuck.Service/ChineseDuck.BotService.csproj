@@ -6,8 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Ninject" Version="3.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\chineseDuck.Bot\ChineseDuck.Bot.csproj" />
     <ProjectReference Include="..\chineseDuck.Common\ChineseDuck.Common.csproj" />
-    <ProjectReference Include="..\chineseDuck.Data\ChineseDuck.Data.csproj" />
     <ProjectReference Include="..\chineseDuck.pinyin4net\ChineseDuck.Pinyin4net.csproj" />
   </ItemGroup>
 

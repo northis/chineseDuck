@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChineseDuck.Pinyin4net.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChineseDuck.BotService", "src\bot\chineseDuck.Service\ChineseDuck.BotService.csproj", "{79504E52-2EF5-4AF6-A44D-8412C164FC98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChineseDuck.Data", "src\bot\chineseDuck.Data\ChineseDuck.Data.csproj", "{FB01F0AD-2777-4A87-A289-C266CA549964}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChineseDuck.Bot", "src\bot\chineseDuck.Bot\ChineseDuck.Bot.csproj", "{FB01F0AD-2777-4A87-A289-C266CA549964}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChineseDuck.Common", "src\bot\chineseDuck.Common\ChineseDuck.Common.csproj", "{8024C386-833B-4A48-A67E-DD7D32A574AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChineseDuck.Common", "src\bot\chineseDuck.Common\ChineseDuck.Common.csproj", "{8024C386-833B-4A48-A67E-DD7D32A574AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
