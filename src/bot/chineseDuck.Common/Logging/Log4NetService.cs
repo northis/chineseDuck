@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
+using System.Xml;
 using log4net;
 using log4net.Config;
 using log4net.Core;
@@ -15,11 +17,13 @@ namespace ChineseDuck.Common.Logging
 
         static Log4NetService()
         {
-            LoggerManager.ResetConfiguration(Assembly.GetCallingAssembly());
-            var rep = LogManager.GetRepository("MainLogging");
-            XmlConfigurator.Configure(rep);
+            XmlDocument log4netConfig = new XmlDocument();
+            log4netConfig.Load(File.OpenRead("log4net.config"));
+            var repo = LogManager.CreateRepository(Assembly.GetEntryAssembly(),
+                typeof(Hierarchy));
+            XmlConfigurator.Configure(repo, log4netConfig["log4net"]);
 
-            var hierarchy = (Hierarchy)rep;
+            var hierarchy = (Hierarchy)repo;
             MainLogger = hierarchy.Root;
         }
 
@@ -27,7 +31,7 @@ namespace ChineseDuck.Common.Logging
 
         #region Methods
 
-        public void Write(string message, Exception ex, Dictionary<string, object> parameters)
+        public void Write(string message, Exception ex = null, Dictionary<string, object> parameters = null)
         {
             var props = new LoggingEventData
             {
