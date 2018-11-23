@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 using System.Text;
+using ChineseDuck.Bot.Interfaces.Data;
 using Newtonsoft.Json;
 
 namespace ChineseDuck.Bot.Rest.Model {
@@ -9,13 +10,13 @@ namespace ChineseDuck.Bot.Rest.Model {
   /// 
   /// </summary>
   [DataContract]
-  public class User {
+  public class User :IUser {
     /// <summary>
     /// Gets or Sets Id
     /// </summary>
     [DataMember(Name="_id", EmitDefaultValue=false)]
     [JsonProperty(PropertyName = "_id")]
-    public long? Id { get; set; }
+    public long IdUser { get; set; }
 
     /// <summary>
     /// Gets or Sets CurrentFolderId
@@ -29,7 +30,7 @@ namespace ChineseDuck.Bot.Rest.Model {
     /// </summary>
     [DataMember(Name="username", EmitDefaultValue=false)]
     [JsonProperty(PropertyName = "username")]
-    public string Username { get; set; }
+    public string Name { get; set; }
 
     /// <summary>
     /// Gets or Sets TokenHash
@@ -50,7 +51,7 @@ namespace ChineseDuck.Bot.Rest.Model {
     /// </summary>
     [DataMember(Name="joinDate", EmitDefaultValue=false)]
     [JsonProperty(PropertyName = "joinDate")]
-    public DateTime? JoinDate { get; set; }
+    public DateTime JoinDate { get; set; }
 
     /// <summary>
     /// Gets or Sets Who
@@ -74,9 +75,9 @@ namespace ChineseDuck.Bot.Rest.Model {
     public override string ToString()  {
       var sb = new StringBuilder();
       sb.Append("class User {\n");
-      sb.Append("  Id: ").Append(Id).Append("\n");
+      sb.Append("  Id: ").Append(IdUser).Append("\n");
       sb.Append("  CurrentFolderId: ").Append(CurrentFolderId).Append("\n");
-      sb.Append("  Username: ").Append(Username).Append("\n");
+      sb.Append("  Username: ").Append(Name).Append("\n");
       sb.Append("  TokenHash: ").Append(TokenHash).Append("\n");
       sb.Append("  LastCommand: ").Append(LastCommand).Append("\n");
       sb.Append("  JoinDate: ").Append(JoinDate).Append("\n");

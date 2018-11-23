@@ -1,4 +1,6 @@
-﻿namespace ChineseDuck.Bot.ObjectModels
+﻿using System.Drawing;
+
+namespace ChineseDuck.Bot.ObjectModels
 {
     public class Syllable
     {
@@ -11,7 +13,7 @@
             Color = color;
         }
 
-        public Syllable(char commonChar) : this(commonChar, string.Empty, Colors.Black)
+        public Syllable(char commonChar) : this(commonChar, string.Empty, Color.Black)
         {
         }
 

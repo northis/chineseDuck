@@ -1,4 +1,6 @@
-﻿namespace ChineseDuck.Bot.ObjectModels
+﻿using ChineseDuck.Bot.Rest.Model;
+
+namespace ChineseDuck.Bot.ObjectModels
 {
     public class ImportWordResult
     {

@@ -1,5 +1,6 @@
 using System.Runtime.Serialization;
 using System.Text;
+using ChineseDuck.Bot.Interfaces.Data;
 using Newtonsoft.Json;
 
 namespace ChineseDuck.Bot.Rest.Model {
