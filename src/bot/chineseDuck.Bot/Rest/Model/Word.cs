@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 using System.Text;
+using ChineseDuck.Bot.Interfaces.Data;
 using Newtonsoft.Json;
 
 namespace ChineseDuck.Bot.Rest.Model {
@@ -9,13 +10,13 @@ namespace ChineseDuck.Bot.Rest.Model {
   /// 
   /// </summary>
   [DataContract]
-  public class Word {
+  public class Word :IWord {
     /// <summary>
     /// Gets or Sets Id
     /// </summary>
     [DataMember(Name="_id", EmitDefaultValue=false)]
     [JsonProperty(PropertyName = "_id")]
-    public long? Id { get; set; }
+    public long WordId { get; set; }
 
     /// <summary>
     /// Gets or Sets OwnerId

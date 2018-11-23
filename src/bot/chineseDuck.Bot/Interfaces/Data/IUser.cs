@@ -9,5 +9,6 @@ namespace ChineseDuck.Bot.Interfaces.Data
         string LastCommand { get; set; }
         DateTime JoinDate { get; set; }
         string Mode { get; set; }
+        long CurrentFolderId { get; set; }
     }
 }

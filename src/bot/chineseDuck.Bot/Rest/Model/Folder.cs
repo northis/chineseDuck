@@ -1,15 +1,16 @@
 using System;
 using System.Runtime.Serialization;
 using System.Text;
+using ChineseDuck.Bot.Interfaces.Data;
 using Newtonsoft.Json;
 
 namespace ChineseDuck.Bot.Rest.Model {
-
-  /// <summary>
+    /// <summary>
   /// 
   /// </summary>
   [DataContract]
-  public class Folder {
+  public class Folder : IFolder
+    {
     /// <summary>
     /// Gets or Sets Id
     /// </summary>

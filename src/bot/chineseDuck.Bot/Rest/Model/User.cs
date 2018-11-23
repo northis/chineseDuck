@@ -23,7 +23,7 @@ namespace ChineseDuck.Bot.Rest.Model {
     /// </summary>
     [DataMember(Name="currentFolder_id", EmitDefaultValue=false)]
     [JsonProperty(PropertyName = "currentFolder_id")]
-    public long? CurrentFolderId { get; set; }
+    public long CurrentFolderId { get; set; }
 
     /// <summary>
     /// Gets or Sets Username
