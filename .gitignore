@@ -9,6 +9,7 @@ yarn-error.log
 .vs/
 bin/
 obj/
+logs/
 
 # Editor directories and files
 .idea

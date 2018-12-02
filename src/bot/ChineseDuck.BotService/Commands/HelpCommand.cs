@@ -5,16 +5,16 @@ using ChineseDuck.BotService.MainExecution;
 using ChineseDuck.WebBot.Commands.Common;
 using ChineseDuck.WebBot.Commands.Enums;
 
-namespace ChineseDuck.WebBot.Commands
+namespace ChineseDuck.BotService.Commands
 {
     public class HelpCommand : CommandBase
     {
-        public HelpCommand(Func<CommandBase[]> getAllComands)
+        public HelpCommand(CommandBase[] allCommands)
         {
-            GetAllComands = getAllComands;
+            AllCommands = allCommands;
         }
 
-        protected Func<CommandBase[]> GetAllComands { get; }
+        protected CommandBase[] AllCommands { get; }
 
         public override string GetCommandIconUnicode()
         {
@@ -33,7 +33,7 @@ namespace ChineseDuck.WebBot.Commands
 
         public virtual string GetHelpMessage()
         {
-            return string.Join(Environment.NewLine, GetAllComands().Select(a => a.GetFormattedDescription()));
+            return string.Join(Environment.NewLine, AllCommands.Select(a => a.GetFormattedDescription()));
         }
 
         public override AnswerItem Reply(MessageItem mItem)

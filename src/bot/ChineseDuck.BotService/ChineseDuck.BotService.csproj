@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="logs\**" />
+    <Content Remove="logs\**" />
+    <EmbeddedResource Remove="logs\**" />
+    <None Remove="logs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
@@ -21,6 +28,12 @@
     <ProjectReference Include="..\chineseDuck.Bot\ChineseDuck.Bot.csproj" />
     <ProjectReference Include="..\chineseDuck.Common\ChineseDuck.Common.csproj" />
     <ProjectReference Include="..\chineseDuck.pinyin4net\ChineseDuck.Pinyin4net.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ReleaseNotes.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

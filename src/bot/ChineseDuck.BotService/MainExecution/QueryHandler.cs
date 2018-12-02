@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ChineseDuck.Bot.Interfaces;
 using ChineseDuck.Bot.ObjectModels;
+using ChineseDuck.Common.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
@@ -18,17 +19,19 @@ namespace ChineseDuck.BotService.MainExecution
         private readonly TelegramBotClient _client;
         private readonly string _flashCardUrl;
         private readonly IWordRepository _repository;
+        private readonly ILogService _logService;
 
         public int MaxInlineQueryLength = 5;
         public int MaxInlineSearchResult = 7;
 
-        public QueryHandler(TelegramBotClient client, IWordRepository repository, AntiDdosChecker checker,
-            string flashCardUrl)
+        public QueryHandler(TelegramBotClient client, ILogService logService, /*IWordRepository repository,*/ AntiDdosChecker checker/*,
+            string flashCardUrl*/)
         {
             _client = client;
-            _repository = repository;
+            //_repository = repository;
             _checker = checker;
-            _flashCardUrl = flashCardUrl;
+           // _flashCardUrl = flashCardUrl;
+            _logService = logService;
         }
 
         public async Task CallbackQuery(CallbackQuery callbackQuery)
@@ -45,7 +48,7 @@ namespace ChineseDuck.BotService.MainExecution
             }
             catch (Exception ex)
             {
-                //MainFactory.Log.Write("CallbackQuery", ex, null);
+                _logService.Write("CallbackQuery", ex, null);
             }
         }
 
@@ -167,18 +170,18 @@ namespace ChineseDuck.BotService.MainExecution
             }
             catch (Exception ex)
             {
-                //MainFactory.Log.Write("Message", ex, null);
+                _logService.Write("Message", ex, null);
             }
         }
 
         public void OnReceiveError(ApiRequestException e)
         {
-            //MainFactory.Log.Write(nameof(OnReceiveError), e, null);
+            _logService.Write(nameof(OnReceiveError), e, null);
         }
 
         public void OnReceiveGeneralError(Exception e)
         {
-            //MainFactory.Log.Write(nameof(OnReceiveGeneralError), e, null);
+            _logService.Write(nameof(OnReceiveGeneralError), e, null);
         }
 
         private async Task HandleArgumentCommand(Message msg, string argumentCommand, long userId)

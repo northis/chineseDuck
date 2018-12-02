@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using ChineseDuck.BotService.Helpers;
 using ChineseDuck.BotService.MainExecution;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot.Types;
 
 namespace ChineseDuck.BotService.Controllers
 {
-    [Webhook]
+    [Route("[controller]")]
     [ApiController]
     public class WebHookController : ControllerBase
     {

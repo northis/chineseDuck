@@ -17,11 +17,16 @@ namespace ChineseDuck.Common.Logging
 
         static Log4NetService()
         {
-            XmlDocument log4netConfig = new XmlDocument();
-            log4netConfig.Load(File.OpenRead("log4net.config"));
-            var repo = LogManager.CreateRepository(Assembly.GetEntryAssembly(),
-                typeof(Hierarchy));
-            XmlConfigurator.Configure(repo, log4netConfig["log4net"]);
+            var log4NetConfig = new XmlDocument();
+
+            var currentAssembly = Assembly.GetEntryAssembly();
+            var currentFolder = Directory.GetParent(currentAssembly.Location).FullName;
+            var cfg = Path.Combine(currentFolder, "log4net.config");
+            
+            log4NetConfig.Load(File.OpenRead(cfg));
+
+            var repo = LogManager.CreateRepository(currentAssembly, typeof(Hierarchy));
+            XmlConfigurator.Configure(repo, log4NetConfig["log4net"]);
 
             var hierarchy = (Hierarchy)repo;
             MainLogger = hierarchy.Root;

@@ -1,10 +1,14 @@
 ﻿using System;
-using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using ChineseDuck.BotService.Commands;
+using ChineseDuck.BotService.Commands.Common;
+using ChineseDuck.BotService.MainExecution;
+using ChineseDuck.Common.Logging;
+using ChineseDuck.WebBot.Commands;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
@@ -17,9 +21,57 @@ namespace ChineseDuck.BotService.Root
         {
             Configuration = configuration;
         }
+        
+        private string _releaseNotesInfo;
+        private static string _currentDir;
+
+        public string ReleaseNotesInfo
+        {
+            get
+            {
+                if (_releaseNotesInfo != null) return _releaseNotesInfo;
+
+                var path = Path.Combine(CurrentDir, "ReleaseNotes.txt");
+                _releaseNotesInfo = File.Exists(path) ? File.ReadAllText(path) : string.Empty;
+
+                return _releaseNotesInfo;
+            }
+        }
+
+        public string CurrentDir
+        {
+            get
+            {
+                if (_currentDir != null)
+                    return _currentDir;
+
+                var thisLocation = Assembly.GetCallingAssembly().Location;
+                _currentDir = Path.GetDirectoryName(thisLocation);
+
+                return _currentDir;
+            }
+        }
 
         public IConfiguration Configuration { get; }
         public IServiceProvider ServiceProvider { get; private set; }
+
+        private CommandBase[] GetCommands => new CommandBase[]
+        {
+            //NinjectKernel.Get<DefaultCommand>(),
+            //NinjectKernel.Get<ImportCommand>(),
+            //NinjectKernel.Get<AddCommand>(),
+            //NinjectKernel.Get<ViewCommand>(),
+            //NinjectKernel.Get<DeleteCommand>(),
+            ServiceProvider.GetRequiredService<HelpCommand>(),
+            ServiceProvider.GetRequiredService<StartCommand>(),
+            //NinjectKernel.Get<LearnWritingCommand>(),
+            //NinjectKernel.Get<LearnViewCommand>(),
+            //NinjectKernel.Get<AboutCommand>(),
+            //NinjectKernel.Get<ModeCommand>(),
+            //NinjectKernel.Get<LearnSpeakCommand>(),
+            //NinjectKernel.Get<LearnTranslationCommand>(),
+            //NinjectKernel.Get<EditCommand>()
+        };
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -27,8 +79,14 @@ namespace ChineseDuck.BotService.Root
             var tClient = new TelegramBotClient(botSettings.TelegramBotKey)
                 { Timeout = botSettings.PollingTimeout };
 
+            services.AddSingleton(a => new AntiDdosChecker(GetDateTime));
             services.AddSingleton(bS => botSettings);
             services.AddSingleton(cl => tClient);
+            services.AddSingleton(cl => tClient);
+            services.AddSingleton<ILogService, Log4NetService>();
+            services.AddSingleton<QueryHandler>();
+            services.AddTransient(a => GetCommands);
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime applicationLifetime)
@@ -47,13 +105,18 @@ namespace ChineseDuck.BotService.Root
 
             var botSettings = ServiceProvider.GetRequiredService<BotSettingHolder>();
             var botBotClient = ServiceProvider.GetRequiredService<TelegramBotClient>();
-            botBotClient.SetWebhookAsync(botSettings.WebhookPublicUrl + $"/{botSettings.TelegramBotKey}/Webhook").Wait();
+            botBotClient.SetWebhookAsync($"{botSettings.WebhookPublicUrl}/{botSettings.TelegramBotKey}/Webhook").Wait();
         }
 
         private void OnShutdown()
         {
-            var botBotClient = ServiceProvider.GetRequiredService<BotSettingHolder>();
-            //botBotClient.DeleteWebhookAsync().Wait();
+            var botClient = ServiceProvider.GetRequiredService<TelegramBotClient>();
+            botClient.DeleteWebhookAsync().Wait();
+        }
+
+        public static DateTime GetDateTime()
+        {
+            return DateTime.Now;
         }
     }
 }

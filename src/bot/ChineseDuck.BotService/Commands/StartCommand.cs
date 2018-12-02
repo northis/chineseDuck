@@ -1,13 +1,12 @@
 ﻿using System;
 using ChineseDuck.BotService.Commands.Common;
-using ChineseDuck.WebBot.Commands.Common;
 using ChineseDuck.WebBot.Commands.Enums;
 
-namespace ChineseDuck.WebBot.Commands
+namespace ChineseDuck.BotService.Commands
 {
     public class StartCommand : HelpCommand
     {
-        public StartCommand(Func<CommandBase[]> getAllComands) : base(getAllComands)
+        public StartCommand(CommandBase[] allCommands) : base(allCommands)
         {
         }
 
