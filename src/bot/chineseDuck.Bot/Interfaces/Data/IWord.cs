@@ -11,11 +11,12 @@ namespace ChineseDuck.Bot.Interfaces.Data
         DateTime LastModified { get; set; }
         string Translation { get; set; }
         string Usage { get; set; }
-        GenerateImageResult CardAll { get; set; }
-        GenerateImageResult CardOriginalWord { get; set; }
-        GenerateImageResult CardTranslation { get; set; }
-        GenerateImageResult CardPronunciation { get; set; }
+        IWordFile CardAll { get; set; }
+        IWordFile CardOriginalWord { get; set; }
+        IWordFile CardTranslation { get; set; }
+        IWordFile CardPronunciation { get; set; }
 
         int SyllablesCount { get; set; }
+        long FolderId { get; set; }
     }
 }

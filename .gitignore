@@ -17,3 +17,4 @@ obj/
 *.njsproj
 apiKeys.js
 keys.js
+appsettings.json

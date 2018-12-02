@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using ChineseDuck.Bot.Rest.Client;
 using ChineseDuck.Bot.Rest.Model;

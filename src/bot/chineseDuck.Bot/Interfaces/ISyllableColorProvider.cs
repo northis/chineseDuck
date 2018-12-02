@@ -1,3 +1,5 @@
+using System.Drawing;
+
 namespace ChineseDuck.Bot.Interfaces
 {
     public interface ISyllableColorProvider

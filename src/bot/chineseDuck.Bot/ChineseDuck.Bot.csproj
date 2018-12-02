@@ -6,8 +6,18 @@
 
   <ItemGroup>
     <Compile Remove="Data\**" />
+    <Compile Remove="Drawing\**" />
+    <Compile Remove="Providers\**" />
     <EmbeddedResource Remove="Data\**" />
+    <EmbeddedResource Remove="Drawing\**" />
+    <EmbeddedResource Remove="Providers\**" />
     <None Remove="Data\**" />
+    <None Remove="Drawing\**" />
+    <None Remove="Providers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Rest\EfRepository.cs" />
   </ItemGroup>
 
   <ItemGroup>

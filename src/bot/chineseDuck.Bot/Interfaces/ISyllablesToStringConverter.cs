@@ -7,6 +7,7 @@ namespace ChineseDuck.Bot.Interfaces
         string GetSeparator();
 
         string Join(IEnumerable<string> syllables);
+
         IEnumerable<string> Parse(string pinyinString);
     }
 }

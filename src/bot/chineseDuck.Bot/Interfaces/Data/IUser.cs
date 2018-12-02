@@ -1,4 +1,5 @@
 using System;
+using ChineseDuck.Bot.Enums;
 
 namespace ChineseDuck.Bot.Interfaces.Data
 {
@@ -10,5 +11,6 @@ namespace ChineseDuck.Bot.Interfaces.Data
         DateTime JoinDate { get; set; }
         string Mode { get; set; }
         long CurrentFolderId { get; set; }
+        RightEnum Who { get; set; }
     }
 }

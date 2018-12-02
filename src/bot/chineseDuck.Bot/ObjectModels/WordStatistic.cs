@@ -13,7 +13,7 @@ namespace ChineseDuck.Bot.ObjectModels
                 return "0";
 
             return
-                $"🖌{Score.OriginalWordSuccessCount ?? 0}/{Score.OriginalWordCount ?? 0}, 📢{Score.PronunciationSuccessCount ?? 0}/{Score.PronunciationCount ?? 0}, 🇨🇳{Score.TranslationSuccessCount ?? 0}/{Score.TranslationCount ?? 0}, 👀{Score.ViewCount}";
+                $"🖌{Score.OriginalWordSuccessCount}/{Score.OriginalWordCount}, 📢{Score.PronunciationSuccessCount}/{Score.PronunciationCount}, 🇨🇳{Score.TranslationSuccessCount}/{Score.TranslationCount}, 👀{Score.ViewCount}";
         }
     }
 }

@@ -1,6 +1,4 @@
 using System.Runtime.Serialization;
-using System.Text;
-using ChineseDuck.Bot.Interfaces.Data;
 using Newtonsoft.Json;
 
 namespace ChineseDuck.Bot.Rest.Model {
@@ -9,7 +7,7 @@ namespace ChineseDuck.Bot.Rest.Model {
   /// 
   /// </summary>
   [DataContract]
-  public class ApiUser {
+  public class ApiUser : BaseModel {
     /// <summary>
     /// Gets or Sets Id
     /// </summary>
@@ -37,30 +35,6 @@ namespace ChineseDuck.Bot.Rest.Model {
     [DataMember(Name="remember", EmitDefaultValue=false)]
     [JsonProperty(PropertyName = "remember")]
     public bool? Remember { get; set; }
-
-
-    /// <summary>
-    /// Get the string presentation of the object
-    /// </summary>
-    /// <returns>String presentation of the object</returns>
-    public override string ToString()  {
-      var sb = new StringBuilder();
-      sb.Append("class ApiUser {\n");
-      sb.Append("  Id: ").Append(Id).Append("\n");
-      sb.Append("  Code: ").Append(Code).Append("\n");
-      sb.Append("  Hash: ").Append(Hash).Append("\n");
-      sb.Append("  Remember: ").Append(Remember).Append("\n");
-      sb.Append("}\n");
-      return sb.ToString();
-    }
-
-    /// <summary>
-    /// Get the JSON string presentation of the object
-    /// </summary>
-    /// <returns>JSON string presentation of the object</returns>
-    public string ToJson() {
-      return JsonConvert.SerializeObject(this, Formatting.Indented);
-    }
 
 }
 }

@@ -19,6 +19,7 @@ namespace ChineseDuck.Bot.Interfaces
         void EditWord(IWord word);
 
         IQueryable<WordSearchResult> FindFlashCard(string searchString, long userId);
+
         WordStatistic GetCurrentUserWordStatistic(long userId);
 
         IQueryable<WordSearchResult> GetLastWords(long idUser, int topCount);
@@ -28,10 +29,13 @@ namespace ChineseDuck.Bot.Interfaces
         LearnUnit GetNextWord(WordSettings settings);
 
         DateTime GetRepositoryTime();
+
         string GetUserCommand(long userId);
+
         IQueryable<IUser> GetUserFriends(long userId);
 
         IQueryable<IUser> GetUsers();
+
         WordStatistic GetUserWordStatistic(long userId, long wordId);
 
         IWord GetWord(string wordOriginal);
