@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ChineseDuck.Import
+﻿namespace ChineseDuck.Import.EfModels
 {
     public partial class UserSharing
     {

@@ -1,14 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ChineseDuck.Import.EfModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChineseDuck.Import
 {
-    public partial class LearnChineseDevContext : DbContext
+    public partial class LearnChineseContext : DbContext
     {
-        public LearnChineseDevContext()
+        public LearnChineseContext()
         {
         }
 
-        public LearnChineseDevContext(DbContextOptions<LearnChineseDevContext> options)
+        public LearnChineseContext(DbContextOptions<LearnChineseContext> options)
             : base(options)
         {
         }
@@ -28,7 +29,7 @@ namespace ChineseDuck.Import
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=.;initial catalog=LearnChineseDev;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=.;initial catalog=LearnChinese;Trusted_Connection=True;");
             }
         }
 

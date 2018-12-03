@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace ChineseDuck.Import
+namespace ChineseDuck.Import.EfModels
 {
-    public partial class WordFileP
+    public partial class WordFileA
     {
         public long IdWord { get; set; }
         public Guid Id { get; set; }
