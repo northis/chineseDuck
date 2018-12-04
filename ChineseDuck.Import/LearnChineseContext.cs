@@ -5,13 +5,11 @@ namespace ChineseDuck.Import
 {
     public partial class LearnChineseContext : DbContext
     {
-        public LearnChineseContext()
-        {
-        }
+        private readonly string _connectionString;
 
-        public LearnChineseContext(DbContextOptions<LearnChineseContext> options)
-            : base(options)
+        public LearnChineseContext( string connectionString)
         {
+            _connectionString = connectionString;
         }
 
         public virtual DbSet<Folder> Folder { get; set; }
@@ -27,10 +25,7 @@ namespace ChineseDuck.Import
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer("Server=.;initial catalog=LearnChinese;Trusted_Connection=True;");
-            }
+            optionsBuilder.UseSqlServer(_connectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

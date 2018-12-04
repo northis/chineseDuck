@@ -1,5 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using ChineseDuck.Bot.Rest.Api;
+using ChineseDuck.Bot.Rest.Client;
 using Microsoft.Extensions.Configuration;
 
 namespace ChineseDuck.Import
@@ -12,11 +15,24 @@ namespace ChineseDuck.Import
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
-            IConfigurationRoot configuration = builder.Build();
+            var configuration = builder.Build();
+            var connectionString = configuration.GetConnectionString("OldSqlDb");
+            var site = configuration["NewWebApi"];
 
-            Console.WriteLine(configuration.GetConnectionString("OldSqlDb"));
+            var apiClient = new ApiClient(site);
+            var serviceApi = new ServiceApi(apiClient);
 
-            Console.WriteLine("Hello World!");
+            var dt = serviceApi.GetDatetime();
+
+            using (var context = new LearnChineseContext(connectionString))
+            {
+                var users = context.User.ToArray();
+
+                foreach (var user in users)
+                {
+                    Console.WriteLine($"{user.IdUser} - {user.Name} - {user.JoinDate}");
+                }
+            }
             Console.ReadKey();
         }
     }
