@@ -929,7 +929,7 @@ function testService() {
       .set("Content-Type", "application/json");
 
     const sinceLastSec = moment
-      .duration(new Date(response.body.datetime) - new Date())
+      .duration(new Date(response.body) - new Date())
       .asSeconds();
 
     assert.ok(sinceLastSec < 60);

@@ -14,8 +14,6 @@ namespace ChineseDuck.Bot.Rest.Client
     /// </summary>
     public class ApiClient
     {
-        private readonly Dictionary<string, string> _defaultHeaderMap = new Dictionary<string, string>();
-  
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiClient" /> class.
         /// </summary>
@@ -24,6 +22,7 @@ namespace ChineseDuck.Bot.Rest.Client
         {
             BasePath = basePath;
             RestClient = new RestClient(BasePath);
+            DefaultHeaders = new Dictionary<string, string>();
         }
     
         /// <summary>
@@ -37,11 +36,11 @@ namespace ChineseDuck.Bot.Rest.Client
         /// </summary>
         /// <value>An instance of the RestClient</value>
         public RestClient RestClient { get; set; }
-    
+
         /// <summary>
-        /// Gets the default header.
+        /// Gets or sets the default headers.
         /// </summary>
-        public Dictionary<string, string> DefaultHeader => _defaultHeaderMap;
+        public Dictionary<string, string> DefaultHeaders { get; set; }
 
         /// <summary>
         /// Makes the HTTP request (Sync).
@@ -62,10 +61,8 @@ namespace ChineseDuck.Bot.Rest.Client
 
             var request = new RestRequest(path, method);
    
-            UpdateParamsForAuth(queryParams, headerParams, authSettings);
-
             // add default header, if any
-            foreach(var defaultHeader in _defaultHeaderMap)
+            foreach(var defaultHeader in DefaultHeaders)
                 request.AddHeader(defaultHeader.Key, defaultHeader.Value);
 
             // add header parameter, if any
@@ -89,17 +86,6 @@ namespace ChineseDuck.Bot.Rest.Client
 
             return RestClient.Execute(request);
 
-        }
-    
-        /// <summary>
-        /// Add default header.
-        /// </summary>
-        /// <param name="key">Header field name.</param>
-        /// <param name="value">Header field value.</param>
-        /// <returns></returns>
-        public void AddDefaultHeader(string key, string value)
-        {
-            _defaultHeaderMap.Add(key, value);
         }
     
         /// <summary>
@@ -223,41 +209,12 @@ namespace ChineseDuck.Bot.Rest.Client
         /// <returns>API key with prefix.</returns>
         public string GetApiKeyWithPrefix (string apiKeyIdentifier)
         {
-            var apiKeyValue = "";
-            Configuration.ApiKey.TryGetValue (apiKeyIdentifier, out apiKeyValue);
-            var apiKeyPrefix = "";
-            if (Configuration.ApiKeyPrefix.TryGetValue (apiKeyIdentifier, out apiKeyPrefix))
+            Configuration.ApiKey.TryGetValue (apiKeyIdentifier, out var apiKeyValue);
+            if (Configuration.ApiKeyPrefix.TryGetValue (apiKeyIdentifier, out var apiKeyPrefix))
                 return apiKeyPrefix + " " + apiKeyValue;
             return apiKeyValue;
         }
     
-        /// <summary>
-        /// Update parameters based on authentication.
-        /// </summary>
-        /// <param name="queryParams">Query parameters.</param>
-        /// <param name="headerParams">Header parameters.</param>
-        /// <param name="authSettings">Authentication settings.</param>
-        public void UpdateParamsForAuth(Dictionary<string, string> queryParams, Dictionary<string, string> headerParams, string[] authSettings)
-        {
-            if (authSettings == null || authSettings.Length == 0)
-                return;
-
-            foreach (string auth in authSettings)
-            {
-                // determine which one to use
-                switch(auth)
-                {
-                    case "cookieAuth":
-                        
-                        
-                        break;
-                    default:
-                        //TODO show warning about security definition not found
-                        break;
-                }
-            }
-        }
- 
         /// <summary>
         /// Encode string in base64 format.
         /// </summary>

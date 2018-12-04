@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using ChineseDuck.Bot.Rest.Client;
 using ChineseDuck.Bot.Rest.Model;
 using RestSharp;
@@ -150,7 +151,7 @@ namespace ChineseDuck.Bot.Rest.Api
     
             if ((int)response.StatusCode >= 400)
                 throw new ApiException ((int)response.StatusCode, "Error calling AuthUser: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
+            if (response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling AuthUser: " + response.ErrorMessage, response.ErrorMessage);
 
             return (ApiUser) ApiClient.Deserialize(response.Content, typeof(ApiUser), response.Headers);
@@ -187,10 +188,8 @@ namespace ChineseDuck.Bot.Rest.Api
     
             if ((int)response.StatusCode >= 400)
                 throw new ApiException ((int)response.StatusCode, "Error calling CreateUser: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
+            if (response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling CreateUser: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
         }
     
         /// <summary>
@@ -224,10 +223,8 @@ namespace ChineseDuck.Bot.Rest.Api
     
             if ((int)response.StatusCode >= 400)
                 throw new ApiException ((int)response.StatusCode, "Error calling DeleteUser: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
+            if (response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling DeleteUser: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
         }
     
         /// <summary>
@@ -261,7 +258,7 @@ namespace ChineseDuck.Bot.Rest.Api
     
             if ((int)response.StatusCode >= 400)
                 throw new ApiException ((int)response.StatusCode, "Error calling GetUserById: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
+            if (response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling GetUserById: " + response.ErrorMessage, response.ErrorMessage);
 
             return (User) ApiClient.Deserialize(response.Content, typeof(User), response.Headers);
@@ -297,7 +294,7 @@ namespace ChineseDuck.Bot.Rest.Api
     
             if ((int)response.StatusCode >= 400)
                 throw new ApiException ((int)response.StatusCode, "Error calling GetUserByToken: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
+            if (response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling GetUserByToken: " + response.ErrorMessage, response.ErrorMessage);
 
             return (User) ApiClient.Deserialize(response.Content, typeof(User), response.Headers);
@@ -322,22 +319,24 @@ namespace ChineseDuck.Bot.Rest.Api
             var headerParams = new Dictionary<string, string>();
             var formParams = new Dictionary<string, string>();
             var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-    
-                                                postBody = ApiClient.Serialize(apiUser); // http body (model) parameter
+
+            var postBody = ApiClient.Serialize(apiUser);
     
             // authentication setting, if any
             string[] authSettings = { "cookieAuth" };
     
             // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.POST, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
+            var response = (IRestResponse) ApiClient.CallApi(path, Method.POST, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
     
             if ((int)response.StatusCode >= 400)
                 throw new ApiException ((int)response.StatusCode, "Error calling LoginUser: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
+            if (response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling LoginUser: " + response.ErrorMessage, response.ErrorMessage);
 
-            return;
+            var authCookie = response.Headers.FirstOrDefault(a => a.Name == "Set-Cookie");
+
+            if (authCookie != null)
+                ApiClient.DefaultHeaders["Set-Cookie"] = authCookie.Value.ToString();
         }
     
         /// <summary>
@@ -366,10 +365,8 @@ namespace ChineseDuck.Bot.Rest.Api
     
             if ((int)response.StatusCode >= 400)
                 throw new ApiException ((int)response.StatusCode, "Error calling LogoutUser: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
+            if (response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling LogoutUser: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
         }
     
         /// <summary>
@@ -403,10 +400,8 @@ namespace ChineseDuck.Bot.Rest.Api
     
             if ((int)response.StatusCode >= 400)
                 throw new ApiException ((int)response.StatusCode, "Error calling SetCurrentFolder: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
+            if (response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling SetCurrentFolder: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
         }
     
         /// <summary>
@@ -445,10 +440,8 @@ namespace ChineseDuck.Bot.Rest.Api
     
             if ((int)response.StatusCode >= 400)
                 throw new ApiException ((int)response.StatusCode, "Error calling UpdateUser: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
+            if (response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling UpdateUser: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
         }
     
     }

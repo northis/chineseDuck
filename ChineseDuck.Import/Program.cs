@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using ChineseDuck.Bot.Rest.Api;
 using ChineseDuck.Bot.Rest.Client;
+using ChineseDuck.Bot.Rest.Model;
 using Microsoft.Extensions.Configuration;
 
 namespace ChineseDuck.Import
@@ -20,9 +21,9 @@ namespace ChineseDuck.Import
             var site = configuration["NewWebApi"];
 
             var apiClient = new ApiClient(site);
-            var serviceApi = new ServiceApi(apiClient);
+            var userApi = new UserApi(apiClient);
 
-            var dt = serviceApi.GetDatetime();
+            userApi.LoginUser(new ApiUser{ Code = "", Id = "101"});
 
             using (var context = new LearnChineseContext(connectionString))
             {

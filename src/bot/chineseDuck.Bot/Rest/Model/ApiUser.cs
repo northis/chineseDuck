@@ -34,7 +34,7 @@ namespace ChineseDuck.Bot.Rest.Model {
     /// </summary>
     [DataMember(Name="remember", EmitDefaultValue=false)]
     [JsonProperty(PropertyName = "remember")]
-    public bool? Remember { get; set; }
+    public bool Remember { get; set; }
 
 }
 }

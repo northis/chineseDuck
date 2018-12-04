@@ -162,8 +162,6 @@ namespace ChineseDuck.Bot.Rest.Api
                 throw new ApiException ((int)response.StatusCode, "Error calling AddWord: " + response.Content, response.Content);
             if ((int)response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling AddWord: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
         }
     
         /// <summary>
@@ -199,8 +197,6 @@ namespace ChineseDuck.Bot.Rest.Api
                 throw new ApiException ((int)response.StatusCode, "Error calling DeleteWord: " + response.Content, response.Content);
             if ((int)response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling DeleteWord: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
         }
     
         /// <summary>
@@ -394,8 +390,6 @@ path = path.Replace("{" + "userId" + "}", ApiClient.ParameterToString(userId));
                 throw new ApiException ((int)response.StatusCode, "Error calling MoveWordsToFolder: " + response.Content, response.Content);
             if ((int)response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling MoveWordsToFolder: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
         }
     
         /// <summary>
@@ -436,8 +430,6 @@ path = path.Replace("{" + "userId" + "}", ApiClient.ParameterToString(userId));
                 throw new ApiException ((int)response.StatusCode, "Error calling RenameWord: " + response.Content, response.Content);
             if ((int)response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling RenameWord: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
         }
     
         /// <summary>
@@ -478,8 +470,6 @@ path = path.Replace("{" + "userId" + "}", ApiClient.ParameterToString(userId));
                 throw new ApiException ((int)response.StatusCode, "Error calling ScoreWord: " + response.Content, response.Content);
             if ((int)response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling ScoreWord: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
         }
     
         /// <summary>
@@ -515,8 +505,6 @@ path = path.Replace("{" + "userId" + "}", ApiClient.ParameterToString(userId));
                 throw new ApiException ((int)response.StatusCode, "Error calling UpdateWord: " + response.Content, response.Content);
             if ((int)response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling UpdateWord: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
         }
     
     }

@@ -154,8 +154,6 @@ namespace ChineseDuck.Bot.Rest.Api
                 throw new ApiException ((int)response.StatusCode, "Error calling CreateFolder: " + response.Content, response.Content);
             if ((int)response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling CreateFolder: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
         }
     
         /// <summary>
@@ -196,8 +194,6 @@ namespace ChineseDuck.Bot.Rest.Api
                 throw new ApiException ((int)response.StatusCode, "Error calling CreateFolderForUser: " + response.Content, response.Content);
             if ((int)response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling CreateFolderForUser: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
         }
     
         /// <summary>
@@ -233,8 +229,6 @@ namespace ChineseDuck.Bot.Rest.Api
                 throw new ApiException ((int)response.StatusCode, "Error calling DeleteFolder: " + response.Content, response.Content);
             if ((int)response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling DeleteFolder: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
         }
     
         /// <summary>
@@ -381,8 +375,6 @@ namespace ChineseDuck.Bot.Rest.Api
                 throw new ApiException ((int)response.StatusCode, "Error calling MoveWordsToFolder: " + response.Content, response.Content);
             if ((int)response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling MoveWordsToFolder: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
         }
     
         /// <summary>
@@ -418,8 +410,6 @@ namespace ChineseDuck.Bot.Rest.Api
                 throw new ApiException ((int)response.StatusCode, "Error calling SetCurrentFolder: " + response.Content, response.Content);
             if ((int)response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling SetCurrentFolder: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
         }
     
         /// <summary>
@@ -460,8 +450,6 @@ namespace ChineseDuck.Bot.Rest.Api
                 throw new ApiException ((int)response.StatusCode, "Error calling UpdateFolder: " + response.Content, response.Content);
             if ((int)response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling UpdateFolder: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
         }
     
     }
