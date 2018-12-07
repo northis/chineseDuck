@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces.Data;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace ChineseDuck.Bot.Rest.Model
 {
@@ -60,6 +61,7 @@ namespace ChineseDuck.Bot.Rest.Model
         /// </summary>
         [DataMember(Name = "who", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "who")]
+        [JsonConverter(typeof(StringEnumConverter))]
         public RightEnum Who { get; set; }
 
         /// <summary>

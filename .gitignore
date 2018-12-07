@@ -19,3 +19,4 @@ logs/
 apiKeys.js
 keys.js
 appsettings.json
+/ChineseDuck.Import/Properties/launchSettings.json

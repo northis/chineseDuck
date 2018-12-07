@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using ChineseDuck.Bot.Rest.Client;
 using ChineseDuck.Bot.Rest.Model;
 using RestSharp;
@@ -178,7 +180,7 @@ namespace ChineseDuck.Bot.Rest.Api
             var fileParams = new Dictionary<string, FileParameter>();
             string postBody = null;
     
-                                                postBody = ApiClient.Serialize(user); // http body (model) parameter
+            postBody = ApiClient.Serialize(user); // http body (model) parameter
     
             // authentication setting, if any
             string[] authSettings = { "cookieAuth" };
@@ -336,7 +338,13 @@ namespace ChineseDuck.Bot.Rest.Api
             var authCookie = response.Headers.FirstOrDefault(a => a.Name == "Set-Cookie");
 
             if (authCookie != null)
-                ApiClient.DefaultHeaders["Set-Cookie"] = authCookie.Value.ToString();
+            {
+                if(ApiClient.RestClient.CookieContainer == null)
+                    ApiClient.RestClient.CookieContainer = new CookieContainer();
+
+                ApiClient.RestClient.CookieContainer.SetCookies(new Uri(ApiClient.BasePath),
+                    authCookie.Value.ToString());
+            }
         }
     
         /// <summary>

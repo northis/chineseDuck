@@ -1,29 +1,36 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
+using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Rest.Api;
 using ChineseDuck.Bot.Rest.Client;
 using ChineseDuck.Bot.Rest.Model;
-using Microsoft.Extensions.Configuration;
 
 namespace ChineseDuck.Import
 {
     class Program
     {
-        static void Main(string[] args)
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+        private const string PasswordKey = "--password=";
+        private const string UserIdKey = "--userId=";
+        private const string OldSqlDbKey = "--OldSqlDb=";
+        private const string NewWebApiKey = "--NewWebApi=";
 
-            var configuration = builder.Build();
-            var connectionString = configuration.GetConnectionString("OldSqlDb");
-            var site = configuration["NewWebApi"];
+        private static string GetParameter(string key)
+        {
+            return Environment.GetCommandLineArgs().Where(a => a.StartsWith(key)).Select(a => a.Replace(key, string.Empty))
+                .FirstOrDefault();
+        }
+
+        static void Main()
+        {
+            var password = GetParameter(PasswordKey);
+            var userId = GetParameter(UserIdKey);
+            var connectionString = GetParameter(OldSqlDbKey);
+            var site = GetParameter(NewWebApiKey);
 
             var apiClient = new ApiClient(site);
             var userApi = new UserApi(apiClient);
 
-            userApi.LoginUser(new ApiUser{ Code = "", Id = "101"});
+            userApi.LoginUser(new ApiUser{ Code = password, Id = userId });
 
             using (var context = new LearnChineseContext(connectionString))
             {
@@ -31,7 +38,19 @@ namespace ChineseDuck.Import
 
                 foreach (var user in users)
                 {
-                    Console.WriteLine($"{user.IdUser} - {user.Name} - {user.JoinDate}");
+                    try
+                    {
+                        userApi.CreateUser(new User
+                        {
+                            CurrentFolderId = 0, IdUser = user.IdUser, Name = user.Name, JoinDate = user.JoinDate,
+                            LastCommand = user.LastCommand, Mode = user.Mode, Who = RightEnum.Write
+                        });
+                        Console.WriteLine($"{user.IdUser} {user.Name} - user is added");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"{user.IdUser} {user.Name} - user is not added: Error {ex.Message}");
+                    }
                 }
             }
             Console.ReadKey();
