@@ -2,14 +2,14 @@
   "openapi": "3.0.0",
   "servers": [
     {
-      "url": "https://udd3r.com/api/v1/"
+      "url": "https://chineseduck.online/api/v1/"
     }
   ],
   "info": {
     "description": "Chinese Duck Bot Api",
     "version": "1.1.1-oas3",
     "title": "Chinese Duck Bot Api",
-    "termsOfService": "https://udd3r.com/terms/",
+    "termsOfService": "https://chineseduck.online/terms/",
     "contact": {
       "email": "north@live.ru"
     },
@@ -438,6 +438,76 @@
         "security": [
           {
             "cookieAuth": ["read"]
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["word"],
+        "summary": "Delete file",
+        "operationId": "deleteFile",
+        "parameters": [
+          {
+            "name": "fileId",
+            "in": "path",
+            "description": "File id to delete",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "403": {
+            "description": "You have no rights to do this"
+          },
+          "404": {
+            "description": "File is not found"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ]
+      }
+    },
+    "/word/file": {
+      "post": {
+        "tags": ["word"],
+        "summary": "Add file",
+        "operationId": "addFile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WordFileBytes"
+              }
+            }
+          },
+          "description": "Word file that needs to be added to the store",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation，fileId",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You have no rights to do this"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
           }
         ]
       }
@@ -909,7 +979,7 @@
         "operationId": "deleteUser",
         "parameters": [
           {
-            "name": "id",
+            "name": "userId",
             "in": "path",
             "description": "The user id that needs to be deleted.",
             "required": true,
@@ -990,7 +1060,7 @@
         },
         "security": [
           {
-            "cookieAuth": ["admin"]
+            "cookieAuth": ["read"]
           }
         ]
       }
@@ -1092,7 +1162,7 @@
           },
           "lastView": {
             "type": "string",
-            "format": "datetime"
+            "format": "date-time"
           },
           "lastLearned": {
             "type": "string",
@@ -1106,7 +1176,7 @@
           },
           "rightAnswerNumber": {
             "type": "integer",
-            "format": "int32"
+            "format": "int16"
           },
           "pronunciationCount": {
             "type": "integer",
@@ -1206,13 +1276,9 @@
       },
       "WordFile": {
         "type": "object",
-        "required": ["_id", "word_id", "createDate"],
+        "required": ["id", "createDate", "height", "width"],
         "properties": {
-          "_id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "word_id": {
+          "id": {
             "type": "integer",
             "format": "int64"
           },
@@ -1229,6 +1295,19 @@
         },
         "xml": {
           "name": "WordFile"
+        }
+      },
+      "WordFileBytes": {
+        "type": "object",
+        "required": ["bytes"],
+        "properties": {
+          "bytes": {
+            "type": "string",
+            "format": "byte"
+          }
+        },
+        "xml": {
+          "name": "WordFileBytes"
         }
       },
       "ApiUser": {

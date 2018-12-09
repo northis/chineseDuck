@@ -201,6 +201,11 @@ router
   .put(word.rename.put);
 
 router
+  .route(routes._word_file.express)
+  .all(accessControl(routes._word_file))
+  .post(word.file.post);
+
+router
   .route(routes._word__wordId__score.express)
   .all(accessControl(routes._word__wordId__score))
   .all(wordControl)
@@ -218,5 +223,10 @@ router
   .all(accessControl(routes._word_user__userId__search__wordEntry_))
   .all(userControl)
   .get(word.search.get);
+
+router
+  .route(routes._word_file__fileId_.express)
+  .all(accessControl(routes._word_file__fileId_))
+  .delete(word.file.delete);
 
 export default router;

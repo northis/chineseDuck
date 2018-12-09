@@ -24,8 +24,12 @@ export default { _word:
      express: '/word/user/:userId/search/:wordEntry' },
   _word_file__fileId_:
    { value: '/word/file/{fileId}',
-     actions: { get: ["read"] },
+     actions: { get: ["read"], delete: ["admin"] },
      express: '/word/file/:fileId' },
+  _word_file:
+   { value: '/word/file',
+     actions: { post: ["admin"] },
+     express: '/word/file' },
   _folder:
    { value: '/folder',
      actions: { post: ["write"], get: ["write"] },
@@ -64,5 +68,5 @@ export default { _word:
      express: '/user/currentFolder/:folderId' },
   _service_datetime:
    { value: '/service/datetime',
-     actions: { get: ["admin"] },
+     actions: { get: ["read"] },
      express: '/service/datetime' } }

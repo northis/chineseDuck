@@ -12,6 +12,7 @@ import mh from "../../src/server/api/db";
 import * as testEntities from "../db/testEntities";
 import * as moment from "moment";
 import { isNullOrUndefined } from "util";
+import * as fileB64 from "../db/fileB64";
 
 const routes = rt.default;
 const urlJoin = uj.default;
@@ -840,6 +841,102 @@ function testWord() {
       .get(url)
       .set("Content-Type", "image/png");
     assert.ok(response.status === 404);
+  });
+
+  it(`${routes._word_file__fileId_.value} - delete`, async () => {
+    let wordDb = await mh.word.findOne({ owner_id: DebugKeys.user_id });
+    let url = urlJoin(
+      Settings.apiPrefix,
+      routes._word_file__fileId_.value.replace(
+        PathWildcardEnum.fileId,
+        wordDb.full.id
+      )
+    );
+
+    let response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "image/png");
+    assert.ok(response.status === 200);
+
+    const fileId = response.body._id;
+
+    response = await request(srv.default.app)
+      .delete(url)
+      .set("Content-Type", "application/json");
+    assert.ok(response.status === 401);
+
+    response = await request(srv.default.app)
+      .delete(url)
+      .set("Cookie", [cookie])
+      .set("Content-Type", "application/json");
+    assert.ok(response.status === 403);
+
+    response = await request(srv.default.app)
+      .delete(url)
+      .set("Cookie", [cookieAdmin])
+      .set("Content-Type", "application/json");
+    assert.ok(response.status === 200);
+
+    const wordFile = await mh.wordFile.findOne({ _id: fileId });
+    assert.ok(isNullOrUndefined(wordFile));
+
+    url = urlJoin(
+      Settings.apiPrefix,
+      routes._word_file__fileId_.value.replace(
+        PathWildcardEnum.fileId,
+        DebugKeys.notAnumber
+      )
+    );
+
+    response = await request(srv.default.app)
+      .delete(url)
+      .set("Cookie", [cookieAdmin])
+      .set("Content-Type", "application/json");
+    assert.ok(response.status === 400);
+
+    url = urlJoin(
+      Settings.apiPrefix,
+      routes._word_file__fileId_.value.replace(
+        PathWildcardEnum.fileId,
+        DebugKeys.not_existing_file_id
+      )
+    );
+
+    response = await request(srv.default.app)
+      .get(url)
+      .set("Cookie", [cookieAdmin])
+      .set("Content-Type", "application/json");
+    assert.ok(response.status === 404);
+  });
+
+  it(`${routes._word_file.value} - post`, async () => {
+    const fileBody = fileB64.testWordImg;
+    let url = urlJoin(Settings.apiPrefix, routes._word_file.value);
+    let response = await request(srv.default.app)
+      .post(url)
+      .set("Cookie", [cookieAdmin])
+      .set("Content-Type", "application/json")
+      .send(JSON.stringify({ bytes: fileBody }));
+
+    assert.ok(response.status === 200);
+
+    const fileId = response.body;
+
+    const wordFile = await mh.wordFile.findOne({ _id: fileId });
+    assert.ok(wordFile.bytes == fileBody);
+
+    response = await request(srv.default.app)
+      .post(url)
+      .set("Content-Type", "application/json")
+      .send(JSON.stringify({ bytes: fileBody }));
+    assert.ok(response.status === 401);
+
+    response = await request(srv.default.app)
+      .post(url)
+      .set("Cookie", [cookie])
+      .set("Content-Type", "application/json")
+      .send(JSON.stringify({ bytes: fileBody }));
+    assert.ok(response.status === 403);
   });
 
   it(`${routes._word__wordId_.value} - delete`, async () => {

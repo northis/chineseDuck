@@ -282,5 +282,33 @@ export const file = {
       "Content-Length": img.length
     });
     res.end(img);
+  },
+  /**
+   * summary:Delete file
+   * description:
+   * parameters: fileId
+   * produces:
+   * responses: 200, 400, 404
+   */ delete: async function deleteWordCard(req, res, next) {
+    const fileId = req.params.fileId;
+
+    if (isNullOrUndefined(fileId) || !mongoose.Types.ObjectId.isValid(fileId))
+      return errors.e400(res, "Bad file Id");
+
+    let delRes = await mh.wordFile.findByIdAndRemove({ _id: fileId });
+    if (isNullOrUndefined(delRes)) return errors.e404(res, "File not found");
+
+    res.json(delRes);
+  },
+  /**
+   * summary: Add file
+   * description:
+   * parameters: fileId
+   * produces:
+   * responses: 200
+   */ post: async function addWordCard(req, res, next) {
+    const fileBody = req.body.bytes;
+    const result = await mh.wordFile.create({ bytes: fileBody });
+    res.json(result._id);
   }
 };
