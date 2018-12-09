@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using ChineseDuck.Bot.Rest.Client;
 using ChineseDuck.Bot.Rest.Model;
 using RestSharp;
@@ -10,6 +12,25 @@ namespace ChineseDuck.Bot.Rest.Api
     /// </summary>
     public interface IWordApi
     {
+        /// <summary>
+        /// Delete file
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="fileId">File id to delete</param>
+        /// <returns></returns>
+        void DeleteFile(string fileId);
+
+        /// <summary>
+        /// Add file
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="wordFileBytes">Word file that needs to be added to the store</param>
+        /// <returns>string</returns>
+        string AddFile(WordFileBytes wordFileBytes);
         /// <summary>
         /// Add a new word to the store 
         /// </summary>
@@ -95,40 +116,68 @@ namespace ChineseDuck.Bot.Rest.Api
         }
     
         /// <summary>
-        /// Initializes a new instance of the <see cref="WordApi"/> class.
-        /// </summary>
-        /// <returns></returns>
-        public WordApi(string basePath)
-        {
-            ApiClient = new ApiClient(basePath);
-        }
-    
-        /// <summary>
-        /// Sets the base path of the API client.
-        /// </summary>
-        /// <param name="basePath">The base path</param>
-        /// <value>The base path</value>
-        public void SetBasePath(string basePath)
-        {
-            ApiClient.BasePath = basePath;
-        }
-    
-        /// <summary>
-        /// Gets the base path of the API client.
-        /// </summary>
-        /// <param name="basePath">The base path</param>
-        /// <value>The base path</value>
-        public string GetBasePath(string basePath)
-        {
-            return ApiClient.BasePath;
-        }
-    
-        /// <summary>
         /// Gets or sets the API client.
         /// </summary>
         /// <value>An instance of the ApiClient</value>
         public ApiClient ApiClient {get; set;}
-    
+
+        public void DeleteFile(string fileId)
+        {
+            // verify the required parameter 'fileId' is set
+            if (fileId == null)
+                throw new ApiException(400, "Missing required parameter 'fileId' when calling WordApi->DeleteFile");
+
+            var path = "/word/file/{fileId}";
+            path = path.Replace("{format}", "json");
+            path = path.Replace("{" + "fileId" + "}", ApiClient.ParameterToString(fileId));
+            
+            var queryParams = new Dictionary<string, string>();
+            var headerParams = new Dictionary<string, string>();
+            var formParams = new Dictionary<string, string>();
+            var fileParams = new Dictionary<string, FileParameter>();
+
+            // authentication setting, if any
+            string[] authSettings = { "cookieAuth" };
+
+            // make the HTTP request
+            IRestResponse response = (IRestResponse)ApiClient.CallApi(path, Method.DELETE, queryParams, null, headerParams, formParams, fileParams, authSettings);
+
+            if ((int)response.StatusCode >= 400)
+                throw new ApiException((int)response.StatusCode, "Error calling DeleteFile: " + response.Content, response.Content);
+            if (response.StatusCode == 0)
+                throw new ApiException((int)response.StatusCode, "Error calling DeleteFile: " + response.ErrorMessage, response.ErrorMessage);
+        }
+
+        public string AddFile(WordFileBytes wordFileBytes)
+        {
+            // verify the required parameter 'wordFileBytes' is set
+            if (wordFileBytes == null) throw new ApiException(400, "Missing required parameter 'word' when calling AddWord");
+
+            var path = "/word/file";
+            path = path.Replace("{format}", "json");
+
+            var queryParams = new Dictionary<string, string>();
+            var headerParams = new Dictionary<string, string>();
+            var formParams = new Dictionary<string, string>();
+            var fileParams = new Dictionary<string, FileParameter>();
+
+            var postBody = ApiClient.Serialize(wordFileBytes);
+
+            // authentication setting, if any
+            string[] authSettings = { "cookieAuth" };
+
+            // make the HTTP request
+            var response = (IRestResponse)ApiClient.CallApi(path, Method.POST, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
+
+            if ((int)response.StatusCode >= 400)
+                throw new ApiException((int)response.StatusCode, "Error calling AddFile: " + response.Content, response.Content);
+            if (response.StatusCode == 0)
+                throw new ApiException((int)response.StatusCode, "Error calling AddFile: " + response.ErrorMessage, response.ErrorMessage);
+
+
+            return (string)ApiClient.Deserialize(response.Content, typeof(string), response.Headers);
+        }
+
         /// <summary>
         /// Add a new word to the store 
         /// </summary>
@@ -136,11 +185,9 @@ namespace ChineseDuck.Bot.Rest.Api
         /// <returns></returns>            
         public void AddWord (Word word)
         {
-            
             // verify the required parameter 'word' is set
             if (word == null) throw new ApiException(400, "Missing required parameter 'word' when calling AddWord");
             
-    
             var path = "/word";
             path = path.Replace("{format}", "json");
                 
@@ -148,19 +195,18 @@ namespace ChineseDuck.Bot.Rest.Api
             var headerParams = new Dictionary<string, string>();
             var formParams = new Dictionary<string, string>();
             var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-    
-                                                postBody = ApiClient.Serialize(word); // http body (model) parameter
+
+            var postBody = ApiClient.Serialize(word);
     
             // authentication setting, if any
             string[] authSettings = { "cookieAuth" };
     
             // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.POST, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
+            var response = (IRestResponse) ApiClient.CallApi(path, Method.POST, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
     
             if ((int)response.StatusCode >= 400)
                 throw new ApiException ((int)response.StatusCode, "Error calling AddWord: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
+            if (response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling AddWord: " + response.ErrorMessage, response.ErrorMessage);
         }
     
@@ -171,10 +217,8 @@ namespace ChineseDuck.Bot.Rest.Api
         /// <returns></returns>            
         public void DeleteWord (long? wordId)
         {
-            
             // verify the required parameter 'wordId' is set
-            if (wordId == null) throw new ApiException(400, "Missing required parameter 'wordId' when calling DeleteWord");
-            
+            if (wordId == null) throw new ApiException(400, "Missing required parameter 'wordId' when calling DeleteWord");            
     
             var path = "/word/{wordId}";
             path = path.Replace("{format}", "json");

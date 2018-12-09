@@ -46,8 +46,13 @@ namespace ChineseDuck.Import
                     {
                         userApi.CreateUser(new User
                         {
-                            CurrentFolderId = 0, IdUser = user.IdUser, Name = user.Name, JoinDate = user.JoinDate,
-                            LastCommand = user.LastCommand, Mode = user.Mode, Who = RightEnum.Write
+                            CurrentFolderId = 0,
+                            IdUser = user.IdUser,
+                            Name = user.Name,
+                            JoinDate = user.JoinDate,
+                            LastCommand = user.LastCommand,
+                            Mode = user.Mode,
+                            Who = RightEnum.Write
                         });
                         usersCount++;
                     }
@@ -99,10 +104,10 @@ namespace ChineseDuck.Import
                             scoreApi.ViewCount = score.ViewCount ?? 0;
                         }
 
-                        var fileA = word.WordFileA;
-                        var fileO = word.WordFileO;
-                        var fileP = word.WordFileP;
-                        var fileT = word.WordFileT;
+                        var fileA = context.WordFileA.FirstOrDefault(a=>a.IdWord == word.Id);
+                        var fileO = context.WordFileO.FirstOrDefault(a => a.IdWord == word.Id);
+                        var fileP = context.WordFileP.FirstOrDefault(a => a.IdWord == word.Id);
+                        var fileT = context.WordFileT.FirstOrDefault(a => a.IdWord == word.Id);
 
                         if (fileA == null || fileO == null || fileP == null || fileT == null)
                         {
@@ -110,7 +115,10 @@ namespace ChineseDuck.Import
                             continue;
                         }
 
-                        // wordApi.
+                        var fileAId = wordApi.AddFile(new WordFileBytes {Bytes = fileA.Bytes});
+                        var fileOId = wordApi.AddFile(new WordFileBytes { Bytes = fileO.Bytes });
+                        var filePId = wordApi.AddFile(new WordFileBytes { Bytes = fileP.Bytes });
+                        var fileTId = wordApi.AddFile(new WordFileBytes { Bytes = fileT.Bytes });
 
                         wordApi.AddWord(new Word
                         {
@@ -119,13 +127,25 @@ namespace ChineseDuck.Import
                             SyllablesCount = word.SyllablesCount, Translation = word.Translation, Usage = word.Usage,
                             Score = scoreApi,
                             CardAll = new WordFile
-                                {CreateDate = fileA.CreateDate, Height = fileA.Height ?? 0, Width = fileA.Width ?? 0},
+                            {
+                                CreateDate = fileA.CreateDate, Height = fileA.Height ?? 0, Width = fileA.Width ?? 0,
+                                Id = fileAId
+                            },
                             CardOriginalWord = new WordFile
-                                { CreateDate = fileO.CreateDate, Height = fileO.Height ?? 0, Width = fileO.Width ?? 0 },
+                            {
+                                CreateDate = fileO.CreateDate, Height = fileO.Height ?? 0, Width = fileO.Width ?? 0,
+                                Id = fileOId
+                            },
                             CardPronunciation = new WordFile
-                                { CreateDate = fileP.CreateDate, Height = fileP.Height ?? 0, Width = fileP.Width ?? 0 },
+                            {
+                                CreateDate = fileP.CreateDate, Height = fileP.Height ?? 0, Width = fileP.Width ?? 0,
+                                Id = filePId
+                            },
                             CardTranslation = new WordFile
-                                { CreateDate = fileT.CreateDate, Height = fileT.Height ?? 0, Width = fileT.Width ?? 0 }
+                            {
+                                CreateDate = fileT.CreateDate, Height = fileT.Height ?? 0, Width = fileT.Width ?? 0,
+                                Id = fileTId
+                            }
                         });
                         wordsCount++;
                     }

@@ -7,7 +7,7 @@ namespace ChineseDuck.Bot.Interfaces.Data
         /// <summary>
         /// Gets or Sets Id
         /// </summary>
-        long Id { get; set; }
+        string Id { get; set; }
 
         /// <summary>
         /// Gets or Sets CreateDate

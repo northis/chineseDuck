@@ -16,7 +16,7 @@ namespace ChineseDuck.Bot.Rest.Model
         /// </summary>
         [DataMember(Name = "id", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "id")]
-        public long Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Gets or Sets CreateDate

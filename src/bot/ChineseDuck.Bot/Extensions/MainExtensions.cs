@@ -1,6 +1,7 @@
 ﻿using System;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces.Data;
+using ChineseDuck.Bot.Rest.Client;
 
 //using YellowDuck.LearnChinese.Providers;
 
