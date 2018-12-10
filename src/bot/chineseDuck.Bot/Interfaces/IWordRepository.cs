@@ -8,8 +8,6 @@ namespace ChineseDuck.Bot.Interfaces
 {
     public interface IWordRepository
     {
-        void AddFriendUser(long ownerUserId, long friendUserId);
-
         void AddUser(IUser user);
 
         void AddWord(IWord word, long idUser);
@@ -31,9 +29,7 @@ namespace ChineseDuck.Bot.Interfaces
         DateTime GetRepositoryTime();
 
         string GetUserCommand(long userId);
-
-        IQueryable<IUser> GetUserFriends(long userId);
-
+        
         IQueryable<IUser> GetUsers();
 
         WordStatistic GetUserWordStatistic(long userId, long wordId);
@@ -43,9 +39,7 @@ namespace ChineseDuck.Bot.Interfaces
         byte[] GetWordFlashCard(long fileId);
 
         bool IsUserExist(long userId);
-
-        void RemoveFriendUser(long ownerUserId, long friendUserId);
-
+        
         void RemoveUser(long userId);
 
         void SetLearnMode(long userId, EGettingWordsStrategy mode);

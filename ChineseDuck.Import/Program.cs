@@ -92,6 +92,7 @@ namespace ChineseDuck.Import
                             scoreApi.IsInLearnMode = score.IsInLearnMode;
                             scoreApi.LastView = score.LastView;
                             scoreApi.LastLearned = score.LastLearned;
+                            scoreApi.LastLearnMode = score.LastLearnMode;
 
                             scoreApi.OriginalWordCount = score.OriginalWordCount ?? 0;
                             scoreApi.OriginalWordSuccessCount = score.OriginalWordSuccessCount ?? 0;

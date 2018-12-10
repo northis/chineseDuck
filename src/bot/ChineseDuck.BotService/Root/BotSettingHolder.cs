@@ -11,6 +11,7 @@ namespace ChineseDuck.BotService.Root
             PollingTimeout = TimeSpan.Parse(configuration["PollingTimeout"]);
             WebhookUrl = configuration["WebhookUrl"];
             WebhookPublicUrl = configuration["WebhookPublicUrl"];
+            ApiPublicUrl = configuration["ApiPublicUrl"];
             LocalPort = int.Parse(configuration["LocalPort"]);
             Singleton = this;
         }
@@ -21,6 +22,7 @@ namespace ChineseDuck.BotService.Root
         public string WebhookUrl{ get; }
         public string WebhookPublicUrl { get; }
         public int LocalPort { get; }
+        public string ApiPublicUrl { get; }
 
         public static BotSettingHolder Singleton { get; private set; }
         #endregion

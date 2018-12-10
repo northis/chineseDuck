@@ -1,6 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using ChineseDuck.Bot.Interfaces;
+using ChineseDuck.Bot.Rest.Api;
+using ChineseDuck.Bot.Rest.Client;
+using ChineseDuck.Bot.Rest.Repository;
 using ChineseDuck.BotService.Commands;
 using ChineseDuck.BotService.Commands.Common;
 using ChineseDuck.BotService.MainExecution;
@@ -79,12 +83,25 @@ namespace ChineseDuck.BotService.Root
             var tClient = new TelegramBotClient(botSettings.TelegramBotKey)
                 { Timeout = botSettings.PollingTimeout };
 
-            services.AddSingleton(a => new AntiDdosChecker(GetDateTime));
+            var apiClient = new ApiClient(botSettings.ApiPublicUrl);
+            var wordApi = new WordApi(apiClient);
+            var userApi = new UserApi(apiClient);
+            var serviceApi = new ServiceApi(apiClient);
+            var folderApi = new FolderApi(apiClient);
+            var log4NetService = new Log4NetService();
+            var restWordRepository = new RestWordRepository(wordApi, userApi, serviceApi, folderApi);
+            var antiDdosChecker = new AntiDdosChecker(GetDateTime);
+
+            services.AddSingleton(a => antiDdosChecker);
             services.AddSingleton(bS => botSettings);
             services.AddSingleton(cl => tClient);
-            services.AddSingleton(cl => tClient);
-            services.AddSingleton<ILogService, Log4NetService>();
-            services.AddSingleton<QueryHandler>();
+            services.AddSingleton<ILogService>(log4NetService);
+            services.AddSingleton<IWordRepository>(restWordRepository);
+
+            var flashCardUrl = $"{botSettings.ApiPublicUrl}/word/file";
+
+            services.AddSingleton(qh =>
+                new QueryHandler(tClient, log4NetService, restWordRepository, antiDdosChecker, flashCardUrl));
             services.AddTransient(a => GetCommands);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
