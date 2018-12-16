@@ -145,16 +145,28 @@
           "description": "Word ids",
           "required": true
         }
-      },
+      }
+    },
+    "/word/folder/{folderId}/count/{count}": {
       "get": {
         "tags": ["word", "folder"],
         "description": "Get words by folder id",
         "operationId": "getWordsFolderId",
         "parameters": [
           {
-            "name": "folderId",
             "in": "path",
+            "name": "folderId",
             "description": "Folder id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "in": "path",
+            "name": "count",
+            "description": "Count limit",
             "required": true,
             "schema": {
               "type": "integer",

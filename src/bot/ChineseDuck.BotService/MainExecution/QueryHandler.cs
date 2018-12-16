@@ -1,15 +1,21 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces;
 using ChineseDuck.Bot.ObjectModels;
+using ChineseDuck.BotService.Commands;
 using ChineseDuck.Common.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.InlineQueryResults;
+using Telegram.Bot.Types.InputFiles;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace ChineseDuck.BotService.MainExecution
 {
@@ -18,19 +24,20 @@ namespace ChineseDuck.BotService.MainExecution
         private readonly AntiDdosChecker _checker;
         private readonly TelegramBotClient _client;
         private readonly string _flashCardUrl;
+        private readonly ICommandManager _commandManager;
         private readonly IWordRepository _repository;
         private readonly ILogService _logService;
 
         public int MaxInlineQueryLength = 5;
         public int MaxInlineSearchResult = 7;
 
-        public QueryHandler(TelegramBotClient client, ILogService logService, IWordRepository repository, AntiDdosChecker checker,
-            string flashCardUrl)
+        public QueryHandler(TelegramBotClient client, ILogService logService, IWordRepository repository, AntiDdosChecker checker,string flashCardUrl, ICommandManager commandManager)
         {
             _client = client;
             _repository = repository;
             _checker = checker;
             _flashCardUrl = flashCardUrl;
+            _commandManager = commandManager;
             _logService = logService;
         }
 
@@ -82,15 +89,14 @@ namespace ChineseDuck.BotService.MainExecution
             if (q.Length > MaxInlineQueryLength)
                 return;
 
-            //if (!_repository.IsUserExist(userId))
-            //    _repository.AddUser(new LearnChinese.Data.Ef.User
-            //    {
-            //        IdUser = userId,
-            //        Name = $"{inlineQuery.From.FirstName} {inlineQuery.From.LastName}",
-            //        Mode = EGettingWordsStrategy.Random.ToString()
-            //    });
+            if (!_repository.IsUserExist(userId))
+                _repository.AddUser(new Bot.Rest.Model.User
+                {
+                    IdUser = userId,
+                    Name = $"{inlineQuery.From.FirstName} {inlineQuery.From.LastName}",
+                    Mode = EGettingWordsStrategy.Random.ToString()
+                });
 
-            //IEnumerable<InlineQueryResult> inlineQueryResults;
             WordSearchResult[] results;
 
             // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
@@ -101,58 +107,33 @@ namespace ChineseDuck.BotService.MainExecution
 
             if (!results.Any())
             {
-                //await _client.AnswerInlineQueryAsync(inlineQuery.Id, new InlineQueryResult[]
-                //{
-                //    new InlineQueryResultArticle
-                //    {
-                //        Title = "Please, type a chinese word to view it's flashcard",
-                //        Id = inlineQuery.Id,
-                //        InputMessageContent =
-                //            new InputTextMessageContent
-                //            {
-                //                DisableWebPagePreview = true,
-                //                MessageText = "Still can't show you a flashcard",
-                //                ParseMode = ParseMode.Default
-                //            }
-                //    }
-                //});
+                await _client.AnswerInlineQueryAsync(inlineQuery.Id, new InlineQueryResultBase[]
+                {
+                    new InlineQueryResultArticle(inlineQuery.Id, "Please, type a chinese word to view it's flashcard",
+                        new InputTextMessageContent("Still can't show you a flashcard")
+                        {
+                            DisableWebPagePreview = true,
+                            ParseMode = ParseMode.Default
+                        })
+                });
 
                 _checker.UserQueryProcessed(userId);
                 return;
             }
 
 
-            //if (MainFactory.UseWebhooks)
-            //    inlineQueryResults = results.Select(
-            //        a =>
-            //            new InlineQueryResultPhoto
-            //            {
-            //                Caption = a.OriginalWord,
-            //                Url = _flashCardUrl + a.FileId,
-            //                ThumbUrl = _flashCardUrl + a.FileId,
-            //                Height = a.HeightFlashCard.GetValueOrDefault(),
-            //                Width = a.WidthFlashCard.GetValueOrDefault(),
-            //                Id = Guid.NewGuid().ToString()
-            //            });
-            //else
-            //    inlineQueryResults = results.Select(
-            //        a =>
-            //            new InlineQueryResultArticle
-            //            {
-            //                Title = $"{a.OriginalWord}-{a.Pronunciation}",
-            //                Id = inlineQuery.Id,
-            //                InputMessageContent =
-            //                    new InputTextMessageContent
-            //                    {
-            //                        DisableWebPagePreview = true,
-            //                        MessageText =
-            //                            $"<b>{a.OriginalWord}</>{Environment.NewLine}<i>{a.Pronunciation}</i>{Environment.NewLine}{a.Translation}",
-            //                        ParseMode = ParseMode.Html
-            //                    }
-            //            });
+            var inlineQueryResults = results.Select(
+                a =>
+                    new InlineQueryResultPhoto(Guid.NewGuid().ToString(), _flashCardUrl + a.FileId,
+                        _flashCardUrl + a.FileId)
+                    {
+                        Caption = a.OriginalWord,
+                        PhotoHeight = a.HeightFlashCard.GetValueOrDefault(),
+                        PhotoWidth = a.WidthFlashCard.GetValueOrDefault()
+                    });
 
-            //await _client.AnswerInlineQueryAsync(inlineQuery.Id, inlineQueryResults.ToArray(), 0);
 
+            await _client.AnswerInlineQueryAsync(inlineQuery.Id, inlineQueryResults.ToArray(), 0);
             _checker.UserQueryProcessed(userId);
         }
 
@@ -201,11 +182,13 @@ namespace ChineseDuck.BotService.MainExecution
                     TextOnly = noEmojiCmd.Replace(possiblePreviousCommand, string.Empty)
                 };
 
-                if (msg.Document != null)
-                {
-                    var file = await _client.GetFileAsync(msg.Document.FileId);
-                    //mItem.FileStream = file.FileStream;
-                }
+                // TODO
+                //if (msg.Document != null)
+                //{
+                //    var file = await _client.GetFileAsync(msg.Document.FileId);
+
+                //    mItem.FileStream = file.FileStream;
+                //}
 
                 await HandleCommand(mItem);
             }
@@ -213,32 +196,37 @@ namespace ChineseDuck.BotService.MainExecution
 
         private async Task HandleCommand(MessageItem mItem)
         {
-            //var handler = MainFactory.GetCommandHandler(mItem.Command);
-            //var reply = handler.Reply(mItem);
+            var handler = _commandManager.GetCommandHandler(mItem.Command);
+            var reply = handler.Reply(mItem);
 
-            //if (reply.Markup == null)
-            //    reply.Markup = new ReplyKeyboardRemove();
+            if (reply.Markup == null)
+                reply.Markup = new ReplyKeyboardRemove();
 
-            //if (reply.Picture == null)
-            //    await _client.SendTextMessageAsync(mItem.ChatId, reply.Message, ParseMode.Default, true, false, 0,
-            //        reply.Markup);
-            //else
-            //    using (var ms = new MemoryStream(reply.Picture.ImageBody))
-            //    {
-            //        await _client.SendPhotoAsync(mItem.ChatId, new FileToSend("file.jpg", ms), reply.Message, false,
-            //            0, reply.Markup);
-            //    }
+            if (reply.Picture == null)
+            {
+                await _client.SendTextMessageAsync(mItem.ChatId, reply.Message, ParseMode.Default, true, false, 0,
+                    reply.Markup);
+            }
+            else
+            {
+                using (var ms = new MemoryStream(reply.Picture.ImageBody))
+                {
+                    await _client.SendPhotoAsync(mItem.ChatId, new InputOnlineFile(ms, "file.jpg"), reply.Message,
+                        ParseMode.Default, false,
+                        0, reply.Markup);
+                }
+            }
         }
 
         private async Task OnMessage(Message msg, string argumentCommand, User user)
         {
-            //if (!_repository.IsUserExist(user.Id))
-            //    _repository.AddUser(new LearnChinese.Data.Ef.User
-            //    {
-            //        IdUser = user.Id,
-            //        Name = $"{user.FirstName} {user.LastName}",
-            //        Mode = EGettingWordsStrategy.Random.ToString()
-            //    });
+            if (!_repository.IsUserExist(user.Id))
+                _repository.AddUser(new Bot.Rest.Model.User
+                {
+                    IdUser = user.Id,
+                    Name = $"{user.FirstName} {user.LastName}",
+                    Mode = EGettingWordsStrategy.Random.ToString()
+                });
 
             var firstEntity = msg.Entities.FirstOrDefault();
             if (firstEntity?.Type == MessageEntityType.BotCommand)

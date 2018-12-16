@@ -608,7 +608,9 @@ function testWord() {
     assert.ok(response.status === 401);
   });
 
-  it(`${routes._word_folder__folderId_.value} - get`, async () => {
+  it(`${
+    routes._word_folder__folderId__count__count_.value
+  } - get`, async () => {
     let folderDb = await mh.folder.findOne({ owner_id: DebugKeys.user_id });
     let words = await mh.word
       .find({ owner_id: DebugKeys.user_id })
@@ -616,10 +618,9 @@ function testWord() {
 
     let url = urlJoin(
       Settings.apiPrefix,
-      routes._word_folder__folderId_.value.replace(
-        PathWildcardEnum.folderId,
-        folderDb._id
-      )
+      routes._word_folder__folderId__count__count_.value
+        .replace(PathWildcardEnum.folderId, folderDb._id)
+        .replace(PathWildcardEnum.count, 0)
     );
 
     let response = await request(srv.default.app)
@@ -629,10 +630,24 @@ function testWord() {
     assert.ok(response.status === 200);
     assert.ok(response.body.length === words.length);
 
+    const limit = 1;
+    url = urlJoin(
+      Settings.apiPrefix,
+      routes._word_folder__folderId__count__count_.value
+        .replace(PathWildcardEnum.folderId, folderDb._id)
+        .replace(PathWildcardEnum.count, limit)
+    );
+    response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie]);
+    assert.ok(response.status === 200);
+    assert.ok(response.body.length === limit);
+
     folderDb = await mh.folder.findOne({ owner_id: DebugKeys.admin_id });
     url = urlJoin(
       Settings.apiPrefix,
-      routes._word_folder__folderId_.value.replace(
+      routes._word_folder__folderId__count__count_.value.replace(
         PathWildcardEnum.folderId,
         folderDb._id
       )

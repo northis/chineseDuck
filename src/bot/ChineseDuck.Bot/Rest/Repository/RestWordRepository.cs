@@ -12,52 +12,67 @@ namespace ChineseDuck.Bot.Rest.Repository
 {
     public class RestWordRepository : IWordRepository
     {
-        public IWordApi WordApi { get; }
-        public IUserApi UserApi { get; }
-        public IServiceApi ServiceApi { get; }
-        public IFolderApi FolderApi { get; }
+        private readonly IWordApi _wordApi;
+        private readonly IUserApi _userApi;
+        private readonly IServiceApi _serviceApi;
+        private readonly IFolderApi _folderApi;
 
         public RestWordRepository(IWordApi wordApi, IUserApi userApi, IServiceApi serviceApi, IFolderApi folderApi)
         {
-            WordApi = wordApi;
-            UserApi = userApi;
-            ServiceApi = serviceApi;
-            FolderApi = folderApi;
+            _wordApi = wordApi;
+            _userApi = userApi;
+            _serviceApi = serviceApi;
+            _folderApi = folderApi;
         }
 
         public void AddUser(IUser user)
         {
-            throw new NotImplementedException();
+            _userApi.CreateUser(user);
         }
 
         public void AddWord(IWord word, long idUser)
         {
-            throw new NotImplementedException();
+            word.OwnerId = idUser;
+            _wordApi.AddWord(word);
         }
 
         public void DeleteWord(long wordId)
         {
-            throw new NotImplementedException();
+            _wordApi.DeleteWord(wordId);
         }
 
         public void EditWord(IWord word)
         {
-            throw new NotImplementedException();
+            _wordApi.UpdateWord(word);
         }
 
-        public IQueryable<WordSearchResult> FindFlashCard(string searchString, long userId)
+        public WordSearchResult[] FindFlashCard(string searchString, long userId)
         {
-            throw new NotImplementedException();
+            return _wordApi.GetWordsByUser(searchString, userId).Select(a => new WordSearchResult
+            {
+                OriginalWord = a.OriginalWord,
+                Pronunciation = a.Pronunciation,
+                Translation = a.Translation,
+                File = a.CardAll
+            }).ToArray();
         }
 
-        public WordStatistic GetCurrentUserWordStatistic(long userId)
+        public WordSearchResult[] GetLastWords(long idUser, int topCount)
         {
-            throw new NotImplementedException();
-        }
+            var user = _userApi.GetUserById(idUser);
 
-        public IQueryable<WordSearchResult> GetLastWords(long idUser, int topCount)
-        {
-            throw new NotImplementedException();
+            if (user == null)
+            {
+                return null;
+            }
+
+            return _wordApi.GetWordsFolderId(user.CurrentFolderId).Take(topCount).Select(a=> new WordSearchResult
+            {
+                OriginalWord = a.OriginalWord,
+                Pronunciation = a.Pronunciation,
+                Translation = a.Translation,
+                File = a.CardAll
+            }).ToArray();
         }
 
         public EGettingWordsStrategy GetLearnMode(long userId)
@@ -76,11 +91,6 @@ namespace ChineseDuck.Bot.Rest.Repository
         }
 
         public string GetUserCommand(long userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IQueryable<IUser> GetUsers()
         {
             throw new NotImplementedException();
         }

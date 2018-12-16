@@ -198,13 +198,27 @@ export const folderId = {
   get: async function getWordsFolderId(req, res, next) {
     const idUser = req.session.passport.user;
     const folderId = req.params.folderId;
+    const count = +req.params.count;
 
-    const result = await mh.word
-      .find(
-        { owner_id: idUser, folder_id: folderId },
-        { owner_id: false, folder_id: false }
-      )
-      .sort({ lastModified: -1 });
+    let result;
+    const useCount = !isNaN(count) && count !== 0;
+
+    if (useCount) {
+      result = await mh.word
+        .find(
+          { owner_id: idUser, folder_id: folderId },
+          { owner_id: false, folder_id: false }
+        )
+        .sort({ lastModified: -1 })
+        .limit(count);
+    } else {
+      result = await mh.word
+        .find(
+          { owner_id: idUser, folder_id: folderId },
+          { owner_id: false, folder_id: false }
+        )
+        .sort({ lastModified: -1 });
+    }
 
     res.json(result);
   }

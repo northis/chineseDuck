@@ -59,23 +59,26 @@ namespace ChineseDuck.BotService.Root
         public IConfiguration Configuration { get; }
         public IServiceProvider ServiceProvider { get; private set; }
 
-        private CommandBase[] GetCommands => new CommandBase[]
+        private CommandBase[] GetCommands()
         {
-            //NinjectKernel.Get<DefaultCommand>(),
-            //NinjectKernel.Get<ImportCommand>(),
-            //NinjectKernel.Get<AddCommand>(),
-            //NinjectKernel.Get<ViewCommand>(),
-            //NinjectKernel.Get<DeleteCommand>(),
-            ServiceProvider.GetRequiredService<HelpCommand>(),
-            ServiceProvider.GetRequiredService<StartCommand>(),
-            //NinjectKernel.Get<LearnWritingCommand>(),
-            //NinjectKernel.Get<LearnViewCommand>(),
-            //NinjectKernel.Get<AboutCommand>(),
-            //NinjectKernel.Get<ModeCommand>(),
-            //NinjectKernel.Get<LearnSpeakCommand>(),
-            //NinjectKernel.Get<LearnTranslationCommand>(),
-            //NinjectKernel.Get<EditCommand>()
-        };
+            return new CommandBase[]
+            {
+                //NinjectKernel.Get<DefaultCommand>(),
+                //NinjectKernel.Get<ImportCommand>(),
+                //NinjectKernel.Get<AddCommand>(),
+                //NinjectKernel.Get<ViewCommand>(),
+                //NinjectKernel.Get<DeleteCommand>(),
+                ServiceProvider.GetRequiredService<HelpCommand>(),
+                ServiceProvider.GetRequiredService<StartCommand>(),
+                //NinjectKernel.Get<LearnWritingCommand>(),
+                //NinjectKernel.Get<LearnViewCommand>(),
+                //NinjectKernel.Get<AboutCommand>(),
+                //NinjectKernel.Get<ModeCommand>(),
+                //NinjectKernel.Get<LearnSpeakCommand>(),
+                //NinjectKernel.Get<LearnTranslationCommand>(),
+                //NinjectKernel.Get<EditCommand>()
+            };
+        }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -91,18 +94,19 @@ namespace ChineseDuck.BotService.Root
             var log4NetService = new Log4NetService();
             var restWordRepository = new RestWordRepository(wordApi, userApi, serviceApi, folderApi);
             var antiDdosChecker = new AntiDdosChecker(GetDateTime);
+            var commandManager = new CommandManager(GetCommands);
 
             services.AddSingleton(a => antiDdosChecker);
             services.AddSingleton(bS => botSettings);
             services.AddSingleton(cl => tClient);
+            services.AddSingleton<ICommandManager>(commandManager);
             services.AddSingleton<ILogService>(log4NetService);
             services.AddSingleton<IWordRepository>(restWordRepository);
 
             var flashCardUrl = $"{botSettings.ApiPublicUrl}/word/file";
 
             services.AddSingleton(qh =>
-                new QueryHandler(tClient, log4NetService, restWordRepository, antiDdosChecker, flashCardUrl));
-            services.AddTransient(a => GetCommands);
+                new QueryHandler(tClient, log4NetService, restWordRepository, antiDdosChecker, flashCardUrl, commandManager));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

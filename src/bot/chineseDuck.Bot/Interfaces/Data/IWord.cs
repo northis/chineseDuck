@@ -6,6 +6,7 @@ namespace ChineseDuck.Bot.Interfaces.Data
     public interface IWord
     {
         long Id { get; set; }
+        long OwnerId { get; set; }
         string OriginalWord { get; set; }
         string Pronunciation { get; set; }
         DateTime LastModified { get; set; }

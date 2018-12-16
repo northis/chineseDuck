@@ -34,7 +34,8 @@ export const PathWildcardEnum = {
   wordEntry: "{wordEntry}",
   fileId: "{fileId}",
   userId: "{userId}",
-  id: "{id}"
+  id: "{id}",
+  count: "{count}"
 };
 
 export const LearnModeEnum = {

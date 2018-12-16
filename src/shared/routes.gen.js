@@ -4,8 +4,12 @@ export default { _word:
      express: '/word' },
   _word_folder__folderId_:
    { value: '/word/folder/{folderId}',
-     actions: { put: ["write"], get: ["write"] },
+     actions: { put: ["write"] },
      express: '/word/folder/:folderId' },
+  _word_folder__folderId__count__count_:
+   { value: '/word/folder/{folderId}/count/{count}',
+     actions: { get: ["write"] },
+     express: '/word/folder/:folderId/count/:count' },
   _word__wordId__rename:
    { value: '/word/{wordId}/rename',
      actions: { put: ["write"] },

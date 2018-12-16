@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces.Data;
 using ChineseDuck.Bot.ObjectModels;
@@ -16,11 +15,9 @@ namespace ChineseDuck.Bot.Interfaces
 
         void EditWord(IWord word);
 
-        IQueryable<WordSearchResult> FindFlashCard(string searchString, long userId);
-
-        WordStatistic GetCurrentUserWordStatistic(long userId);
-
-        IQueryable<WordSearchResult> GetLastWords(long idUser, int topCount);
+        WordSearchResult[] FindFlashCard(string searchString, long userId);
+        
+        WordSearchResult[] GetLastWords(long idUser, int topCount);
 
         EGettingWordsStrategy GetLearnMode(long userId);
 
@@ -30,8 +27,6 @@ namespace ChineseDuck.Bot.Interfaces
 
         string GetUserCommand(long userId);
         
-        IQueryable<IUser> GetUsers();
-
         WordStatistic GetUserWordStatistic(long userId, long wordId);
 
         IWord GetWord(string wordOriginal);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using ChineseDuck.Bot.Interfaces.Data;
 using ChineseDuck.Bot.Rest.Client;
 using ChineseDuck.Bot.Rest.Model;
 using RestSharp;
@@ -24,7 +25,7 @@ namespace ChineseDuck.Bot.Rest.Api
         /// </summary>
         /// <param name="user">Created user object</param>
         /// <returns></returns>
-        void CreateUser (User user);
+        void CreateUser (IUser user);
         /// <summary>
         /// Delete user This can only be done by the logged in user.
         /// </summary>
@@ -164,7 +165,7 @@ namespace ChineseDuck.Bot.Rest.Api
         /// </summary>
         /// <param name="user">Created user object</param> 
         /// <returns></returns>            
-        public void CreateUser (User user)
+        public void CreateUser (IUser user)
         {
             
             // verify the required parameter 'user' is set

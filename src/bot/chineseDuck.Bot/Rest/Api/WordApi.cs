@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ChineseDuck.Bot.Interfaces.Data;
 using ChineseDuck.Bot.Rest.Client;
 using ChineseDuck.Bot.Rest.Model;
 using RestSharp;
@@ -36,7 +37,7 @@ namespace ChineseDuck.Bot.Rest.Api
         /// </summary>
         /// <param name="word">Word object that needs to be added to the store</param>
         /// <returns></returns>
-        void AddWord (Word word);
+        void AddWord (IWord word);
         /// <summary>
         /// Delete word 
         /// </summary>
@@ -54,20 +55,20 @@ namespace ChineseDuck.Bot.Rest.Api
         /// </summary>
         /// <param name="wordId">Word id</param>
         /// <returns>Word</returns>
-        Word GetWordId (long? wordId);
+        IWord GetWordId (long? wordId);
         /// <summary>
         /// Get words by word or character for user Get words by wordEntry for user
         /// </summary>
         /// <param name="wordEntry">Word entry</param>
         /// <param name="userId">User entry to match</param>
         /// <returns>List&lt;Word&gt;</returns>
-        List<Word> GetWordsByUser (string wordEntry, long? userId);
+        List<IWord> GetWordsByUser (string wordEntry, long? userId);
         /// <summary>
         ///  Get words by folder id
         /// </summary>
         /// <param name="folderId">Folder id</param>
         /// <returns>List&lt;Word&gt;</returns>
-        List<Word> GetWordsFolderId (long? folderId);
+        List<IWord> GetWordsFolderId (long? folderId);
         /// <summary>
         /// Move words to another folder 
         /// </summary>
@@ -94,7 +95,7 @@ namespace ChineseDuck.Bot.Rest.Api
         /// </summary>
         /// <param name="word">Word object that needs to be updated in the store</param>
         /// <returns></returns>
-        void UpdateWord (Word word);
+        void UpdateWord (IWord word);
     }
   
     /// <summary>
@@ -183,7 +184,7 @@ namespace ChineseDuck.Bot.Rest.Api
         /// </summary>
         /// <param name="word">Word object that needs to be added to the store</param> 
         /// <returns></returns>            
-        public void AddWord (Word word)
+        public void AddWord (IWord word)
         {
             // verify the required parameter 'word' is set
             if (word == null) throw new ApiException(400, "Missing required parameter 'word' when calling AddWord");
@@ -285,7 +286,7 @@ namespace ChineseDuck.Bot.Rest.Api
         /// </summary>
         /// <param name="wordId">Word id</param> 
         /// <returns>Word</returns>            
-        public Word GetWordId (long? wordId)
+        public IWord GetWordId (long? wordId)
         {
             
             // verify the required parameter 'wordId' is set
@@ -323,7 +324,7 @@ namespace ChineseDuck.Bot.Rest.Api
         /// <param name="wordEntry">Word entry</param> 
         /// <param name="userId">User entry to match</param> 
         /// <returns>List&lt;Word&gt;</returns>            
-        public List<Word> GetWordsByUser (string wordEntry, long? userId)
+        public List<IWord> GetWordsByUser (string wordEntry, long? userId)
         {
             
             // verify the required parameter 'wordEntry' is set
@@ -353,10 +354,10 @@ path = path.Replace("{" + "userId" + "}", ApiClient.ParameterToString(userId));
     
             if ((int)response.StatusCode >= 400)
                 throw new ApiException ((int)response.StatusCode, "Error calling GetWordsByUser: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
+            if (response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling GetWordsByUser: " + response.ErrorMessage, response.ErrorMessage);
 
-            return (List<Word>) ApiClient.Deserialize(response.Content, typeof(List<Word>), response.Headers);
+            return (List<IWord>) ApiClient.Deserialize(response.Content, typeof(List<IWord>), response.Headers);
         }
     
         /// <summary>
@@ -364,7 +365,7 @@ path = path.Replace("{" + "userId" + "}", ApiClient.ParameterToString(userId));
         /// </summary>
         /// <param name="folderId">Folder id</param> 
         /// <returns>List&lt;Word&gt;</returns>            
-        public List<Word> GetWordsFolderId (long? folderId)
+        public List<IWord> GetWordsFolderId (long? folderId)
         {
             
             // verify the required parameter 'folderId' is set
@@ -521,7 +522,7 @@ path = path.Replace("{" + "userId" + "}", ApiClient.ParameterToString(userId));
         /// </summary>
         /// <param name="word">Word object that needs to be updated in the store</param> 
         /// <returns></returns>            
-        public void UpdateWord (Word word)
+        public void UpdateWord (IWord word)
         {
             
             // verify the required parameter 'word' is set
