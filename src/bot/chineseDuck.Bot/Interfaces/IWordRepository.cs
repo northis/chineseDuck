@@ -20,14 +20,12 @@ namespace ChineseDuck.Bot.Interfaces
         WordSearchResult[] GetLastWords(long idUser, int topCount);
 
         EGettingWordsStrategy GetLearnMode(long userId);
-
-        LearnUnit GetNextWord(WordSettings settings);
-
+        
         DateTime GetRepositoryTime();
 
         string GetUserCommand(long userId);
-        
-        WordStatistic GetUserWordStatistic(long userId, long wordId);
+
+        IWord GetWord(long wordId);
 
         IWord GetWord(string wordOriginal);
 

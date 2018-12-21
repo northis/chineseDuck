@@ -15,6 +15,15 @@ namespace ChineseDuck.Bot.Extensions
         //        $"{word.OriginalWord}{PinyinChineseWordParseProvider.ImportSeparator1}{word.Pronunciation.Replace("|", string.Empty)}{PinyinChineseWordParseProvider.ImportSeparator1}{word.Translation}";
         //}
 
+        public static string ToScoreString(this IWord word)
+        {
+            if (word.Score == null)
+                return "0";
+
+            return
+                $"🖌{word.Score.OriginalWordSuccessCount}/{word.Score.OriginalWordCount}, 📢{word.Score.PronunciationSuccessCount}/{word.Score.PronunciationCount}, 🇨🇳{word.Score.TranslationSuccessCount}/{word.Score.TranslationCount}, 👀{word.Score.ViewCount}";
+        }
+
         public static ELearnMode ToELearnMode(this IScore score, long idUser)
         {
             if (!Enum.TryParse(score.LastLearnMode, out ELearnMode learnMode))

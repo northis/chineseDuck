@@ -66,7 +66,7 @@ namespace ChineseDuck.Bot.Rest.Repository
                 return null;
             }
 
-            return _wordApi.GetWordsFolderId(user.CurrentFolderId).Take(topCount).Select(a=> new WordSearchResult
+            return _wordApi.GetWordsFolderId(user.CurrentFolderId, topCount).Select(a => new WordSearchResult
             {
                 OriginalWord = a.OriginalWord,
                 Pronunciation = a.Pronunciation,
@@ -77,27 +77,26 @@ namespace ChineseDuck.Bot.Rest.Repository
 
         public EGettingWordsStrategy GetLearnMode(long userId)
         {
-            throw new NotImplementedException();
-        }
+            var user = _userApi.GetUserById(userId);
 
-        public LearnUnit GetNextWord(WordSettings settings)
-        {
-            throw new NotImplementedException();
+            return user != null ? Enum.Parse<EGettingWordsStrategy>(user.Mode) : EGettingWordsStrategy.NewFirst;
         }
 
         public DateTime GetRepositoryTime()
         {
-            throw new NotImplementedException();
+            return _serviceApi.GetDatetime() ?? DateTime.Now;
         }
 
         public string GetUserCommand(long userId)
         {
-            throw new NotImplementedException();
+            var user = _userApi.GetUserById(userId);
+            return user != null ? user.LastCommand : string.Empty;
         }
 
-        public WordStatistic GetUserWordStatistic(long userId, long wordId)
+        public IWord GetWord(long wordId)
         {
-            throw new NotImplementedException();
+            var word = _wordApi.GetWordId(wordId);
+            return word;
         }
 
         public IWord GetWord(string wordOriginal)

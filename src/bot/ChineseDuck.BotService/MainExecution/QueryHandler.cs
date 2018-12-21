@@ -124,12 +124,12 @@ namespace ChineseDuck.BotService.MainExecution
 
             var inlineQueryResults = results.Select(
                 a =>
-                    new InlineQueryResultPhoto(Guid.NewGuid().ToString(), _flashCardUrl + a.FileId,
-                        _flashCardUrl + a.FileId)
+                    new InlineQueryResultPhoto(Guid.NewGuid().ToString(), _flashCardUrl + a.File.Id,
+                        _flashCardUrl + a.File.Id)
                     {
                         Caption = a.OriginalWord,
-                        PhotoHeight = a.HeightFlashCard.GetValueOrDefault(),
-                        PhotoWidth = a.WidthFlashCard.GetValueOrDefault()
+                        PhotoHeight = a.File.Height,
+                        PhotoWidth = a.File.Width
                     });
 
 

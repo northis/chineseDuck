@@ -16,6 +16,7 @@ namespace ChineseDuck.Bot.Interfaces.Data
         IWordFile CardOriginalWord { get; set; }
         IWordFile CardTranslation { get; set; }
         IWordFile CardPronunciation { get; set; }
+        IScore Score { get; set; }
 
         int SyllablesCount { get; set; }
         long FolderId { get; set; }

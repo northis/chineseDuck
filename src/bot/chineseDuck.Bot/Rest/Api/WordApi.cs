@@ -66,9 +66,7 @@ namespace ChineseDuck.Bot.Rest.Api
         /// <summary>
         ///  Get words by folder id
         /// </summary>
-        /// <param name="folderId">Folder id</param>
-        /// <returns>List&lt;Word&gt;</returns>
-        List<IWord> GetWordsFolderId (long? folderId);
+        List<IWord> GetWordsFolderId (long? folderId, long? count);
         /// <summary>
         /// Move words to another folder 
         /// </summary>
@@ -362,20 +360,19 @@ path = path.Replace("{" + "userId" + "}", ApiClient.ParameterToString(userId));
     
         /// <summary>
         ///  Get words by folder id
-        /// </summary>
-        /// <param name="folderId">Folder id</param> 
-        /// <returns>List&lt;Word&gt;</returns>            
-        public List<IWord> GetWordsFolderId (long? folderId)
+        /// </summary>      
+        public List<IWord> GetWordsFolderId (long? folderId, long? count)
         {
             
             // verify the required parameter 'folderId' is set
             if (folderId == null) throw new ApiException(400, "Missing required parameter 'folderId' when calling GetWordsFolderId");
             
     
-            var path = "/word/folder/{folderId}";
+            var path = "/word/folder/{folderId}/{count}";
             path = path.Replace("{format}", "json");
             path = path.Replace("{" + "folderId" + "}", ApiClient.ParameterToString(folderId));
-    
+            path = path.Replace("{" + "count" + "}", ApiClient.ParameterToString(count));
+
             var queryParams = new Dictionary<string, string>();
             var headerParams = new Dictionary<string, string>();
             var formParams = new Dictionary<string, string>();
@@ -394,7 +391,7 @@ path = path.Replace("{" + "userId" + "}", ApiClient.ParameterToString(userId));
             if ((int)response.StatusCode == 0)
                 throw new ApiException ((int)response.StatusCode, "Error calling GetWordsFolderId: " + response.ErrorMessage, response.ErrorMessage);
 
-            return (List<Word>) ApiClient.Deserialize(response.Content, typeof(List<Word>), response.Headers);
+            return (List<IWord>) ApiClient.Deserialize(response.Content, typeof(List<IWord>), response.Headers);
         }
     
         /// <summary>
