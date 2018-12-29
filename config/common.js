@@ -49,16 +49,16 @@ export function isAnalyze() {
 export function getFooterMarkupLine() {
   return `<p>${pkg.description} - ${pkg.version} | <a href=${
     pkg.url
-    }>Contact me</a> | <a href=${
+  }>Contact me</a> | <a href=${
     pkg.homepage
-    }>GitHub</a> | <a href=/api/docs>Api</a></p>`;
+  }>GitHub</a> | <a href=/api/docs>Api</a></p>`;
 }
 export function getFooterMarkup() {
   return `<p>${pkg.description} - ${pkg.version}</p> <p><a href=${
     pkg.url
-    }>Contact me</a> | <a href=${
+  }>Contact me</a> | <a href=${
     pkg.homepage
-    }>GitHub</a> | <a href=/api/docs>Api</a></p>`;
+  }>GitHub</a> | <a href=/api/docs>Api</a></p>`;
 }
 
 export const DebugKeys = {
@@ -79,6 +79,7 @@ export const Settings = {
   mongoDbString: keys.mongoDbString,
   port: 3000,
   sessionsPass: keys.sessionsPass,
+  answersCount: 4,
   apiPrefix: "/api/v1/",
   docsPrefix: "/api/docs/",
   getLocalApiAddress: () =>

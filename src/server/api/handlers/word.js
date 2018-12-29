@@ -1,4 +1,5 @@
 import { mh } from "../../../server/api/db";
+import { Settings } from "../../../../config/common";
 import * as models from "../../../server/api/db/models";
 import { isNullOrUndefined } from "util";
 import mongoose from "mongoose";
@@ -324,5 +325,123 @@ export const file = {
     const fileBody = req.body.bytes;
     const result = await mh.wordFile.create({ bytes: fileBody });
     res.json(result._id);
+  }
+};
+
+/**
+ * Operations on /word/user/{userId}/answers & /word/user/{userId}/nextWord
+ */
+export const study = {
+  /**
+   * summary: Set question to study for user and return right answer
+   * parameters: userId
+   * produces:
+   * responses: 200
+   */
+  put: async function setQuestionByUser(req, res, next) {
+    const userId = req.params.userId;
+
+    const user = await mh.user.findById(userId);
+    const mode = user.mode;
+    const answersCount = Settings.answersCount;
+    const sortFuncArray = [];
+
+    let scores = mh.word.find({ owner_id: userId });
+    let modeFunc = null;
+
+    switch (mode) {
+      case models.LearnModeEnum.OriginalWord:
+        modeFunc = (a, b) =>
+          (a.OriginalWordCount > 0
+            ? a.OriginalWordSuccessCount / a.OriginalWordCount
+            : 0) -
+          (b.OriginalWordCount > 0
+            ? b.OriginalWordSuccessCount / b.OriginalWordCount
+            : 0);
+        break;
+      case models.LearnModeEnum.Translation:
+        modeFunc = (a, b) =>
+          (a.PronunciationCount > 0
+            ? a.PronunciationSuccessCount / a.PronunciationCount
+            : 0) -
+          (b.PronunciationCount > 0
+            ? b.PronunciationSuccessCount / b.PronunciationCount
+            : 0);
+        break;
+      case models.LearnModeEnum.Pronunciation:
+        modeFunc = (a, b) =>
+          (a.TranslationCount > 0
+            ? a.TranslationSuccessCount / a.TranslationCount
+            : 0) -
+          (b.TranslationCount > 0
+            ? b.TranslationSuccessCount / b.TranslationCount
+            : 0);
+        break;
+      default:
+        modeFunc = (a, b) => a.ViewCount - b.ViewCount;
+        break;
+    }
+
+    switch (mode) {
+      case models.LearnModeEnum.OriginalWord:
+        modeFunc = (a, b) =>
+          (a.OriginalWordCount > 0
+            ? a.OriginalWordSuccessCount / a.OriginalWordCount
+            : 0) -
+          (b.OriginalWordCount > 0
+            ? b.OriginalWordSuccessCount / b.OriginalWordCount
+            : 0);
+        break;
+      case models.LearnModeEnum.Translation:
+        modeFunc = (a, b) =>
+          (a.PronunciationCount > 0
+            ? a.PronunciationSuccessCount / a.PronunciationCount
+            : 0) -
+          (b.PronunciationCount > 0
+            ? b.PronunciationSuccessCount / b.PronunciationCount
+            : 0);
+        break;
+      case models.LearnModeEnum.Pronunciation:
+        modeFunc = (a, b) =>
+          (a.TranslationCount > 0
+            ? a.TranslationSuccessCount / a.TranslationCount
+            : 0) -
+          (b.TranslationCount > 0
+            ? b.TranslationSuccessCount / b.TranslationCount
+            : 0);
+        break;
+      default:
+        modeFunc = (a, b) => a.ViewCount - b.ViewCount;
+        break;
+    }
+
+    let words = await mh.word.find({
+      originalWord: {
+        $regex: wordEntry,
+        $options: "i"
+      },
+      owner_id: userId,
+      folder_id: user.currentFolder_id
+    });
+    res.json(words);
+  },
+  /**
+   * summary: Get answers for current question
+   * parameters: userId
+   * produces:
+   * responses: 200
+   */ get: async function getAnswersByUser(req, res, next) {
+    const userId = req.params.userId;
+    const wordEntry = req.params.wordEntry;
+
+    let words = await mh.word.find({
+      originalWord: {
+        $regex: wordEntry,
+        $options: "i"
+      },
+      owner_id: userId,
+      folder_id: user.currentFolder_id
+    });
+    res.json(words);
   }
 };

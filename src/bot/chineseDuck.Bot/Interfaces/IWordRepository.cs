@@ -27,9 +27,9 @@ namespace ChineseDuck.Bot.Interfaces
 
         IWord GetWord(long wordId);
 
-        IWord GetWord(string wordOriginal);
+        IWord GetWord(string wordOriginal, long userId);
 
-        byte[] GetWordFlashCard(long fileId);
+        byte[] GetWordFlashCard(string fileId);
 
         bool IsUserExist(long userId);
         
@@ -40,5 +40,6 @@ namespace ChineseDuck.Bot.Interfaces
         void SetScore(IScore score);
 
         void SetUserCommand(long userId, string command);
+        LearnUnit GetNextWord(WordSettings settings);
     }
 }

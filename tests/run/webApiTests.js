@@ -24,6 +24,7 @@ export default () => {
   testFolder();
   testWord();
   testService();
+  testStudy();
 };
 
 function testUser() {
@@ -1031,6 +1032,12 @@ function testWord() {
       .set("Content-Type", "application/json");
     assert.ok(response.status === 401);
   });
+}
+
+function testStudy() {
+  it(`${routes._word_user__userId__nextWord.value} - put`, async () => {});
+
+  it(`${routes._word_user__userId__answers.value} - get`, async () => {});
 }
 
 function testService() {

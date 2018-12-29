@@ -61,6 +61,14 @@ export const ModelsEnum = {
   session: "session"
 };
 
+export const StrategyEnum = {
+  newFirst: "NewFirst",
+  oldFirst: "OldFirst",
+  newMostDifficult: "NewMostDifficult",
+  oldMostDifficult: "OldMostDifficult",
+  random: "Random"
+};
+
 export const userSchema = {
   _id: Number,
   username: String,

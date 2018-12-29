@@ -412,6 +412,105 @@
         ]
       }
     },
+    "/word/user/{userId}/nextWord/{mode}": {
+      "put": {
+        "tags": ["word"],
+        "summary": "Set question to study for user and return right answer",
+        "description": "Set question to study for user and return right answer",
+        "operationId": "setQuestionByUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User entry to match",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "mode",
+            "in": "path",
+            "description": "Learn mode",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "NewFirst",
+                "OldFirst",
+                "NewMostDifficult",
+                "OldMostDifficult",
+                "Random"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Word"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You have no rights to do this"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ]
+      }
+    },
+    "/word/user/{userId}/answers": {
+      "get": {
+        "tags": ["word"],
+        "summary": "Get answers for current question",
+        "description": "Get answers for current question",
+        "operationId": "getAnswersByUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User entry to match",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Word"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You have no rights to do this"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ]
+      }
+    },
     "/word/file/{fileId}": {
       "get": {
         "tags": ["word"],

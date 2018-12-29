@@ -234,4 +234,16 @@ router
   .all(accessControl(routes._word_file__fileId_))
   .delete(word.file.delete);
 
+router
+  .route(routes._word_user__userId__nextWord.express)
+  .all(accessControl(routes._word_user__userId__nextWord))
+  .all(userControl)
+  .get(word.study.put);
+
+router
+  .route(routes._word_user__userId__answers.express)
+  .all(accessControl(routes._word_user__userId__answers))
+  .all(userControl)
+  .get(word.study.get);
+
 export default router;

@@ -7,13 +7,10 @@
   <ItemGroup>
     <Compile Remove="Data\**" />
     <Compile Remove="Drawing\**" />
-    <Compile Remove="Providers\**" />
     <EmbeddedResource Remove="Data\**" />
     <EmbeddedResource Remove="Drawing\**" />
-    <EmbeddedResource Remove="Providers\**" />
     <None Remove="Data\**" />
     <None Remove="Drawing\**" />
-    <None Remove="Providers\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,6 +20,10 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="RestSharp" Version="106.5.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\chineseDuck.pinyin4net\ChineseDuck.Pinyin4net.csproj" />
   </ItemGroup>
 
 </Project>
