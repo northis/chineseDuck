@@ -40,6 +40,9 @@ namespace ChineseDuck.Bot.Interfaces
         void SetScore(IScore score);
 
         void SetUserCommand(long userId, string command);
+
         LearnUnit GetNextWord(WordSettings settings);
+
+        IWord GetCurrentWord(long userId);
     }
 }

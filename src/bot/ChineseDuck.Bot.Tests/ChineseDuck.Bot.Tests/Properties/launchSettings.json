@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ChineseDuck.Bot.Tests": {
+      "commandName": "Project",
+      "commandLineArgs": "--password=5lJnlNrgDjeu --userId=101 --WebApi=http://localhost:3000/api/v1/"
+    }
+  }
+}

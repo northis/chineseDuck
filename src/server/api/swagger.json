@@ -478,7 +478,7 @@
           {
             "name": "userId",
             "in": "path",
-            "description": "User entry to match",
+            "description": "User id to match",
             "required": true,
             "schema": {
               "type": "integer",
@@ -496,6 +496,46 @@
                   "items": {
                     "$ref": "#/components/schemas/Word"
                   }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You have no rights to do this"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ]
+      }
+    },
+    "/word/user/{userId}/currentWord": {
+      "get": {
+        "tags": ["word"],
+        "summary": "Get current learning word for the user",
+        "description": "Get current learning word for the user",
+        "operationId": "getCurrentWord",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User id to match",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Word"
                 }
               }
             }

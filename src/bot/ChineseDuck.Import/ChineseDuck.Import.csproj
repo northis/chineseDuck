@@ -34,14 +34,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\bot\chineseDuck.Bot\ChineseDuck.Bot.csproj" />
-    <ProjectReference Include="..\src\bot\chineseDuck.Common\ChineseDuck.Common.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Microsoft.Extensions.Configuration">
-      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.configuration\2.1.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\chineseDuck.Bot\ChineseDuck.Bot.csproj" />
+    <ProjectReference Include="..\chineseDuck.Common\ChineseDuck.Common.csproj" />
   </ItemGroup>
 
 </Project>

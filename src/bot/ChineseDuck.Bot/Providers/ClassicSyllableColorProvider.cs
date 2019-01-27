@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Drawing;
 using System.Text.RegularExpressions;
-using System.Windows.Media;
-using YellowDuck.LearnChinese.Interfaces;
+using ChineseDuck.Bot.Interfaces;
 
 namespace YellowDuck.LearnChinese.Providers
 {
@@ -27,15 +27,15 @@ namespace YellowDuck.LearnChinese.Providers
             switch (syllableNumber)
             {
                 case 1:
-                    return Colors.Red;
+                    return Color.Red;
                 case 2:
-                    return Colors.Orange;
+                    return Color.Orange;
                 case 3:
-                    return Colors.Green;
+                    return Color.Green;
                 case 4:
-                    return Colors.Blue;
+                    return Color.Blue;
                 default:
-                    return Colors.Black;
+                    return Color.Black;
             }
         }
 

@@ -1,6 +1,6 @@
 import { Settings, DebugKeys } from "../../config/common";
 import {
-  RightWeightEnum,
+  LearnModeEnum,
   PathWildcardEnum
 } from "../../src/server/api/db/models";
 import request from "supertest";
@@ -1035,7 +1035,19 @@ function testWord() {
 }
 
 function testStudy() {
-  it(`${routes._word_user__userId__nextWord.value} - put`, async () => {});
+  it(`${routes._word_user__userId__nextWord__mode_.value} - put`, async () => {
+    let url = urlJoin(
+      Settings.apiPrefix,
+      routes._word_user__userId__nextWord__mode_.value
+        .replace(PathWildcardEnum.userId, DebugKeys.user_id)
+        .replace(PathWildcardEnum.mode, LearnModeEnum.Translation)
+    );
+    let response = await request(srv.default.app)
+      .put(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookieAdmin]);
+    assert.ok(response.status === 200);
+  });
 
   it(`${routes._word_user__userId__answers.value} - get`, async () => {});
 }

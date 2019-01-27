@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces.Data;
 using ChineseDuck.Bot.Rest.Client;
 using ChineseDuck.Bot.Rest.Model;
@@ -16,538 +14,251 @@ namespace ChineseDuck.Bot.Rest.Api
         /// <summary>
         /// Delete file
         /// </summary>
-        /// <remarks>
-        /// 
-        /// </remarks>
         /// <param name="fileId">File id to delete</param>
-        /// <returns></returns>
         void DeleteFile(string fileId);
 
         /// <summary>
         /// Add file
         /// </summary>
-        /// <remarks>
-        /// 
-        /// </remarks>
         /// <param name="wordFileBytes">Word file that needs to be added to the store</param>
-        /// <returns>string</returns>
+        /// <returns>File Id</returns>
         string AddFile(WordFileBytes wordFileBytes);
+
         /// <summary>
         /// Add a new word to the store 
         /// </summary>
         /// <param name="word">Word object that needs to be added to the store</param>
-        /// <returns></returns>
-        void AddWord (IWord word);
+        void AddWord(IWord word);
+
         /// <summary>
         /// Delete word 
         /// </summary>
         /// <param name="wordId">Word id to delete</param>
-        /// <returns></returns>
-        void DeleteWord (long? wordId);
+        void DeleteWord(long wordId);
+
         /// <summary>
-        /// Get word&#39;s flash card as png binary 
+        /// Get word's flash card as png binary 
         /// </summary>
         /// <param name="fileId">File id</param>
-        /// <returns>byte[]</returns>
-        byte[] GetWordCard (string fileId);
+        /// <returns>File's bytes</returns>
+        byte[] GetWordCard(string fileId);
+
         /// <summary>
         ///  Get word by id
         /// </summary>
         /// <param name="wordId">Word id</param>
         /// <returns>Word</returns>
-        IWord GetWordId (long? wordId);
+        IWord GetWordId(long wordId);
+
         /// <summary>
         /// Get words by word or character for user Get words by wordEntry for user
         /// </summary>
         /// <param name="wordEntry">Word entry</param>
         /// <param name="userId">User entry to match</param>
-        /// <returns>List&lt;Word&gt;</returns>
-        List<IWord> GetWordsByUser (string wordEntry, long? userId);
+        /// <returns>Words</returns>
+        IWord[] GetWordsByUser(string wordEntry, long userId);
+
         /// <summary>
         ///  Get words by folder id
         /// </summary>
-        List<IWord> GetWordsFolderId (long? folderId, long? count);
+        /// <param name="folderId">Folder id</param>
+        /// <param name="count">Count of the words returned</param>
+        /// <returns>Words</returns>
+        IWord[] GetWordsFolderId(long folderId, long? count);
+
         /// <summary>
         /// Move words to another folder 
         /// </summary>
         /// <param name="folderId">Folder id to move in</param>
-        /// <param name="requestBody">Word ids</param>
-        /// <returns></returns>
-        void MoveWordsToFolder (long? folderId, List<long?> requestBody);
+        /// <param name="wordIds">Word ids</param>
+        void MoveWordsToFolder(long folderId, long[] wordIds);
+
         /// <summary>
         /// Rename words with another translation 
         /// </summary>
         /// <param name="wordId">Word id to rename</param>
         /// <param name="body">New translation</param>
-        /// <returns></returns>
-        void RenameWord (long? wordId, string body);
+        void RenameWord(long wordId, string body);
+
         /// <summary>
-        /// Update user&#39;s score for word 
+        /// Update user's score for word 
         /// </summary>
         /// <param name="wordId">Word id to rename</param>
         /// <param name="score">Score object that needs to be updated in the word</param>
-        /// <returns></returns>
-        void ScoreWord (long? wordId, Score score);
+        void ScoreWord(long wordId, IScore score);
+
         /// <summary>
         /// Update an existing word 
         /// </summary>
         /// <param name="word">Word object that needs to be updated in the store</param>
-        /// <returns></returns>
-        void UpdateWord (IWord word);
+        void UpdateWord(IWord word);
+
+        /// <summary>
+        /// Set question to study for user and return right answer
+        /// </summary>
+        /// <param name="userId"> User entry to match</param>
+        /// <param name="mode">Learn mode</param>
+        /// <returns>Right answer</returns>
+        IWord SetQuestionByUser(long userId, ELearnMode mode);
+
+        /// <summary>
+        /// Get answers for current question
+        /// </summary>
+        /// <param name="userId">User id to match</param>
+        /// <returns>Answers</returns>
+        IWord[] GetAnswersByUser(long userId);
+
+        /// <summary>
+        /// Get current learning word for the user
+        /// </summary>
+        /// <param name="userId"> User id to match</param>
+        /// <returns>Current learning word for the user</returns>
+        IWord GetCurrentWord(long userId);
     }
-  
+
     /// <summary>
-    /// Represents a collection of functions to interact with the API endpoints
+    /// Main implementation of the IWordApi
     /// </summary>
-    public class WordApi : IWordApi
+    public class WordApi : BaseApi, IWordApi
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="WordApi"/> class.
+        /// Constructor
         /// </summary>
-        /// <param name="apiClient"> an instance of ApiClient (optional)</param>
-        /// <returns></returns>
-        public WordApi(ApiClient apiClient = null)
+        /// <param name="apiClient">An instance of ApiClient</param>
+        public WordApi(ApiClient apiClient) : base(apiClient)
         {
-            if (apiClient == null) // use the default one in Configuration
-                ApiClient = Configuration.DefaultApiClient; 
-            else
-                ApiClient = apiClient;
         }
-    
-        /// <summary>
-        /// Gets or sets the API client.
-        /// </summary>
-        /// <value>An instance of the ApiClient</value>
-        public ApiClient ApiClient {get; set;}
 
         public void DeleteFile(string fileId)
         {
-            // verify the required parameter 'fileId' is set
-            if (fileId == null)
-                throw new ApiException(400, "Missing required parameter 'fileId' when calling WordApi->DeleteFile");
+            var path = $"/word/file/{fileId}";
+            var response = ApiClient.CallApi(path, Method.DELETE);
 
-            var path = "/word/file/{fileId}";
-            path = path.Replace("{format}", "json");
-            path = path.Replace("{" + "fileId" + "}", ApiClient.ParameterToString(fileId));
-            
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-
-            // authentication setting, if any
-            string[] authSettings = { "cookieAuth" };
-
-            // make the HTTP request
-            IRestResponse response = (IRestResponse)ApiClient.CallApi(path, Method.DELETE, queryParams, null, headerParams, formParams, fileParams, authSettings);
-
-            if ((int)response.StatusCode >= 400)
-                throw new ApiException((int)response.StatusCode, "Error calling DeleteFile: " + response.Content, response.Content);
-            if (response.StatusCode == 0)
-                throw new ApiException((int)response.StatusCode, "Error calling DeleteFile: " + response.ErrorMessage, response.ErrorMessage);
+            ApiClient.CheckResponse(response);
         }
 
         public string AddFile(WordFileBytes wordFileBytes)
         {
-            // verify the required parameter 'wordFileBytes' is set
-            if (wordFileBytes == null) throw new ApiException(400, "Missing required parameter 'word' when calling AddWord");
-
             var path = "/word/file";
-            path = path.Replace("{format}", "json");
-
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-
             var postBody = ApiClient.Serialize(wordFileBytes);
+            var response = ApiClient.CallApi(path, Method.POST, postBody);
 
-            // authentication setting, if any
-            string[] authSettings = { "cookieAuth" };
-
-            // make the HTTP request
-            var response = (IRestResponse)ApiClient.CallApi(path, Method.POST, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-
-            if ((int)response.StatusCode >= 400)
-                throw new ApiException((int)response.StatusCode, "Error calling AddFile: " + response.Content, response.Content);
-            if (response.StatusCode == 0)
-                throw new ApiException((int)response.StatusCode, "Error calling AddFile: " + response.ErrorMessage, response.ErrorMessage);
-
-
-            return (string)ApiClient.Deserialize(response.Content, typeof(string), response.Headers);
+            ApiClient.CheckResponse(response);
+            return ApiClient.Deserialize<string>(response);
         }
 
-        /// <summary>
-        /// Add a new word to the store 
-        /// </summary>
-        /// <param name="word">Word object that needs to be added to the store</param> 
-        /// <returns></returns>            
-        public void AddWord (IWord word)
+        public void AddWord(IWord word)
         {
-            // verify the required parameter 'word' is set
-            if (word == null) throw new ApiException(400, "Missing required parameter 'word' when calling AddWord");
-            
             var path = "/word";
-            path = path.Replace("{format}", "json");
-                
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-
             var postBody = ApiClient.Serialize(word);
-    
-            // authentication setting, if any
-            string[] authSettings = { "cookieAuth" };
-    
-            // make the HTTP request
-            var response = (IRestResponse) ApiClient.CallApi(path, Method.POST, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-    
-            if ((int)response.StatusCode >= 400)
-                throw new ApiException ((int)response.StatusCode, "Error calling AddWord: " + response.Content, response.Content);
-            if (response.StatusCode == 0)
-                throw new ApiException ((int)response.StatusCode, "Error calling AddWord: " + response.ErrorMessage, response.ErrorMessage);
-        }
-    
-        /// <summary>
-        /// Delete word 
-        /// </summary>
-        /// <param name="wordId">Word id to delete</param> 
-        /// <returns></returns>            
-        public void DeleteWord (long? wordId)
-        {
-            // verify the required parameter 'wordId' is set
-            if (wordId == null) throw new ApiException(400, "Missing required parameter 'wordId' when calling DeleteWord");            
-    
-            var path = "/word/{wordId}";
-            path = path.Replace("{format}", "json");
-            path = path.Replace("{" + "wordId" + "}", ApiClient.ParameterToString(wordId));
-    
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-    
-                                                    
-            // authentication setting, if any
-            string[] authSettings = { "cookieAuth" };
-    
-            // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.DELETE, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-    
-            if ((int)response.StatusCode >= 400)
-                throw new ApiException ((int)response.StatusCode, "Error calling DeleteWord: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
-                throw new ApiException ((int)response.StatusCode, "Error calling DeleteWord: " + response.ErrorMessage, response.ErrorMessage);
-        }
-    
-        /// <summary>
-        /// Get word&#39;s flash card as png binary 
-        /// </summary>
-        /// <param name="fileId">File id</param> 
-        /// <returns>byte[]</returns>            
-        public byte[] GetWordCard (string fileId)
-        {
-            
-            // verify the required parameter 'fileId' is set
-            if (fileId == null) throw new ApiException(400, "Missing required parameter 'fileId' when calling GetWordCard");
-            
-    
-            var path = "/word/file/{fileId}";
-            path = path.Replace("{format}", "json");
-            path = path.Replace("{" + "fileId" + "}", ApiClient.ParameterToString(fileId));
-    
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-    
-                                                    
-            // authentication setting, if any
-            string[] authSettings = { "cookieAuth" };
-    
-            // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.GET, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-    
-            if ((int)response.StatusCode >= 400)
-                throw new ApiException ((int)response.StatusCode, "Error calling GetWordCard: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
-                throw new ApiException ((int)response.StatusCode, "Error calling GetWordCard: " + response.ErrorMessage, response.ErrorMessage);
+            var response = ApiClient.CallApi(path, Method.POST, postBody);
 
-            return (byte[]) ApiClient.Deserialize(response.Content, typeof(byte[]), response.Headers);
+            ApiClient.CheckResponse(response);
         }
-    
-        /// <summary>
-        ///  Get word by id
-        /// </summary>
-        /// <param name="wordId">Word id</param> 
-        /// <returns>Word</returns>            
-        public IWord GetWordId (long? wordId)
-        {
-            
-            // verify the required parameter 'wordId' is set
-            if (wordId == null) throw new ApiException(400, "Missing required parameter 'wordId' when calling GetWordId");
-            
-    
-            var path = "/word/{wordId}";
-            path = path.Replace("{format}", "json");
-            path = path.Replace("{" + "wordId" + "}", ApiClient.ParameterToString(wordId));
-    
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-    
-                                                    
-            // authentication setting, if any
-            string[] authSettings = { "cookieAuth" };
-    
-            // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.GET, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-    
-            if ((int)response.StatusCode >= 400)
-                throw new ApiException ((int)response.StatusCode, "Error calling GetWordId: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
-                throw new ApiException ((int)response.StatusCode, "Error calling GetWordId: " + response.ErrorMessage, response.ErrorMessage);
 
-            return (Word) ApiClient.Deserialize(response.Content, typeof(Word), response.Headers);
-        }
-    
-        /// <summary>
-        /// Get words by word or character for user Get words by wordEntry for user
-        /// </summary>
-        /// <param name="wordEntry">Word entry</param> 
-        /// <param name="userId">User entry to match</param> 
-        /// <returns>List&lt;Word&gt;</returns>            
-        public List<IWord> GetWordsByUser (string wordEntry, long? userId)
+        public void DeleteWord(long wordId)
         {
-            
-            // verify the required parameter 'wordEntry' is set
-            if (wordEntry == null) throw new ApiException(400, "Missing required parameter 'wordEntry' when calling GetWordsByUser");
-            
-            // verify the required parameter 'userId' is set
-            if (userId == null) throw new ApiException(400, "Missing required parameter 'userId' when calling GetWordsByUser");
-            
-    
-            var path = "/word/user/{userId}/search/{wordEntry}";
-            path = path.Replace("{format}", "json");
-            path = path.Replace("{" + "wordEntry" + "}", ApiClient.ParameterToString(wordEntry));
-path = path.Replace("{" + "userId" + "}", ApiClient.ParameterToString(userId));
-    
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-    
-                                                    
-            // authentication setting, if any
-            string[] authSettings = { "cookieAuth" };
-    
-            // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.GET, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-    
-            if ((int)response.StatusCode >= 400)
-                throw new ApiException ((int)response.StatusCode, "Error calling GetWordsByUser: " + response.Content, response.Content);
-            if (response.StatusCode == 0)
-                throw new ApiException ((int)response.StatusCode, "Error calling GetWordsByUser: " + response.ErrorMessage, response.ErrorMessage);
+            var path = $"/word/{wordId}";
+            var response = ApiClient.CallApi(path, Method.DELETE);
 
-            return (List<IWord>) ApiClient.Deserialize(response.Content, typeof(List<IWord>), response.Headers);
+            ApiClient.CheckResponse(response);
         }
-    
-        /// <summary>
-        ///  Get words by folder id
-        /// </summary>      
-        public List<IWord> GetWordsFolderId (long? folderId, long? count)
-        {
-            
-            // verify the required parameter 'folderId' is set
-            if (folderId == null) throw new ApiException(400, "Missing required parameter 'folderId' when calling GetWordsFolderId");
-            
-    
-            var path = "/word/folder/{folderId}/{count}";
-            path = path.Replace("{format}", "json");
-            path = path.Replace("{" + "folderId" + "}", ApiClient.ParameterToString(folderId));
-            path = path.Replace("{" + "count" + "}", ApiClient.ParameterToString(count));
 
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-    
-                                                    
-            // authentication setting, if any
-            string[] authSettings = { "cookieAuth" };
-    
-            // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.GET, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-    
-            if ((int)response.StatusCode >= 400)
-                throw new ApiException ((int)response.StatusCode, "Error calling GetWordsFolderId: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
-                throw new ApiException ((int)response.StatusCode, "Error calling GetWordsFolderId: " + response.ErrorMessage, response.ErrorMessage);
+        public byte[] GetWordCard(string fileId)
+        {
+            var path = $"/word/file/{fileId}";
+            var response = ApiClient.CallApi(path, Method.GET);
 
-            return (List<IWord>) ApiClient.Deserialize(response.Content, typeof(List<IWord>), response.Headers);
+            ApiClient.CheckResponse(response);
+            return ApiClient.Deserialize<byte[]>(response);
         }
-    
-        /// <summary>
-        /// Move words to another folder 
-        /// </summary>
-        /// <param name="folderId">Folder id to move in</param> 
-        /// <param name="requestBody">Word ids</param> 
-        /// <returns></returns>            
-        public void MoveWordsToFolder (long? folderId, List<long?> requestBody)
+
+        public IWord GetWordId(long wordId)
         {
-            
-            // verify the required parameter 'folderId' is set
-            if (folderId == null) throw new ApiException(400, "Missing required parameter 'folderId' when calling MoveWordsToFolder");
-            
-            // verify the required parameter 'requestBody' is set
-            if (requestBody == null) throw new ApiException(400, "Missing required parameter 'requestBody' when calling MoveWordsToFolder");
-            
-    
-            var path = "/word/folder/{folderId}";
-            path = path.Replace("{format}", "json");
-            path = path.Replace("{" + "folderId" + "}", ApiClient.ParameterToString(folderId));
-    
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-    
-                                                postBody = ApiClient.Serialize(requestBody); // http body (model) parameter
-    
-            // authentication setting, if any
-            string[] authSettings = { "cookieAuth" };
-    
-            // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.PUT, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-    
-            if ((int)response.StatusCode >= 400)
-                throw new ApiException ((int)response.StatusCode, "Error calling MoveWordsToFolder: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
-                throw new ApiException ((int)response.StatusCode, "Error calling MoveWordsToFolder: " + response.ErrorMessage, response.ErrorMessage);
+            var path = $"/word/{wordId}";
+            var response = ApiClient.CallApi(path, Method.GET);
+
+            ApiClient.CheckResponse(response);
+            return ApiClient.Deserialize<IWord>(response);
         }
-    
-        /// <summary>
-        /// Rename words with another translation 
-        /// </summary>
-        /// <param name="wordId">Word id to reaname</param> 
-        /// <param name="body">New translation</param> 
-        /// <returns></returns>            
-        public void RenameWord (long? wordId, string body)
+
+        public IWord[] GetWordsByUser(string wordEntry, long userId)
         {
-            
-            // verify the required parameter 'wordId' is set
-            if (wordId == null) throw new ApiException(400, "Missing required parameter 'wordId' when calling RenameWord");
-            
-            // verify the required parameter 'body' is set
-            if (body == null) throw new ApiException(400, "Missing required parameter 'body' when calling RenameWord");
-            
-    
+            var path = $"/word/user/{userId}/search/{wordEntry}"; //TODO wordEntry encode? 
+            var response = ApiClient.CallApi(path, Method.GET);
+
+            ApiClient.CheckResponse(response);
+            return ApiClient.Deserialize<IWord[]>(response);
+        }
+
+        public IWord[] GetWordsFolderId(long folderId, long? count)
+        {
+            var path = $"/word/folder/{folderId}/{count}";
+            var response = ApiClient.CallApi(path, Method.GET);
+
+            ApiClient.CheckResponse(response);
+            return ApiClient.Deserialize<IWord[]>(response);
+        }
+
+        public void MoveWordsToFolder(long folderId, long[] wordIds)
+        {
+            var path = $"/word/folder/{folderId}";
+            var postBody = ApiClient.Serialize(wordIds);
+            var response = ApiClient.CallApi(path, Method.PUT, postBody);
+
+            ApiClient.CheckResponse(response);
+        }
+
+        public void RenameWord(long wordId, string body)
+        {
             var path = "/word/{wordId}/rename";
-            path = path.Replace("{format}", "json");
-            path = path.Replace("{" + "wordId" + "}", ApiClient.ParameterToString(wordId));
-    
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-    
-                                                postBody = ApiClient.Serialize(body); // http body (model) parameter
-    
-            // authentication setting, if any
-            string[] authSettings = { "cookieAuth" };
-    
-            // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.PUT, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-    
-            if ((int)response.StatusCode >= 400)
-                throw new ApiException ((int)response.StatusCode, "Error calling RenameWord: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
-                throw new ApiException ((int)response.StatusCode, "Error calling RenameWord: " + response.ErrorMessage, response.ErrorMessage);
+            var postBody = ApiClient.Serialize(body);
+            var response = ApiClient.CallApi(path, Method.PUT, postBody);
+
+            ApiClient.CheckResponse(response);
         }
-    
-        /// <summary>
-        /// Update user&#39;s score for word 
-        /// </summary>
-        /// <param name="wordId">Word id to reaname</param> 
-        /// <param name="score">Score object that needs to be updated in the word</param> 
-        /// <returns></returns>            
-        public void ScoreWord (long? wordId, Score score)
+
+        public void ScoreWord(long wordId, IScore score)
         {
-            
-            // verify the required parameter 'wordId' is set
-            if (wordId == null) throw new ApiException(400, "Missing required parameter 'wordId' when calling ScoreWord");
-            
-            // verify the required parameter 'score' is set
-            if (score == null) throw new ApiException(400, "Missing required parameter 'score' when calling ScoreWord");
-            
-    
-            var path = "/word/{wordId}/score";
-            path = path.Replace("{format}", "json");
-            path = path.Replace("{" + "wordId" + "}", ApiClient.ParameterToString(wordId));
-    
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-    
-                                                postBody = ApiClient.Serialize(score); // http body (model) parameter
-    
-            // authentication setting, if any
-            string[] authSettings = { "cookieAuth" };
-    
-            // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.PUT, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-    
-            if ((int)response.StatusCode >= 400)
-                throw new ApiException ((int)response.StatusCode, "Error calling ScoreWord: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
-                throw new ApiException ((int)response.StatusCode, "Error calling ScoreWord: " + response.ErrorMessage, response.ErrorMessage);
+            var path = $"/word/{wordId}/score";
+            var postBody = ApiClient.Serialize(score);
+            var response = ApiClient.CallApi(path, Method.PUT, postBody);
+
+            ApiClient.CheckResponse(response);
         }
-    
-        /// <summary>
-        /// Update an existing word 
-        /// </summary>
-        /// <param name="word">Word object that needs to be updated in the store</param> 
-        /// <returns></returns>            
-        public void UpdateWord (IWord word)
+
+        public void UpdateWord(IWord word)
         {
-            
-            // verify the required parameter 'word' is set
-            if (word == null) throw new ApiException(400, "Missing required parameter 'word' when calling UpdateWord");
-            
-    
             var path = "/word";
-            path = path.Replace("{format}", "json");
-                
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-    
-                                                postBody = ApiClient.Serialize(word); // http body (model) parameter
-    
-            // authentication setting, if any
-            string[] authSettings = { "cookieAuth" };
-    
-            // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.PUT, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-    
-            if ((int)response.StatusCode >= 400)
-                throw new ApiException ((int)response.StatusCode, "Error calling UpdateWord: " + response.Content, response.Content);
-            if ((int)response.StatusCode == 0)
-                throw new ApiException ((int)response.StatusCode, "Error calling UpdateWord: " + response.ErrorMessage, response.ErrorMessage);
+            var postBody = ApiClient.Serialize(word);
+            var response = ApiClient.CallApi(path, Method.PUT, postBody);
+
+            ApiClient.CheckResponse(response);
         }
-    
+
+        public IWord SetQuestionByUser(long userId, ELearnMode mode)
+        {
+            var path = $"/word/user/{userId}/nextWord/{mode}";
+            var response = ApiClient.CallApi(path, Method.PUT);
+
+            ApiClient.CheckResponse(response);
+            return ApiClient.Deserialize<IWord>(response);
+        }
+        public IWord[] GetAnswersByUser(long userId)
+        {
+            var path = $"/word/user/{userId}/currentWord";
+            var response = ApiClient.CallApi(path, Method.GET);
+
+            ApiClient.CheckResponse(response);
+            return ApiClient.Deserialize<IWord[]>(response);
+        }
+        public IWord GetCurrentWord(long userId)
+        {
+            var path = $"/word/user/{userId}/currentWord";
+            var response = ApiClient.CallApi(path, Method.GET);
+
+            ApiClient.CheckResponse(response);
+            return ApiClient.Deserialize<IWord>(response);
+        }
     }
 }

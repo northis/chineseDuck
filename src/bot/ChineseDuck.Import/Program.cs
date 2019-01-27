@@ -4,6 +4,7 @@ using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Rest.Api;
 using ChineseDuck.Bot.Rest.Client;
 using ChineseDuck.Bot.Rest.Model;
+using ChineseDuck.Common;
 
 namespace ChineseDuck.Import
 {
@@ -14,18 +15,13 @@ namespace ChineseDuck.Import
         private const string OldSqlDbKey = "--OldSqlDb=";
         private const string NewWebApiKey = "--NewWebApi=";
 
-        private static string GetParameter(string key)
-        {
-            return Environment.GetCommandLineArgs().Where(a => a.StartsWith(key)).Select(a => a.Replace(key, string.Empty))
-                .FirstOrDefault();
-        }
 
         static void Main()
         {
-            var password = GetParameter(PasswordKey);
-            var userId = GetParameter(UserIdKey);
-            var connectionString = GetParameter(OldSqlDbKey);
-            var site = GetParameter(NewWebApiKey);
+            var password = CommandLineHelper.GetParameter(PasswordKey);
+            var userId = CommandLineHelper.GetParameter(UserIdKey);
+            var connectionString = CommandLineHelper.GetParameter(OldSqlDbKey);
+            var site = CommandLineHelper.GetParameter(NewWebApiKey);
 
             var apiClient = new ApiClient(site);
             var userApi = new UserApi(apiClient);

@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChineseDuck.Common", "src\b
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChineseDuck.BotService", "src\bot\ChineseDuck.BotService\ChineseDuck.BotService.csproj", "{97B8FF48-847B-4D97-809B-6D34CBE41929}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChineseDuck.Import", "ChineseDuck.Import\ChineseDuck.Import.csproj", "{36F3322E-6746-4790-BA64-62F240ECE177}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChineseDuck.Import", "src\bot\ChineseDuck.Import\ChineseDuck.Import.csproj", "{36F3322E-6746-4790-BA64-62F240ECE177}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChineseDuck.Bot.Tests", "src\bot\ChineseDuck.Bot.Tests\ChineseDuck.Bot.Tests\ChineseDuck.Bot.Tests.csproj", "{EE81616C-14FD-44D4-AA20-EA9C4772AF13}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{36F3322E-6746-4790-BA64-62F240ECE177}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36F3322E-6746-4790-BA64-62F240ECE177}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36F3322E-6746-4790-BA64-62F240ECE177}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE81616C-14FD-44D4-AA20-EA9C4772AF13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE81616C-14FD-44D4-AA20-EA9C4772AF13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE81616C-14FD-44D4-AA20-EA9C4772AF13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE81616C-14FD-44D4-AA20-EA9C4772AF13}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,7 @@
 import { mh } from "../../../server/api/db";
 import { Settings } from "../../../../config/common";
 import * as models from "../../../server/api/db/models";
-import { isNullOrUndefined } from "util";
+import { isNullOrUndefined, isNull } from "util";
 import mongoose from "mongoose";
 import * as errors from "../../errors";
 
@@ -339,81 +339,125 @@ export const study = {
    * responses: 200
    */
   put: async function setQuestionByUser(req, res, next) {
-    const userId = req.params.userId;
+    const userId = +req.params.userId;
+    const settingsMode = req.params.mode;
 
     const user = await mh.user.findById(userId);
-    const mode = user.mode;
+    const strategy = user.mode;
     const answersCount = Settings.answersCount;
-    const sortFuncArray = [];
 
-    let scores = mh.word.find({ owner_id: userId });
-    let modeFunc = null;
+    let sortObj = {};
+    let useDifficultStrategy = false;
 
-    switch (mode) {
-      case models.LearnModeEnum.OriginalWord:
-        modeFunc = (a, b) =>
-          (a.OriginalWordCount > 0
-            ? a.OriginalWordSuccessCount / a.OriginalWordCount
-            : 0) -
-          (b.OriginalWordCount > 0
-            ? b.OriginalWordSuccessCount / b.OriginalWordCount
-            : 0);
+    let queryParamsArray = [];
+
+    switch (strategy) {
+      case models.StrategyEnum.newFirst:
+        sortObj["score.lastLearned"] = -1;
+        sortObj["score.lastLearned"] = -1;
+        sortObj.lastModified = -1;
         break;
-      case models.LearnModeEnum.Translation:
-        modeFunc = (a, b) =>
-          (a.PronunciationCount > 0
-            ? a.PronunciationSuccessCount / a.PronunciationCount
-            : 0) -
-          (b.PronunciationCount > 0
-            ? b.PronunciationSuccessCount / b.PronunciationCount
-            : 0);
+      case models.StrategyEnum.newMostDifficult:
+        sortObj["score.lastLearned"] = -1;
+        sortObj["score.lastView"] = -1;
+        useDifficultStrategy = true;
         break;
-      case models.LearnModeEnum.Pronunciation:
-        modeFunc = (a, b) =>
-          (a.TranslationCount > 0
-            ? a.TranslationSuccessCount / a.TranslationCount
-            : 0) -
-          (b.TranslationCount > 0
-            ? b.TranslationSuccessCount / b.TranslationCount
-            : 0);
+      case models.StrategyEnum.oldFirst:
+        sortObj["score.lastLearned"] = 1;
+        sortObj["score.lastLearned"] = 1;
+        sortObj.lastModified = 1;
+        break;
+      case models.StrategyEnum.oldMostDifficult:
+        sortObj["score.lastLearned"] = 1;
+        sortObj["score.lastView"] = 1;
+        useDifficultStrategy = true;
         break;
       default:
-        modeFunc = (a, b) => a.ViewCount - b.ViewCount;
+        queryParamsArray.push({ $sample: { size: 1 } });
+        sortObj = null;
         break;
     }
 
-    switch (mode) {
-      case models.LearnModeEnum.OriginalWord:
-        modeFunc = (a, b) =>
-          (a.OriginalWordCount > 0
-            ? a.OriginalWordSuccessCount / a.OriginalWordCount
-            : 0) -
-          (b.OriginalWordCount > 0
-            ? b.OriginalWordSuccessCount / b.OriginalWordCount
-            : 0);
-        break;
-      case models.LearnModeEnum.Translation:
-        modeFunc = (a, b) =>
-          (a.PronunciationCount > 0
-            ? a.PronunciationSuccessCount / a.PronunciationCount
-            : 0) -
-          (b.PronunciationCount > 0
-            ? b.PronunciationSuccessCount / b.PronunciationCount
-            : 0);
-        break;
-      case models.LearnModeEnum.Pronunciation:
-        modeFunc = (a, b) =>
-          (a.TranslationCount > 0
-            ? a.TranslationSuccessCount / a.TranslationCount
-            : 0) -
-          (b.TranslationCount > 0
-            ? b.TranslationSuccessCount / b.TranslationCount
-            : 0);
-        break;
-      default:
-        modeFunc = (a, b) => a.ViewCount - b.ViewCount;
-        break;
+    let scoreRateObj = null;
+
+    if (!isNull(sortObj) && useDifficultStrategy) {
+      switch (settingsMode) {
+        case models.LearnModeEnum.OriginalWord:
+          scoreRateObj = {
+            $cond: [
+              { $eq: ["$score.originalWordCount", 0] },
+              0,
+              {
+                $divide: [
+                  "$score.originalWordCount",
+                  "$score.originalWordCount"
+                ]
+              }
+            ]
+          };
+          break;
+        case models.LearnModeEnum.Translation:
+          scoreRateObj = {
+            $cond: [
+              { $eq: ["$score.pronunciationCount", 0] },
+              0,
+              {
+                $divide: [
+                  "$score.pronunciationSuccessCount",
+                  "$score.pronunciationCount"
+                ]
+              }
+            ]
+          };
+          break;
+        case models.LearnModeEnum.Pronunciation:
+          scoreRateObj = {
+            $cond: [
+              { $eq: ["$score.translationCount", 0] },
+              0,
+              {
+                $divide: [
+                  "$score.translationSuccessCount",
+                  "$score.translationCount"
+                ]
+              }
+            ]
+          };
+          break;
+        default:
+          sortObj["score.viewCount"] = 1;
+          break;
+      }
     }
+
+    if (!isNull(scoreRateObj)) {
+      queryParamsArray.push({ $addFields: { scoreRate: scoreRateObj } });
+
+      if (isNull(sortObj)) sortObj = {};
+      sortObj.scoreRate = 1;
+    }
+
+    if (!isNull(sortObj)) {
+      queryParamsArray.push({ $sort: sortObj });
+    }
+
+    queryParamsArray.push({ $limit: 1 });
+    queryParamsArray.push({
+      $match: { owner_id: userId, folder_id: user.currentFolder_id }
+    });
+    let words = await mh.word.aggregate(queryParamsArray);
+    res.json(words.length > 0 ? words[0] : {});
+  },
+  /**
+   * summary: Get answers for current question
+   * parameters: userId
+   * produces:
+   * responses: 200
+   */
+
+  get: async function getAnswersByUser(req, res, next) {
+    const userId = req.params.userId;
+    const wordEntry = req.params.wordEntry;
 
     let words = await mh.word.find({
       originalWord: {
@@ -424,13 +468,19 @@ export const study = {
       folder_id: user.currentFolder_id
     });
     res.json(words);
-  },
+  }
+};
+
+/**
+ * Operations on /word/user/{userId}/currentWord
+ */
+export const studyCurrent = {
   /**
    * summary: Get answers for current question
    * parameters: userId
    * produces:
    * responses: 200
-   */ get: async function getAnswersByUser(req, res, next) {
+   */ get: async function getCurrentWord(req, res, next) {
     const userId = req.params.userId;
     const wordEntry = req.params.wordEntry;
 

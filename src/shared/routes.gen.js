@@ -26,14 +26,18 @@ export default { _word:
    { value: '/word/user/{userId}/search/{wordEntry}',
      actions: { get: ["admin"] },
      express: '/word/user/:userId/search/:wordEntry' },
-  _word_user__userId__nextWord:
-   { value: '/word/user/{userId}/nextWord',
+  _word_user__userId__nextWord__mode_:
+   { value: '/word/user/{userId}/nextWord/{mode}',
      actions: { put: ["admin"] },
-     express: '/word/user/:userId/nextWord' },
+     express: '/word/user/:userId/nextWord/:mode' },
   _word_user__userId__answers:
    { value: '/word/user/{userId}/answers',
      actions: { get: ["admin"] },
      express: '/word/user/:userId/answers' },
+  _word_user__userId__currentWord:
+   { value: '/word/user/{userId}/currentWord',
+     actions: { get: ["admin"] },
+     express: '/word/user/:userId/currentWord' },
   _word_file__fileId_:
    { value: '/word/file/{fileId}',
      actions: { get: ["read"], delete: ["admin"] },

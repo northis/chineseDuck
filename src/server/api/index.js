@@ -235,15 +235,21 @@ router
   .delete(word.file.delete);
 
 router
-  .route(routes._word_user__userId__nextWord.express)
-  .all(accessControl(routes._word_user__userId__nextWord))
+  .route(routes._word_user__userId__nextWord__mode_.express)
+  .all(accessControl(routes._word_user__userId__nextWord__mode_))
   .all(userControl)
-  .get(word.study.put);
+  .put(word.study.put);
 
 router
   .route(routes._word_user__userId__answers.express)
   .all(accessControl(routes._word_user__userId__answers))
   .all(userControl)
   .get(word.study.get);
+
+router
+  .route(routes._word_user__userId__currentWord.express)
+  .all(accessControl(routes._word_user__userId__currentWord))
+  .all(userControl)
+  .get(word.studyCurrent.get);
 
 export default router;

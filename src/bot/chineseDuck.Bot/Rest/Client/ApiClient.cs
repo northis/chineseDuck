@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using System.Web;
 using Newtonsoft.Json;
 using RestSharp;
-using RestSharp.Extensions;
 
 namespace ChineseDuck.Bot.Rest.Client
 {
@@ -18,7 +17,7 @@ namespace ChineseDuck.Bot.Rest.Client
         /// Initializes a new instance of the <see cref="ApiClient" /> class.
         /// </summary>
         /// <param name="basePath">The base path.</param>
-        public ApiClient(string basePath="https://udd3r.com/api/v1")
+        public ApiClient(string basePath="https://chineseduck.online/api/v1")
         {
             BasePath = basePath;
             RestClient = new RestClient(BasePath);
@@ -47,68 +46,20 @@ namespace ChineseDuck.Bot.Rest.Client
         /// </summary>
         /// <param name="path">URL path.</param>
         /// <param name="method">HTTP method.</param>
-        /// <param name="queryParams">Query parameters.</param>
         /// <param name="postBody">HTTP body (POST request).</param>
-        /// <param name="headerParams">Header parameters.</param>
-        /// <param name="formParams">Form parameters.</param>
-        /// <param name="fileParams">File parameters.</param>
-        /// <param name="authSettings">Authentication settings.</param>
-        /// <returns>Object</returns>
-        public object CallApi(string path, Method method, Dictionary<string, string> queryParams, string postBody,
-            Dictionary<string, string> headerParams, Dictionary<string, string> formParams, 
-            Dictionary<string, FileParameter> fileParams, string[] authSettings)
+        /// <returns>Response</returns>
+        public IRestResponse CallApi(string path, Method method, string postBody = null)
         {
-
             var request = new RestRequest(path, method);
    
             // add default header, if any
             foreach(var defaultHeader in DefaultHeaders)
                 request.AddHeader(defaultHeader.Key, defaultHeader.Value);
 
-            // add header parameter, if any
-            foreach(var param in headerParams)
-                request.AddHeader(param.Key, param.Value);
-
-            // add query parameter, if any
-            foreach(var param in queryParams)
-                request.AddParameter(param.Key, param.Value, ParameterType.GetOrPost);
-
-            // add form parameter, if any
-            foreach(var param in formParams)
-                request.AddParameter(param.Key, param.Value, ParameterType.GetOrPost);
-
-            // add file parameter, if any
-            //foreach(var param in fileParams)
-            //    request.AddFile(param.Value.Name, param.Value.Writer, param.Value.FileName, param.Value.ContentType);
-
-            if (postBody != null) // http body (model) parameter
+            if (postBody != null)
                 request.AddParameter("application/json", postBody, ParameterType.RequestBody);
 
             return RestClient.Execute(request);
-
-        }
-    
-        /// <summary>
-        /// Escape string (url-encoded).
-        /// </summary>
-        /// <param name="str">String to be escaped.</param>
-        /// <returns>Escaped string.</returns>
-        public string EscapeString(string str)
-        {
-            return HttpUtility.UrlEncode(str);
-        }
-    
-        /// <summary>
-        /// Create FileParameter based on Stream.
-        /// </summary>
-        /// <param name="name">Parameter name.</param>
-        /// <param name="stream">Input stream.</param>
-        /// <returns>FileParameter.</returns>
-        public FileParameter ParameterToFile(string name, Stream stream)
-        {
-            if (stream is FileStream)
-                return FileParameter.Create(name, stream.ReadAsBytes(), Path.GetFileName(((FileStream)stream).Name));
-            return FileParameter.Create(name, stream.ReadAsBytes(), "no_file_name_provided");
         }
     
         /// <summary>
@@ -120,17 +71,29 @@ namespace ChineseDuck.Bot.Rest.Client
         /// <returns>Formatted string.</returns>
         public string ParameterToString(object obj)
         {
-            if (obj is DateTime)
+            if (obj is DateTime time)
                 // Return a formatted date string - Can be customized with Configuration.DateTimeFormat
                 // Defaults to an ISO 8601, using the known as a Round-trip date/time pattern ("o")
                 // https://msdn.microsoft.com/en-us/library/az4se3k1(v=vs.110).aspx#Anchor_8
                 // For example: 2009-06-15T13:45:30.0000000
-                return ((DateTime)obj).ToString (Configuration.DateTimeFormat);
-            if (obj is List<string>)
-                return string.Join(",", (obj as List<string>).ToArray());
+                return time.ToString (Configuration.DateTimeFormat);
+
+            if (obj is List<string> list)
+                return string.Join(",", list.ToArray());
             return Convert.ToString (obj);
         }
-    
+
+        /// <summary>
+        /// Deserialize the JSON string into proper object of type T.
+        /// </summary>
+        /// <typeparam name="T">The type of the object</typeparam>
+        /// <param name="response">Response</param>
+        /// <returns>Object representation of the JSON string.</returns>
+        public T Deserialize<T>(IRestResponse response)
+        {
+            return (T)Deserialize(response.Content, typeof(T), response.Headers);
+        }
+
         /// <summary>
         /// Deserialize the JSON string into a proper object.
         /// </summary>
@@ -140,7 +103,7 @@ namespace ChineseDuck.Bot.Rest.Client
         /// <returns>Object representation of the JSON string.</returns>
         public object Deserialize(string content, Type type, IList<Parameter> headers=null)
         {
-            if (type == typeof(object)) // return an object
+            if (type == typeof(object))
             {
                 return content;
             }
@@ -161,7 +124,6 @@ namespace ChineseDuck.Bot.Rest.Client
                 }
                 File.WriteAllText(fileName, content);
                 return new FileStream(fileName, FileMode.Open);
-
             }
 
             if (type.Name.StartsWith("System.Nullable`1[[System.DateTime")) // return a datetime object
@@ -203,38 +165,27 @@ namespace ChineseDuck.Bot.Rest.Client
         }
     
         /// <summary>
-        /// Get the API key with prefix.
-        /// </summary>
-        /// <param name="apiKeyIdentifier">API key identifier (authentication scheme).</param>
-        /// <returns>API key with prefix.</returns>
-        public string GetApiKeyWithPrefix (string apiKeyIdentifier)
-        {
-            Configuration.ApiKey.TryGetValue (apiKeyIdentifier, out var apiKeyValue);
-            if (Configuration.ApiKeyPrefix.TryGetValue (apiKeyIdentifier, out var apiKeyPrefix))
-                return apiKeyPrefix + " " + apiKeyValue;
-            return apiKeyValue;
-        }
-    
-        /// <summary>
-        /// Encode string in base64 format.
-        /// </summary>
-        /// <param name="text">String to be encoded.</param>
-        /// <returns>Encoded string.</returns>
-        public static string Base64Encode(string text)
-        {
-            var textByte = System.Text.Encoding.UTF8.GetBytes(text);
-            return Convert.ToBase64String(textByte);
-        }
-    
-        /// <summary>
         /// Dynamically cast the object into target type.
         /// </summary>
-        /// <param name="fromObject">Object to be casted</param>
+        /// <param name="fromObject">Object to be cast</param>
         /// <param name="toObject">Target type</param>
-        /// <returns>Casted object</returns>
+        /// <returns>Cast object</returns>
         public static object ConvertType(object fromObject, Type toObject) {
             return Convert.ChangeType(fromObject, toObject);
         }
-  
+
+        /// <summary>
+        /// Check the response for possible errors and throw it if they exist.
+        /// </summary>
+        /// <param name="response">The response</param>
+        /// <param name="callerMethod">The calling method.</param>
+        public void CheckResponse(IRestResponse response, [CallerMemberName]string callerMethod = null)
+        {
+            if ((int)response.StatusCode >= 400)
+                throw new ApiException((int)response.StatusCode, $"Error calling {callerMethod}: {response.Content}", response.Content);
+            if (response.StatusCode == 0)
+                throw new ApiException((int) response.StatusCode,
+                    $"Error calling  {callerMethod}: {response.ErrorMessage}", response.ErrorMessage);
+        }
     }
 }
