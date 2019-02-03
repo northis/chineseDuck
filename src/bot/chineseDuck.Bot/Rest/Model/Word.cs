@@ -2,6 +2,7 @@ using System;
 using System.Runtime.Serialization;
 using ChineseDuck.Bot.Extensions;
 using ChineseDuck.Bot.Interfaces.Data;
+using ChineseDuck.Bot.Rest.Converters;
 using Newtonsoft.Json;
 
 namespace ChineseDuck.Bot.Rest.Model {
@@ -66,6 +67,7 @@ namespace ChineseDuck.Bot.Rest.Model {
         /// </summary>
         [DataMember(Name = "score", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "score")]
+        [JsonConverter(typeof(ConcreteTypeConverter<Score>))]
         public IScore Score { get; set; }
 
         /// <summary>
@@ -73,6 +75,7 @@ namespace ChineseDuck.Bot.Rest.Model {
         /// </summary>
         [DataMember(Name = "full", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "full")]
+        [JsonConverter(typeof(ConcreteTypeConverter<WordFile>))]
         public IWordFile CardAll { get; set; }
 
         /// <summary>
@@ -80,6 +83,7 @@ namespace ChineseDuck.Bot.Rest.Model {
         /// </summary>
         [DataMember(Name = "orig", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "orig")]
+        [JsonConverter(typeof(ConcreteTypeConverter<WordFile>))]
         public IWordFile CardOriginalWord { get; set; }
 
         /// <summary>
@@ -87,6 +91,7 @@ namespace ChineseDuck.Bot.Rest.Model {
         /// </summary>
         [DataMember(Name = "pron", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "pron")]
+        [JsonConverter(typeof(ConcreteTypeConverter<WordFile>))]
         public IWordFile CardPronunciation { get; set; }
 
         /// <summary>
@@ -94,6 +99,7 @@ namespace ChineseDuck.Bot.Rest.Model {
         /// </summary>
         [DataMember(Name = "trans", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "trans")]
+        [JsonConverter(typeof(ConcreteTypeConverter<WordFile>))]
         public IWordFile CardTranslation { get; set; }
 
         /// <summary>

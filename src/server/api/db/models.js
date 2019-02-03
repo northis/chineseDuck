@@ -81,8 +81,9 @@ export const userSchema = {
     enum: Object.values(RightEnum),
     default: RightEnum.read
   },
-  mode: String,
-  currentFolder_id: Number
+  mode: { type: String, enum: Object.values(LearnModeEnum) },
+  currentFolder_id: Number,
+  currentWord_id: Number
 };
 
 export const wordFileBodySchema = {
@@ -137,7 +138,6 @@ export const wordSchema = {
     lastView: { type: Date, default: new Date() },
     lastLearned: { type: Date, default: new Date() },
     lastLearnMode: { type: String, enum: Object.values(LearnModeEnum) },
-    isInLearnMode: Boolean,
     rightAnswerNumber: Number,
     pronunciationCount: Number,
     pronunciationSuccessCount: Number,

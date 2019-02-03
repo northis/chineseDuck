@@ -242,7 +242,7 @@ namespace ChineseDuck.Bot.Rest.Api
             var response = ApiClient.CallApi(path, Method.PUT);
 
             ApiClient.CheckResponse(response);
-            return ApiClient.Deserialize<IWord>(response);
+            return ApiClient.Deserialize<Word>(response);
         }
         public IWord[] GetAnswersByUser(long userId)
         {

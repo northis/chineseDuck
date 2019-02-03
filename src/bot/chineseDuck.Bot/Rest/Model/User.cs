@@ -29,6 +29,13 @@ namespace ChineseDuck.Bot.Rest.Model
         public long CurrentFolderId { get; set; }
 
         /// <summary>
+        /// Gets or Sets CurrentWordId
+        /// </summary>
+        [DataMember(Name = "currentWord_id", EmitDefaultValue = false)]
+        [JsonProperty(PropertyName = "currentWord_id")]
+        public long CurrentWordId { get; set; }
+
+        /// <summary>
         /// Gets or Sets Username
         /// </summary>
         [DataMember(Name = "username", EmitDefaultValue = false)]

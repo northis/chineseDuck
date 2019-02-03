@@ -43,6 +43,8 @@ namespace ChineseDuck.Import
                         userApi.CreateUser(new User
                         {
                             CurrentFolderId = 0,
+                            CurrentWordId = context.Score.Where(a => a.IdUser == user.IdUser && a.IsInLearnMode)
+                                .Select(a => a.IdWord).FirstOrDefault(),
                             IdUser = user.IdUser,
                             Name = user.Name,
                             JoinDate = user.JoinDate,
@@ -71,7 +73,6 @@ namespace ChineseDuck.Import
                         var scoreApi = new Score { Name = string.Empty };
                         if (score == null)
                         {
-                            scoreApi.IsInLearnMode = false;
                             scoreApi.LastView = datetime;
                             scoreApi.LastLearned = null;
                             scoreApi.OriginalWordCount = 0;
@@ -85,7 +86,6 @@ namespace ChineseDuck.Import
                         }
                         else
                         {
-                            scoreApi.IsInLearnMode = score.IsInLearnMode;
                             scoreApi.LastView = score.LastView;
                             scoreApi.LastLearned = score.LastLearned;
                             scoreApi.LastLearnMode = score.LastLearnMode;

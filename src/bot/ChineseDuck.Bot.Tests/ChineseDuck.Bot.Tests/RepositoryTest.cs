@@ -1,20 +1,27 @@
-﻿using ChineseDuck.Bot.Rest.Api;
+﻿using ChineseDuck.Bot.Enums;
+using ChineseDuck.Bot.Rest.Api;
 using ChineseDuck.Bot.Rest.Client;
 using ChineseDuck.Bot.Rest.Model;
-using ChineseDuck.Common;
+using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 
 namespace ChineseDuck.Bot.Tests
 {
     public class RepositoryTest
     {
-        private const string PasswordKey = "--password=";
-        private const string UserIdKey = "--userId=";
-        private const string WebApiKey = "--WebApi=";
+        public RepositoryTest()
+        {
+            _configurationRoot = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+        }
 
-        public string Password => CommandLineHelper.GetParameter(PasswordKey);
-        public string UserId => CommandLineHelper.GetParameter(UserIdKey);
-        public string WebApi => CommandLineHelper.GetParameter(WebApiKey);
+        private readonly IConfigurationRoot _configurationRoot;
+
+        public string Password => _configurationRoot["TestSettings:password"];
+        public string UserId => _configurationRoot["TestSettings:userId"];
+        public string AdminId => _configurationRoot["TestSettings:adminId"];
+        public string WebApi => _configurationRoot["TestSettings:webApi"];
 
         [Test]
         public void AnswerPollTest()
@@ -23,7 +30,8 @@ namespace ChineseDuck.Bot.Tests
             var userApi = new UserApi(apiClient);
             var wordApi = new WordApi(apiClient);
 
-            userApi.LoginUser(new ApiUser { Code = Password, Id = UserId });
+            userApi.LoginUser(new ApiUser { Code = Password, Id = AdminId });
+            var nextWord = wordApi.SetQuestionByUser(long.Parse(UserId), ELearnMode.Translation);
         }
     }
 }

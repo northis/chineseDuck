@@ -14,7 +14,6 @@ namespace ChineseDuck.Bot.Interfaces.Data
         DateTime LastView { get; set; }
         DateTime? LastLearned { get; set; }
         string LastLearnMode { get; set; }
-        bool IsInLearnMode { get; set; }
         int ViewCount { get; set; }
     }
 }

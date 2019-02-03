@@ -1301,7 +1301,7 @@
       },
       "Score": {
         "type": "object",
-        "required": ["lastView", "isInLearnMode"],
+        "required": ["lastView"],
         "properties": {
           "originalWordCount": {
             "type": "integer",
@@ -1321,9 +1321,6 @@
           },
           "lastLearnMode": {
             "type": "string"
-          },
-          "isInLearnMode": {
-            "type": "boolean"
           },
           "rightAnswerNumber": {
             "type": "integer",

@@ -139,40 +139,6 @@ namespace ChineseDuck.Bot.Rest.Repository
             user.LastCommand = command;
             _userApi.UpdateUser(userId, user);
         }
-        
-        public IScore GetScore(long idUser, long idWord)
-        {
-            //var score = _context.Scores.FirstOrDefault(a => a.IdUser == idUser && a.IdWord == idWord);
-
-            //if (score != null)
-            //    return score;
-
-            //var user = _context.Users.FirstOrDefault(a => a.IdUser == idUser);
-            //var word = _context.Words.FirstOrDefault(a => a.Id == idWord);
-
-            //if (user == null || word == null)
-                return null;
-
-            //score = new Score
-            //{
-            //    User = user,
-            //    Word = word,
-            //    LastView = GetRepositoryTime(),
-            //    LastLearnMode = ELearnMode.FullView.ToString(),
-            //    IsInLearnMode = false,
-            //    OriginalWordCount = 0,
-            //    OriginalWordSuccessCount = 0,
-            //    PronunciationCount = 0,
-            //    PronunciationSuccessCount = 0,
-            //    TranslationCount = 0,
-            //    TranslationSuccessCount = 0,
-            //    ViewCount = 0
-            //};
-            //_context.Scores.Add(score);
-            //_context.SaveChanges();
-
-            //return score;
-        }
 
         public LearnUnit GetNextWord(WordSettings settings)
         {
@@ -182,12 +148,11 @@ namespace ChineseDuck.Bot.Rest.Repository
             var pollAnswersCount = settings.PollAnswersCount;
 
 
-            IWord word = null;
+            var word = _wordApi.SetQuestionByUser(userId, learnMode);
             if (word == null)
                 throw new Exception($"No suitable words to learn. userId={userId}");
 
             var wordId = word.Id;
-            var score = GetScore(userId, wordId);
 
             //foreach (var sc in scores)
             //    sc.IsInLearnMode = false;

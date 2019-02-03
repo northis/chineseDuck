@@ -76,7 +76,6 @@ export default () => {
         originalWordCount: 0,
         originalWordSuccessCount: 0,
         lastView: new Date(),
-        isInLearnMode: false,
         pronunciationCount: 0,
         pronunciationSuccessCount: 0,
         translationCount: 0,

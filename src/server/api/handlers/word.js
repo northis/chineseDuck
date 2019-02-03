@@ -350,6 +350,9 @@ export const study = {
     let useDifficultStrategy = false;
 
     let queryParamsArray = [];
+    queryParamsArray.push({
+      $match: { owner_id: userId, folder_id: user.currentFolder_id }
+    });
 
     switch (strategy) {
       case models.StrategyEnum.newFirst:
@@ -379,6 +382,7 @@ export const study = {
     }
 
     let scoreRateObj = null;
+    let scoreUpdate = null;
 
     if (!isNull(sortObj) && useDifficultStrategy) {
       switch (settingsMode) {
@@ -389,14 +393,14 @@ export const study = {
               0,
               {
                 $divide: [
-                  "$score.originalWordCount",
+                  "$score.originalWordSuccessCount",
                   "$score.originalWordCount"
                 ]
               }
             ]
           };
           break;
-        case models.LearnModeEnum.Translation:
+        case models.LearnModeEnum.Pronunciation:
           scoreRateObj = {
             $cond: [
               { $eq: ["$score.pronunciationCount", 0] },
@@ -410,7 +414,7 @@ export const study = {
             ]
           };
           break;
-        case models.LearnModeEnum.Pronunciation:
+        case models.LearnModeEnum.Translation:
           scoreRateObj = {
             $cond: [
               { $eq: ["$score.translationCount", 0] },
@@ -442,11 +446,38 @@ export const study = {
     }
 
     queryParamsArray.push({ $limit: 1 });
-    queryParamsArray.push({
-      $match: { owner_id: userId, folder_id: user.currentFolder_id }
-    });
-    let words = await mh.word.aggregate(queryParamsArray);
-    res.json(words.length > 0 ? words[0] : {});
+    const words = await mh.word.aggregate(queryParamsArray);
+    let word = {};
+
+    if (words.length > 0) {
+      word = words[0];
+      await mh.user.findByIdAndUpdate(
+        { _id: userId },
+        { currentWord_id: word._id, mode: settingsMode }
+      );
+
+      word.score.lastLearnMode = settingsMode;
+      word.score.lastLearned = new Date();
+
+      switch (settingsMode) {
+        case models.LearnModeEnum.OriginalWord:
+          word.score.originalWordCount++;
+          break;
+        case models.LearnModeEnum.Pronunciation:
+          word.score.pronunciationCount++;
+          break;
+        case models.LearnModeEnum.Translation:
+          word.score.translationCount++;
+          break;
+        default:
+          word.score.viewCount++;
+          break;
+      }
+
+      await mh.word.findByIdAndUpdate({ _id: word._id }, { score: word.score });
+    }
+
+    res.json(word);
   },
   /**
    * summary: Get answers for current question

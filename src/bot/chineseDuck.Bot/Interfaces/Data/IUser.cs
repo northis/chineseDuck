@@ -11,6 +11,7 @@ namespace ChineseDuck.Bot.Interfaces.Data
         DateTime JoinDate { get; set; }
         string Mode { get; set; }
         long CurrentFolderId { get; set; }
+        long CurrentWordId { get; set; }
         RightEnum Who { get; set; }
     }
 }
