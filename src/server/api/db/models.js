@@ -1,5 +1,3 @@
-import mongoose from "mongoose";
-
 export const RightEnum = {
   read: "read",
   write: "write",

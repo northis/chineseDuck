@@ -246,11 +246,12 @@ namespace ChineseDuck.Bot.Rest.Api
         }
         public IWord[] GetAnswersByUser(long userId)
         {
-            var path = $"/word/user/{userId}/currentWord";
+            var path = $"/word/user/{userId}/answers";
             var response = ApiClient.CallApi(path, Method.GET);
 
             ApiClient.CheckResponse(response);
-            return ApiClient.Deserialize<IWord[]>(response);
+            // ReSharper disable once CoVariantArrayConversion
+            return ApiClient.Deserialize<Word[]>(response);
         }
         public IWord GetCurrentWord(long userId)
         {

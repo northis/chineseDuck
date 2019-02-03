@@ -139,7 +139,7 @@ namespace ChineseDuck.Bot.Rest.Client
             // at this point, it must be a model (json)
             try
             {
-                return JsonConvert.DeserializeObject(content, type, new JsonSerializerSettings(){ });
+                return JsonConvert.DeserializeObject(content, type);
             }
             catch (IOException e)
             {

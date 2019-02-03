@@ -1,5 +1,5 @@
 import { mh } from "../../../server/api/db";
-import { Settings } from "../../../../config/common";
+import { Settings, shuffle } from "../../../../config/common";
 import * as models from "../../../server/api/db/models";
 import { isNullOrUndefined, isNull } from "util";
 import mongoose from "mongoose";
@@ -344,7 +344,6 @@ export const study = {
 
     const user = await mh.user.findById(userId);
     const strategy = user.mode;
-    const answersCount = Settings.answersCount;
 
     let sortObj = {};
     let useDifficultStrategy = false;
@@ -382,7 +381,6 @@ export const study = {
     }
 
     let scoreRateObj = null;
-    let scoreUpdate = null;
 
     if (!isNull(sortObj) && useDifficultStrategy) {
       switch (settingsMode) {
@@ -479,25 +477,32 @@ export const study = {
 
     res.json(word);
   },
+
   /**
    * summary: Get answers for current question
    * parameters: userId
    * produces:
    * responses: 200
    */
+  get: async function getAnswersByUser(req, res) {
+    const userId = +req.params.userId;
+    const answersCount = Settings.answersCount;
 
-  get: async function getAnswersByUser(req, res, next) {
-    const userId = req.params.userId;
-    const wordEntry = req.params.wordEntry;
+    const user = await mh.user.findOne({ _id: userId });
+    const wordRightAnswer = await mh.word.findOne({ _id: user.currentWord_id });
 
-    let words = await mh.word.find({
-      originalWord: {
-        $regex: wordEntry,
-        $options: "i"
-      },
-      owner_id: userId,
-      folder_id: user.currentFolder_id
-    });
+    let words = await mh.word
+      .find({
+        owner_id: userId,
+        folder_id: user.currentFolder_id,
+        syllablesCount: wordRightAnswer.syllablesCount,
+        _id: { $ne: wordRightAnswer._id }
+      })
+      .limit(answersCount - 1);
+
+    words = words.concat(wordRightAnswer);
+    shuffle(words);
+
     res.json(words);
   }
 };

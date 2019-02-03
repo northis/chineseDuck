@@ -31,7 +31,11 @@ namespace ChineseDuck.Bot.Tests
             var wordApi = new WordApi(apiClient);
 
             userApi.LoginUser(new ApiUser { Code = Password, Id = AdminId });
-            var nextWord = wordApi.SetQuestionByUser(long.Parse(UserId), ELearnMode.Translation);
+
+            var userId = long.Parse(UserId);
+            var nextWord = wordApi.SetQuestionByUser(userId, ELearnMode.Translation);
+
+            var words = wordApi.GetAnswersByUser(userId);
         }
     }
 }

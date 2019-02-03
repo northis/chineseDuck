@@ -1,4 +1,3 @@
-import { getMode, ModeEnum } from "./common";
 import swaggerDoc from "../src/server/api/swagger.json";
 import docHash from "../src/shared/routes.hash.json";
 import fs from "fs";
