@@ -144,7 +144,7 @@ namespace ChineseDuck.Bot.Rest.Api
             var response = ApiClient.CallApi(path, Method.POST, postBody);
 
             ApiClient.CheckResponse(response);
-            return ApiClient.Deserialize<string>(response);
+            return ApiClient.Deserialize<string>(response).Replace(@"""", "");
         }
 
         public void AddWord(IWord word)
@@ -170,7 +170,7 @@ namespace ChineseDuck.Bot.Rest.Api
             var response = ApiClient.CallApi(path, Method.GET);
 
             ApiClient.CheckResponse(response);
-            return ApiClient.Deserialize<byte[]>(response);
+            return response.RawBytes;
         }
 
         public IWord GetWordId(long wordId)
@@ -193,7 +193,7 @@ namespace ChineseDuck.Bot.Rest.Api
 
         public IWord[] GetWordsFolderId(long folderId, long? count)
         {
-            var path = $"/word/folder/{folderId}/{count}";
+            var path = count == null ? $"/word/folder/{folderId}/count/0" : $"/word/folder/{folderId}/count/{count}";
             var response = ApiClient.CallApi(path, Method.GET);
 
             ApiClient.CheckResponse(response);

@@ -116,7 +116,7 @@ namespace ChineseDuck.Bot.Rest.Api
             var response = ApiClient.CallApi(path, Method.GET);
 
             ApiClient.CheckResponse(response);
-            return ApiClient.Deserialize<IUser>(response);
+            return ApiClient.Deserialize<User>(response);
         }
            
         public IUser GetUserByToken ()
@@ -125,7 +125,7 @@ namespace ChineseDuck.Bot.Rest.Api
             var response = ApiClient.CallApi(path, Method.GET);
 
             ApiClient.CheckResponse(response);
-            return ApiClient.Deserialize<IUser>(response);
+            return ApiClient.Deserialize<User>(response);
         }
             
         public void LoginUser (ApiUser apiUser)

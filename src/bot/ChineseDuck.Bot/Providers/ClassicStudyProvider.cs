@@ -69,9 +69,7 @@ namespace ChineseDuck.Bot.Providers
                     break;
             }
 
-            // wordStat.Score.IsInLearnMode = false;
-            _wordRepository.SetScore(wordStat.Score);
-
+            _wordRepository.SetScore(wordStat.Id, wordStat.Score);
             return result;
         }
 

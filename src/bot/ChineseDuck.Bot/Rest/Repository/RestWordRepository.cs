@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using ChineseDuck.Bot.Enums;
+using ChineseDuck.Bot.Extensions;
 using ChineseDuck.Bot.Interfaces;
 using ChineseDuck.Bot.Interfaces.Data;
 using ChineseDuck.Bot.ObjectModels;
 using ChineseDuck.Bot.Rest.Api;
-using ChineseDuck.Bot.Rest.Model;
 
 namespace ChineseDuck.Bot.Rest.Repository
 {
@@ -128,9 +128,9 @@ namespace ChineseDuck.Bot.Rest.Repository
             _userApi.UpdateUser(userId, user);
         }
 
-        public void SetScore(IScore score)
+        public void SetScore(long wordId, IScore score)
         {
-            throw new NotImplementedException();
+            _wordApi.ScoreWord(wordId,score);
         }
 
         public void SetUserCommand(long userId, string command)
@@ -144,62 +144,48 @@ namespace ChineseDuck.Bot.Rest.Repository
         {
             var userId = settings.UserId;
             var learnMode = settings.LearnMode;
-            var strategy = GetLearnMode(userId);
-            var pollAnswersCount = settings.PollAnswersCount;
-
 
             var word = _wordApi.SetQuestionByUser(userId, learnMode);
             if (word == null)
                 throw new Exception($"No suitable words to learn. userId={userId}");
 
-            var wordId = word.Id;
-
-            //foreach (var sc in scores)
-            //    sc.IsInLearnMode = false;
-
-            //score.LastLearnMode = learnMode.ToString();
-            //score.IsInLearnMode = learnMode != ELearnMode.FullView;
-            //score.LastLearned = GetRepositoryTime();
-
-            //var answers =
-            //    userWords.Where(a => a.SyllablesCount == word.SyllablesCount && a.Id != wordId)
-            //        .Take(pollAnswersCount - 1)
-            //        .Concat(userWords.Where(a => a.Id == wordId).Take(1))
-            //        .OrderBy(a => Guid.NewGuid());
-
+            var answers = _wordApi.GetAnswersByUser(userId);
             var questionItem = new LearnUnit();
 
-            //switch (learnMode)
-            //{
-            //    case ELearnMode.OriginalWord:
-            //        questionItem.Options = answers.Select(a => a.OriginalWord).ToArray();
-            //        questionItem.Picture = word.CardOriginalWord;
-            //        break;
+            IWordFile file;
 
-            //    case ELearnMode.Pronunciation:
-            //        questionItem.Options = answers.Select(a => a.Pronunciation).ToArray();
-            //        questionItem.Picture = word.CardPronunciation;
-            //        break;
+            switch (learnMode)
+            {
+                case ELearnMode.OriginalWord:
+                    questionItem.Options = answers.Select(a => a.OriginalWord).ToArray();
+                    file = word.CardOriginalWord;
+                    break;
 
-            //    case ELearnMode.Translation:
-            //        questionItem.Options = answers.Select(a => a.Translation).ToArray();
-            //        questionItem.Picture = word.CardTranslation;
-            //        break;
+                case ELearnMode.Pronunciation:
+                    questionItem.Options = answers.Select(a => a.Pronunciation).ToArray();
+                    file = word.CardPronunciation;
+                    break;
 
-            //    case ELearnMode.FullView:
-            //        if (score.ViewCount == null)
-            //            score.ViewCount = 0;
+                case ELearnMode.Translation:
+                    questionItem.Options = answers.Select(a => a.Translation).ToArray();
+                    file = word.CardTranslation;
+                    break;
 
-            //        score.ViewCount++;
-            //        questionItem.Options = new string[0];
-            //        questionItem.Picture = word.CardAll;
-            //        questionItem.WordStatistic = GetUserWordStatistic(userId, wordId).ToString();
-            //        questionItem.IdWord = wordId;
-            //        break;
-            //}
+                default:
+                    questionItem.Options = new string[0];
+                    questionItem.WordStatistic = word.ToScoreString();
+                    file = word.CardAll;
 
-            //_context.SaveChanges();
+                    questionItem.IdWord = word.Id;
+                    break;
+            }
 
+            questionItem.Picture = new GenerateImageResult
+            {
+                Height = file.Height,
+                Width = file.Width,
+                ImageBody = _wordApi.GetWordCard(file.Id)
+            };
 
             return questionItem;
         }

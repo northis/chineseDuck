@@ -37,7 +37,7 @@ namespace ChineseDuck.Bot.Interfaces
 
         void SetLearnMode(long userId, EGettingWordsStrategy mode);
 
-        void SetScore(IScore score);
+        void SetScore(long wordId, IScore score);
 
         void SetUserCommand(long userId, string command);
 

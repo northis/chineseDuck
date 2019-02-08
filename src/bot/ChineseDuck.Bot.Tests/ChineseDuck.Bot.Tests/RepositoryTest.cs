@@ -1,8 +1,15 @@
-﻿using ChineseDuck.Bot.Enums;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using ChineseDuck.Bot.Enums;
+using ChineseDuck.Bot.ObjectModels;
 using ChineseDuck.Bot.Rest.Api;
 using ChineseDuck.Bot.Rest.Client;
 using ChineseDuck.Bot.Rest.Model;
+using ChineseDuck.Bot.Rest.Repository;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace ChineseDuck.Bot.Tests
@@ -17,25 +24,98 @@ namespace ChineseDuck.Bot.Tests
         }
 
         private readonly IConfigurationRoot _configurationRoot;
+        private RestWordRepository _restWordRepository;
+        private FolderApi _folderApi;
+        private ServiceApi _serviceApi;
+        private WordApi _wordApi;
+        private UserApi _userApi;
+        private Word[] _testWords;
+        private WordFileBytes[] _testWordFileBytes;
 
         public string Password => _configurationRoot["TestSettings:password"];
         public string UserId => _configurationRoot["TestSettings:userId"];
         public string AdminId => _configurationRoot["TestSettings:adminId"];
         public string WebApi => _configurationRoot["TestSettings:webApi"];
+        public long UserIdLong => long.Parse(UserId);
+        
+        private Word[] GetTestWords()
+        {
+            var testWords = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testWords.json");
+            var jsonWords = File.ReadAllText(testWords);
+            var words = JsonConvert.DeserializeObject<Word[]>(jsonWords);
+            return words;
+        }
+
+        private WordFileBytes[] GetTestWordFileBytes()
+        {
+            var testFiles = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testFiles.json");
+            var jsonFiles = File.ReadAllText(testFiles);
+            var files = JsonConvert.DeserializeObject<WordFileBytes[]>(jsonFiles);
+            return files; 
+        }
+
+        [OneTimeSetUp]
+        public void Start()
+        {
+
+            var apiClient = new ApiClient(WebApi);
+            _userApi = new UserApi(apiClient);
+            _wordApi = new WordApi(apiClient);
+            _serviceApi = new ServiceApi(apiClient);
+            _folderApi = new FolderApi(apiClient);
+
+            _userApi.LoginUser(new ApiUser { Code = Password, Id = AdminId });
+            _restWordRepository = new RestWordRepository(_wordApi, _userApi, _serviceApi, _folderApi);
+
+            _testWords = GetTestWords();
+            _testWordFileBytes = GetTestWordFileBytes();
+
+            FillDb();
+        }
+
+        [OneTimeTearDown]
+        public void CleanDb()
+        {
+            var user = _userApi.GetUserById(UserIdLong);
+            var words = _wordApi.GetWordsFolderId(user.CurrentFolderId, null);
+            foreach (var testWord in words)
+            {
+                _wordApi.DeleteFile(testWord.CardAll.Id);
+                _wordApi.DeleteFile(testWord.CardOriginalWord.Id);
+                _wordApi.DeleteFile(testWord.CardPronunciation.Id);
+                _wordApi.DeleteFile(testWord.CardTranslation.Id);
+
+                _wordApi.DeleteWord(testWord.Id);
+            }
+        }
+
+        private void FillDb()
+        {
+            var user = _userApi.GetUserById(UserIdLong);
+
+            foreach (var testWord in _testWords)
+            {
+                testWord.OwnerId = UserIdLong;
+                testWord.FolderId = user.CurrentFolderId;
+
+                testWord.CardAll.Id = _wordApi.AddFile(_testWordFileBytes.First(a => a.Id == testWord.CardAll.Id));
+                testWord.CardOriginalWord.Id =
+                    _wordApi.AddFile(_testWordFileBytes.First(a => a.Id == testWord.CardOriginalWord.Id));
+                testWord.CardTranslation.Id =
+                    _wordApi.AddFile(_testWordFileBytes.First(a => a.Id == testWord.CardTranslation.Id));
+                testWord.CardPronunciation.Id =
+                    _wordApi.AddFile(_testWordFileBytes.First(a => a.Id == testWord.CardPronunciation.Id));
+
+                _wordApi.AddWord(testWord);
+            }
+        }
 
         [Test]
         public void AnswerPollTest()
         {
-            var apiClient = new ApiClient(WebApi);
-            var userApi = new UserApi(apiClient);
-            var wordApi = new WordApi(apiClient);
+            var learnUnit = _restWordRepository.GetNextWord(new WordSettings
+                {LearnMode = ELearnMode.OriginalWord, PollAnswersCount = 4, UserId = UserIdLong });
 
-            userApi.LoginUser(new ApiUser { Code = Password, Id = AdminId });
-
-            var userId = long.Parse(UserId);
-            var nextWord = wordApi.SetQuestionByUser(userId, ELearnMode.Translation);
-
-            var words = wordApi.GetAnswersByUser(userId);
         }
     }
 }

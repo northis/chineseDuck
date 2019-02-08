@@ -473,6 +473,10 @@ export const study = {
       }
 
       await mh.word.findByIdAndUpdate({ _id: word._id }, { score: word.score });
+      await mh.user.findByIdAndUpdate(
+        { _id: userId },
+        { currentWord_id: word._id }
+      );
     }
 
     res.json(word);

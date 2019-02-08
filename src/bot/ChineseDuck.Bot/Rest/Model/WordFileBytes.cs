@@ -10,6 +10,7 @@
 
 using System.Runtime.Serialization;
 using ChineseDuck.Bot.Interfaces.Data;
+using Newtonsoft.Json;
 
 namespace ChineseDuck.Bot.Rest.Model
 {
@@ -19,6 +20,13 @@ namespace ChineseDuck.Bot.Rest.Model
     [DataContract]
     public class WordFileBytes : BaseModel, IWordFileBytes
     {
+        /// <summary>
+        /// Gets or Sets Id
+        /// </summary>
+        [DataMember(Name = "_id", EmitDefaultValue = false)]
+        [JsonProperty(PropertyName = "_id")]
+        public string Id { get; set; }
+
         /// <summary>
         /// Gets or Sets Bytes
         /// </summary>
