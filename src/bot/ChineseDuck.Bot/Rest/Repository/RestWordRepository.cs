@@ -65,7 +65,7 @@ namespace ChineseDuck.Bot.Rest.Repository
                 return null;
             }
 
-            return _wordApi.GetWordsFolderId(user.CurrentFolderId, topCount).Select(a => new WordSearchResult
+            return _wordApi.GetWordsFolderId(user.CurrentFolderId, idUser, topCount).Select(a => new WordSearchResult
             {
                 OriginalWord = a.OriginalWord,
                 Pronunciation = a.Pronunciation,

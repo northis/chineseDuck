@@ -174,6 +174,13 @@ router
   .get(word.folderId.get);
 
 router
+  .route(routes._word_folder__folderId__user__userId__count__count_.express)
+  .all(
+    accessControl(routes._word_folder__folderId__user__userId__count__count_)
+  )
+  .get(word.folderId.get);
+
+router
   .route(routes._folder.express)
   .all(accessControl(routes._folder))
   .get(folder.main.get)

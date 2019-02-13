@@ -199,6 +199,68 @@
         ]
       }
     },
+    "/word/folder/{folderId}/user/{userId}/count/{count}": {
+      "get": {
+        "tags": ["word", "folder", "user"],
+        "description": "Get words by folder id & user id",
+        "operationId": "getWordsFolderIdUserId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "folderId",
+            "description": "Folder id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "description": "User id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "in": "path",
+            "name": "count",
+            "description": "Count limit",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Word"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Folder/user is not found"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ]
+      }
+    },
     "/word/{wordId}/rename": {
       "put": {
         "tags": ["word"],

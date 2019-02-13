@@ -197,7 +197,7 @@ export const folderId = {
    * responses: 200
    */
   get: async function getWordsFolderId(req, res, next) {
-    const idUser = req.session.passport.user;
+    const idUser = req.params.userId || req.session.passport.user;
     const folderId = req.params.folderId;
     const count = +req.params.count;
 
@@ -346,85 +346,56 @@ export const study = {
     const strategy = user.mode;
 
     let sortObj = {};
-    let useDifficultStrategy = false;
+    let queryParamsArray = [
+      {
+        $match: { owner_id: userId, folder_id: user.currentFolder_id }
+      },
+      {
+        $addFields: {
+          wRate: {
+            $divide: [
+              { $add: ["$score.originalWordSuccessCount", 1] },
+              { $add: ["$score.originalWordCount", 1] }
+            ]
+          },
+          pRate: {
+            $divide: [
+              { $add: ["$score.pronunciationSuccessCount", 1] },
+              { $add: ["$score.pronunciationCount", 1] }
+            ]
+          },
+          tRate: {
+            $divide: [
+              { $add: ["$score.translationSuccessCount", 1] },
+              { $add: ["$score.translationCount", 1] }
+            ]
+          },
+          usageSum: {
+            $sum: [
+              "$score.originalWordCount",
+              "$score.pronunciationCount",
+              "$score.translationCount",
+              "$score.viewCount"
+            ]
+          }
+        }
+      }
+    ];
 
-    let queryParamsArray = [];
-    queryParamsArray.push({
-      $match: { owner_id: userId, folder_id: user.currentFolder_id }
-    });
+    const useDifficultStrategy =
+      strategy == models.StrategyEnum.newMostDifficult ||
+      strategy == models.StrategyEnum.oldMostDifficult;
 
-    switch (strategy) {
-      case models.StrategyEnum.newFirst:
-        sortObj["score.lastLearned"] = -1;
-        sortObj["score.lastLearned"] = -1;
-        sortObj.lastModified = -1;
-        break;
-      case models.StrategyEnum.newMostDifficult:
-        sortObj["score.lastLearned"] = -1;
-        sortObj["score.lastView"] = -1;
-        useDifficultStrategy = true;
-        break;
-      case models.StrategyEnum.oldFirst:
-        sortObj["score.lastLearned"] = 1;
-        sortObj["score.lastLearned"] = 1;
-        sortObj.lastModified = 1;
-        break;
-      case models.StrategyEnum.oldMostDifficult:
-        sortObj["score.lastLearned"] = 1;
-        sortObj["score.lastView"] = 1;
-        useDifficultStrategy = true;
-        break;
-      default:
-        queryParamsArray.push({ $sample: { size: 1 } });
-        sortObj = null;
-        break;
-    }
-
-    let scoreRateObj = null;
-
-    if (!isNull(sortObj) && useDifficultStrategy) {
+    if (useDifficultStrategy) {
       switch (settingsMode) {
         case models.LearnModeEnum.OriginalWord:
-          scoreRateObj = {
-            $cond: [
-              { $eq: ["$score.originalWordCount", 0] },
-              0,
-              {
-                $divide: [
-                  "$score.originalWordSuccessCount",
-                  "$score.originalWordCount"
-                ]
-              }
-            ]
-          };
+          sortObj.wRate = 1;
           break;
         case models.LearnModeEnum.Pronunciation:
-          scoreRateObj = {
-            $cond: [
-              { $eq: ["$score.pronunciationCount", 0] },
-              0,
-              {
-                $divide: [
-                  "$score.pronunciationSuccessCount",
-                  "$score.pronunciationCount"
-                ]
-              }
-            ]
-          };
+          sortObj.pRate = 1;
           break;
         case models.LearnModeEnum.Translation:
-          scoreRateObj = {
-            $cond: [
-              { $eq: ["$score.translationCount", 0] },
-              0,
-              {
-                $divide: [
-                  "$score.translationSuccessCount",
-                  "$score.translationCount"
-                ]
-              }
-            ]
-          };
+          sortObj.tRate = 1;
           break;
         default:
           sortObj["score.viewCount"] = 1;
@@ -432,17 +403,33 @@ export const study = {
       }
     }
 
-    if (!isNull(scoreRateObj)) {
-      queryParamsArray.push({ $addFields: { scoreRate: scoreRateObj } });
-
-      if (isNull(sortObj)) sortObj = {};
-      sortObj.scoreRate = 1;
+    switch (strategy) {
+      case models.StrategyEnum.newFirst:
+        sortObj.usageSum = 1;
+        sortObj["score.lastLearned"] = -1;
+        sortObj["score.lastView"] = -1;
+        sortObj.lastModified = -1;
+        break;
+      case models.StrategyEnum.newMostDifficult:
+        sortObj.usageSum = 1;
+        sortObj["score.lastLearned"] = -1;
+        sortObj["score.lastView"] = -1;
+        break;
+      case models.StrategyEnum.oldFirst:
+        sortObj["score.lastLearned"] = 1;
+        sortObj["score.lastView"] = 1;
+        sortObj.lastModified = 1;
+        break;
+      case models.StrategyEnum.oldMostDifficult:
+        sortObj["score.lastLearned"] = 1;
+        sortObj["score.lastView"] = 1;
+        break;
+      default:
+        queryParamsArray.push({ $sample: { size: 1 } });
+        break;
     }
 
-    if (!isNull(sortObj)) {
-      queryParamsArray.push({ $sort: sortObj });
-    }
-
+    queryParamsArray.push({ $sort: sortObj });
     queryParamsArray.push({ $limit: 1 });
     const words = await mh.word.aggregate(queryParamsArray);
     let word = {};
@@ -495,14 +482,21 @@ export const study = {
     const user = await mh.user.findOne({ _id: userId });
     const wordRightAnswer = await mh.word.findOne({ _id: user.currentWord_id });
 
-    let words = await mh.word
-      .find({
-        owner_id: userId,
-        folder_id: user.currentFolder_id,
-        syllablesCount: wordRightAnswer.syllablesCount,
-        _id: { $ne: wordRightAnswer._id }
-      })
-      .limit(answersCount - 1);
+    let words = await mh.word.aggregate([
+      {
+        $match: {
+          owner_id: userId,
+          folder_id: user.currentFolder_id,
+          syllablesCount: wordRightAnswer.syllablesCount,
+          _id: { $ne: wordRightAnswer._id }
+        }
+      },
+      {
+        $sample: {
+          size: answersCount - 1
+        }
+      }
+    ]);
 
     words = words.concat(wordRightAnswer);
     shuffle(words);

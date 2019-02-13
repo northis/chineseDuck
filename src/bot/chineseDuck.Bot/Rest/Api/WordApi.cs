@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces.Data;
 using ChineseDuck.Bot.Rest.Client;
@@ -59,12 +61,21 @@ namespace ChineseDuck.Bot.Rest.Api
         IWord[] GetWordsByUser(string wordEntry, long userId);
 
         /// <summary>
-        ///  Get words by folder id
+        ///  Get words by folder id & user id
         /// </summary>
         /// <param name="folderId">Folder id</param>
         /// <param name="count">Count of the words returned</param>
         /// <returns>Words</returns>
         IWord[] GetWordsFolderId(long folderId, long? count);
+
+        /// <summary>
+        ///  Get words by folder id
+        /// </summary>
+        /// <param name="folderId">Folder id</param>
+        /// <param name="userId">User id</param>
+        /// <param name="count">Count of the words returned</param>
+        /// <returns>Words</returns>
+        IWord[] GetWordsFolderId(long folderId, long userId, long? count);
 
         /// <summary>
         /// Move words to another folder 
@@ -188,16 +199,29 @@ namespace ChineseDuck.Bot.Rest.Api
             var response = ApiClient.CallApi(path, Method.GET);
 
             ApiClient.CheckResponse(response);
-            return ApiClient.Deserialize<IWord[]>(response);
+            return ApiClient.Deserialize<List<Word>>(response).Cast<IWord>().ToArray();
         }
 
         public IWord[] GetWordsFolderId(long folderId, long? count)
         {
-            var path = count == null ? $"/word/folder/{folderId}/count/0" : $"/word/folder/{folderId}/count/{count}";
+            if (count == null)
+                count = 0;
+            var path = $"/word/folder/{folderId}/count/{count}";
             var response = ApiClient.CallApi(path, Method.GET);
 
             ApiClient.CheckResponse(response);
-            return ApiClient.Deserialize<IWord[]>(response);
+            return ApiClient.Deserialize<List<Word>>(response).Cast<IWord>().ToArray();
+        }
+        public IWord[] GetWordsFolderId(long folderId, long userId, long? count)
+        {
+            if (count == null)
+                count = 0;
+
+            var path = $"/word/folder/{folderId}/user/{userId}/count/{count}";
+            var response = ApiClient.CallApi(path, Method.GET);
+
+            ApiClient.CheckResponse(response);
+            return ApiClient.Deserialize<List<Word>>(response).Cast<IWord>().ToArray();
         }
 
         public void MoveWordsToFolder(long folderId, long[] wordIds)

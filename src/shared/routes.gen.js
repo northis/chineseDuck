@@ -10,6 +10,10 @@ export default { _word:
    { value: '/word/folder/{folderId}/count/{count}',
      actions: { get: ["write"] },
      express: '/word/folder/:folderId/count/:count' },
+  _word_folder__folderId__user__userId__count__count_:
+   { value: '/word/folder/{folderId}/user/{userId}/count/{count}',
+     actions: { get: ["admin"] },
+     express: '/word/folder/:folderId/user/:userId/count/:count' },
   _word__wordId__rename:
    { value: '/word/{wordId}/rename',
      actions: { put: ["write"] },

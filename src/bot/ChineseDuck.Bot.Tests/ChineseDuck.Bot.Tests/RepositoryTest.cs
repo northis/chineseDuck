@@ -1,9 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ChineseDuck.Bot.Enums;
+using ChineseDuck.Bot.Interfaces.Data;
 using ChineseDuck.Bot.ObjectModels;
+using ChineseDuck.Bot.Providers;
 using ChineseDuck.Bot.Rest.Api;
 using ChineseDuck.Bot.Rest.Client;
 using ChineseDuck.Bot.Rest.Model;
@@ -37,6 +39,7 @@ namespace ChineseDuck.Bot.Tests
         public string AdminId => _configurationRoot["TestSettings:adminId"];
         public string WebApi => _configurationRoot["TestSettings:webApi"];
         public long UserIdLong => long.Parse(UserId);
+        public ushort AnswersCount => ClassicStudyProvider.PollAnswersCount;
         
         private Word[] GetTestWords()
         {
@@ -70,6 +73,7 @@ namespace ChineseDuck.Bot.Tests
             _testWords = GetTestWords();
             _testWordFileBytes = GetTestWordFileBytes();
 
+
             FillDb();
         }
 
@@ -77,7 +81,7 @@ namespace ChineseDuck.Bot.Tests
         public void CleanDb()
         {
             var user = _userApi.GetUserById(UserIdLong);
-            var words = _wordApi.GetWordsFolderId(user.CurrentFolderId, null);
+            var words = _wordApi.GetWordsFolderId(user.CurrentFolderId, UserIdLong, null);
             foreach (var testWord in words)
             {
                 _wordApi.DeleteFile(testWord.CardAll.Id);
@@ -111,11 +115,43 @@ namespace ChineseDuck.Bot.Tests
         }
 
         [Test]
-        public void AnswerPollTest()
+        public void LearnWordsTest()
         {
-            var learnUnit = _restWordRepository.GetNextWord(new WordSettings
-                {LearnMode = ELearnMode.OriginalWord, PollAnswersCount = 4, UserId = UserIdLong });
+            var word = GetWord("做客");
+            var wordLearnUnit = GetLearnUnit(EGettingWordsStrategy.NewMostDifficult, ELearnMode.Translation);
+            Assert.AreEqual(ClassicStudyProvider.PollAnswersCount, wordLearnUnit.Options.Length);
+            Assert.AreEqual(1, wordLearnUnit.Options.Count(a => a == word.Translation));
+            
+            word = GetWord("忘");
+            wordLearnUnit = GetLearnUnit(EGettingWordsStrategy.OldMostDifficult, ELearnMode.Pronunciation);
+            Assert.AreEqual(ClassicStudyProvider.PollAnswersCount, wordLearnUnit.Options.Length);
+            Assert.AreEqual(1, wordLearnUnit.Options.Count(a => a == word.Pronunciation));
 
+            word = GetWord("冰箱");
+            wordLearnUnit = GetLearnUnit(EGettingWordsStrategy.NewFirst, ELearnMode.OriginalWord);
+            Assert.AreEqual(ClassicStudyProvider.PollAnswersCount, wordLearnUnit.Options.Length);
+            Assert.AreEqual(1, wordLearnUnit.Options.Count(a => a == word.OriginalWord));
+
+            word = GetWord("只有");
+            wordLearnUnit = GetLearnUnit(EGettingWordsStrategy.OldFirst, ELearnMode.FullView);
+            Assert.AreEqual(word.Id, wordLearnUnit.IdWord);
+        }
+
+        LearnUnit GetLearnUnit(EGettingWordsStrategy strategy, ELearnMode mode)
+        {
+            var user = _userApi.GetUserById(UserIdLong);
+            user.Mode = strategy.ToString();
+            _userApi.UpdateUser(UserIdLong, user);
+
+            var learnUnit = _restWordRepository.GetNextWord(new WordSettings
+                { LearnMode = mode, PollAnswersCount = AnswersCount, UserId = UserIdLong });
+
+            return learnUnit;
+        }
+
+        IWord GetWord(string original)
+        {
+            return _wordApi.GetWordsByUser(original, UserIdLong).First();
         }
     }
 }

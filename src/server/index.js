@@ -17,14 +17,6 @@ import { GracefulShutdownManager } from "@moebius/http-graceful-shutdown";
 
 const app = express();
 
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render("error", {
-    message: err.message,
-    error: isDebug() ? err : {}
-  });
-});
-
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -60,6 +52,14 @@ app.use(logErrors);
 httpErrorPages.express(app, {
   lang: "en_US",
   footer: getFooterMarkupLine()
+});
+
+app.use(function(err, req, res, next) {
+  res.status(500);
+  res.render("error", {
+    message: err.message,
+    error: isDebug() ? err : {}
+  });
 });
 
 const listen = app.listen(Settings.port, () => {

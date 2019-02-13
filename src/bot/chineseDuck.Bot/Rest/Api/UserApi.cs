@@ -165,7 +165,7 @@ namespace ChineseDuck.Bot.Rest.Api
             
         public void UpdateUser (long userId, IUser user)
         {
-            var path = "/user/{userId}";
+            var path = $"/user/{userId}";
             var postBody = ApiClient.Serialize(user);
             var response = ApiClient.CallApi(path, Method.PUT, postBody);
 
