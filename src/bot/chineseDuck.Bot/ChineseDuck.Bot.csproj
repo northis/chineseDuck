@@ -6,11 +6,16 @@
 
   <ItemGroup>
     <Compile Remove="Data\**" />
-    <Compile Remove="Drawing\**" />
     <EmbeddedResource Remove="Data\**" />
-    <EmbeddedResource Remove="Drawing\**" />
     <None Remove="Data\**" />
-    <None Remove="Drawing\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="**\*.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="**\*.xaml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -18,12 +23,32 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.11.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="RestSharp" Version="106.5.4" />
+    <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta0008" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0006" />
+    <PackageReference Include="SixLabors.Shapes.Text" Version="1.0.0-beta0008" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\chineseDuck.pinyin4net\ChineseDuck.Pinyin4net.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="FDrawing\lashCardTemplate.xaml.cs">
+      <DependentUpon>Drawing\FlashCardTemplate.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="CardRender\CardTemplate.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="CardRender\template.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Fonts\KaiTi.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

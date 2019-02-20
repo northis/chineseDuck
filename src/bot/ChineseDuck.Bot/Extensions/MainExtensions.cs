@@ -2,9 +2,6 @@
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces.Data;
 using ChineseDuck.Bot.Providers;
-
-//using YellowDuck.LearnChinese.Providers;
-
 namespace ChineseDuck.Bot.Extensions
 {
     public static class MainExtensions

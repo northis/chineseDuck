@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg width="{width}" height="{height}">
+  <style type="text/css">
+    <![CDATA[
+        .han, .pinyin, .trans, .usage {
+           fill:black;
+        }
+        .pinyin, .trans, .usage {
+           font-size:{MainFont}px;
+           font-family:Arial Unicode MS;
+        }
+        .han {
+           font-family:KaiTi;
+           font-size:{HanFont}px;
+        }
+        .usage {
+            font-family:KaiTi, Arial Unicode MS
+        }
+      ]]>
+  </style>
+  <rect width="{width}" height="{height}" fill="white" fill-opacity=".5"/>
+  {text}
+  <!--<text x="1em" y="1em" class="han tone2" style="fill:{color}">
+        明
+    </text>
+    <text x="2em" y="1em" class="han">
+        白
+    </text>
+    <text x="2em" y="3.5em" class="pinyin tone2">
+        míng
+    </text>
+    <text x="5em" y="3.5em" class="pinyin">
+        bai
+    </text>-->
+</svg>

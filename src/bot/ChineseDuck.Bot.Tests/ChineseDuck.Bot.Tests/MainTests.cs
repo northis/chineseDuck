@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces;
 using ChineseDuck.Bot.Providers;
 using ChineseDuck.Bot.Rest.Model;
@@ -69,20 +70,20 @@ namespace ChineseDuck.Bot.Tests
         [Test]
         public void GenerateImageForWordTest()
         {
-            //var prov = GetChineseWordParseProvider();
+            var prov = GetChineseWordParseProvider();
 
-            //var grn = new WpfFlashCardGenerator(prov);
-            //var word = new Word
-            //{
-            //    OriginalWord = "明?白!!",
-            //    Pronunciation = "míng|bai",
-            //    Translation = "понимать"
-            //};
+            var grn = new SvgFlashCardGenerator(prov);
+            var word = new Word
+            {
+                OriginalWord = "明?白!!",
+                Pronunciation = "míng|bai",
+                Translation = "понимать"
+            };
 
-            //var result = grn.Generate(word, ELearnMode.FullView);
+            var result = grn.Generate(word, ELearnMode.FullView);
 
-            //Assert.IsTrue(result.ImageBody?.Length > 0);
-            //System.IO.File.WriteAllBytes(@"D:\test.png", result);
+            Assert.IsTrue(result.ImageBody?.Length > 0);
+            System.IO.File.WriteAllBytes(@"D:\test.png", result.ImageBody);
         }
 
         public static IChineseWordParseProvider GetChineseWordParseProvider()
