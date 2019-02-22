@@ -72,12 +72,13 @@ namespace ChineseDuck.Bot.Tests
         {
             var prov = GetChineseWordParseProvider();
 
-            var grn = new SvgFlashCardGenerator(prov);
+            var grn = new FontFlashCardGenerator(prov);
             var word = new Word
             {
                 OriginalWord = "明?白!!",
                 Pronunciation = "míng|bai",
-                Translation = "понимать"
+                Translation = "понимать",
+                Usage = "我明白你"
             };
 
             var result = grn.Generate(word, ELearnMode.FullView);

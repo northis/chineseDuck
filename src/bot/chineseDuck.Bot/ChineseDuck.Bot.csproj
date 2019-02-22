@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.11.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="RestSharp" Version="106.5.4" />
     <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta0008" />
@@ -40,14 +39,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Update="CardRender\CardTemplate.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="CardRender\template.svg">
+    <None Update="Fonts\ArialUnicodeMS.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Fonts\KaiTi.ttf">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

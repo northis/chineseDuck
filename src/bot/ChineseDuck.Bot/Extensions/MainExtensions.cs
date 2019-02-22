@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces.Data;
 using ChineseDuck.Bot.Providers;
@@ -28,6 +29,10 @@ namespace ChineseDuck.Bot.Extensions
                     $"Wrong learn mode has been set. userId={idUser}, learnMode={score.LastLearnMode}");
 
             return learnMode;
+        }
+        public static string ToHexString(this Color c)
+        {
+            return "#" + c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
         }
     }
 }
