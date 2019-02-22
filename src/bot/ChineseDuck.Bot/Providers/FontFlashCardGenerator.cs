@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Extensions;
@@ -29,20 +27,24 @@ namespace ChineseDuck.Bot.Providers
         private const int MainFont = 22;
         private const int LineSpace = 5;
         private const int Padding = 5;
-        private const int HanMaxLineCharsCount = 8;
+        private const int HanMaxLineCharsCount = 7;
         private const int HanMaxLinesCount = 3;
         private const int HanMaxCharsCount = HanMaxLineCharsCount * HanMaxLinesCount;
         private const int MainMaxLineCharsCount = 20;
-        private const int MainMaxLinesCount = 4;
+        private const int MainMaxLinesCount = 3;
         private const int MainMaxCharsCount = MainMaxLineCharsCount * MainMaxLinesCount;
         private const int ViewPortWidth = MaxWidth - 2* Padding;
-        private const int ViewPortHeight = MaxHeight - 2 * Padding;
 
         private const string KaiTiFile = @"Fonts\KaiTi.ttf";
         private const string ArialUnicodeMsFile = @"Fonts\ArialUnicodeMS.ttf";
         private static readonly Font KaitiHanFont;
         private static readonly Font KaitiMainFont;
         private static readonly Font ArialUnicodeMainFont;
+
+
+        private static readonly Rgba32 MainColor = Rgba32.Black;
+        private static readonly Rgba32 UsageColor = Rgba32.DarkGray;
+        private static readonly Rgba32 BackgroundColor = Rgba32.FromHex("#FFFFFFA0");
 
         static FontFlashCardGenerator()
         {
@@ -67,9 +69,7 @@ namespace ChineseDuck.Bot.Providers
             var result = new GenerateImageResult();
             var syllables = _wordParseProvider.GetOrderedSyllables(word);
 
-            var originalChars = CutToMaximumLength(word.OriginalWord, HanMaxCharsCount);
-            var transChars = CutToMaximumLength(word.Translation, MainMaxCharsCount, string.Empty);
-            var usageChars = CutToMaximumLength(word.Translation, MainMaxCharsCount);
+            var originalChars = CutToMaxLength(word.OriginalWord, HanMaxCharsCount);
 
             var originalLength = 0;
             var pinyinLength = 0;
@@ -79,7 +79,7 @@ namespace ChineseDuck.Bot.Providers
                 originalLength++;
                 pinyinLength += a.Pinyin.Length;
 
-                return pinyinLength < MainMaxCharsCount && originalLength < originalChars.Length;
+                return pinyinLength < MainMaxCharsCount && originalLength <= originalChars.Length;
             }).ToArray();
 
             var y = 0f;
@@ -89,14 +89,14 @@ namespace ChineseDuck.Bot.Providers
                 var builder = new GlyphBuilder();
                 var renderer = new TextRenderer(builder);
 
-                img.Mutate(x => x.Fill(Rgba32.FromHex("#FFFFFFA0")));
+                img.Mutate(a => a.Fill(BackgroundColor));
                 
                 if (learnMode == ELearnMode.FullView || learnMode != ELearnMode.OriginalWord)
                 {
-                    var text = string.Join(string.Empty, syllables.Select(a => a.ChineseChar));
-                    var renderOptions = GetRenderOptions(KaitiHanFont);
+                    var text = CutToMaxRow(originalChars, HanMaxLineCharsCount);
+                    var renderOptions = GetRenderOptions(KaitiHanFont, y);
                     var size = TextMeasurer.Measure(text, renderOptions);
-                    y += size.Height + Padding;
+                    y += size.Height + LineSpace;
 
                     if (size.Width > maxWidth)
                         maxWidth = size.Width;
@@ -107,17 +107,16 @@ namespace ChineseDuck.Bot.Providers
                     {
                         var iLocal = i;
                         var syllable = syllables[iLocal];
-                        img.Mutate(x => x.Fill(Rgba32.FromHex(syllable.Color.ToHexString()), paths[iLocal]));
+                        img.Mutate(a => a.Fill(syllable.Color.ToRgba32(), paths[iLocal]));
                     }
                 }
 
                 if (learnMode == ELearnMode.FullView || learnMode != ELearnMode.Pronunciation)
                 {
                     var text = string.Join(" ", syllables.Select(a => a.Pinyin));
-                    var renderOptions = GetRenderOptions(ArialUnicodeMainFont);
-                    renderOptions.Origin = new PointF(0, y);
+                    var renderOptions = GetRenderOptions(ArialUnicodeMainFont, y);
                     var size = TextMeasurer.Measure(text, renderOptions);
-                    y += size.Height + Padding;
+                    y += size.Height + LineSpace;
 
                     if (size.Width > maxWidth)
                         maxWidth = size.Width;
@@ -132,48 +131,48 @@ namespace ChineseDuck.Bot.Providers
 
                         var pathCollection = new PathCollection(paths.Skip(currentPathPosition).Take(syllable.Pinyin.Length));
 
-                        img.Mutate(x => x.Fill(Rgba32.FromHex(syllable.Color.ToHexString()), pathCollection));
+                        img.Mutate(a => a.Fill(syllable.Color.ToRgba32(), pathCollection));
                         currentPathPosition += syllable.Pinyin.Length;
                     }
                 }
 
                 if (learnMode == ELearnMode.FullView || learnMode != ELearnMode.Translation)
                 {
-                    var renderOptions = GetRenderOptions(ArialUnicodeMainFont);
-                    renderOptions.Origin = new PointF(0, y);
-                    var size = TextMeasurer.Measure(word.Translation, renderOptions);
-                    y += size.Height + Padding;
+                    var renderOptions = GetRenderOptions(ArialUnicodeMainFont, y);
+                    var transChars = CutToMaxRow(CutToMaxLength(word.Translation, MainMaxCharsCount, string.Empty),
+                        MainMaxLineCharsCount);
+                    var size = TextMeasurer.Measure(transChars, renderOptions);
+                    y += size.Height + LineSpace;
 
                     if (size.Width > maxWidth)
                         maxWidth = size.Width;
 
-                    var paths = RenderText(builder, renderer, renderOptions, word.Translation);
-                    img.Mutate(x => x.Fill(Rgba32.Black, new PathCollection(paths)));
-
+                    var paths = RenderText(builder, renderer, renderOptions, transChars);
+                    img.Mutate(a => a.Fill(MainColor, new PathCollection(paths)));
                 }
 
                 if (learnMode == ELearnMode.FullView && !string.IsNullOrEmpty(word.Usage))
                 {
-                    var renderOptions = GetRenderOptions(KaitiMainFont);
-                    renderOptions.Origin = new PointF(0, y);
-                    var size = TextMeasurer.Measure(word.Translation, renderOptions);
-                    y += size.Height + Padding;
+                    var usageChars = CutToMaxRow(CutToMaxLength(word.Usage, MainMaxCharsCount), MainMaxLineCharsCount);
+                    var renderOptions = GetRenderOptions(KaitiMainFont, y);
+                    var size = TextMeasurer.Measure(usageChars, renderOptions);
+                    y += size.Height + LineSpace;
 
                     if (size.Width > maxWidth)
                         maxWidth = size.Width;
 
-                    var paths = RenderText(builder, renderer, renderOptions, word.Usage);
-                    img.Mutate(x => x.Fill(Rgba32.Gray, new PathCollection(paths)));
+                    var paths = RenderText(builder, renderer, renderOptions, usageChars);
+                    img.Mutate(a => a.Fill(UsageColor, new PathCollection(paths)));
                 }
 
-                var finalWidth = (int) (maxWidth + 1);
-                img.Mutate(x => x.Crop(new Rectangle((MaxWidth - finalWidth) / 2, 0, finalWidth, (int) y)));
+                var finalWidth = (int) (maxWidth + 2*Padding);
+                img.Mutate(a => a.Crop(new Rectangle((MaxWidth - finalWidth) / 2, 0, finalWidth, (int) y)));
 
                 result.Width = img.Width;
                 result.Height = img.Height;
                 using (var ms = new MemoryStream())
                 {
-                    img.Save(ms,new PngEncoder());
+                    img.Save(ms, new PngEncoder());
                     result.ImageBody = ms.ToArray();
                 }
             }
@@ -188,23 +187,48 @@ namespace ChineseDuck.Bot.Providers
             return builder.Paths.Except(paths).ToArray();
         }
 
-        private static RendererOptions GetRenderOptions(Font font)
+        private static RendererOptions GetRenderOptions(Font font, float yOffset, float xOffset = 0)
         {
             return new RendererOptions(font, 96)
             {
                 ApplyKerning = true,
                 WrappingWidth = ViewPortWidth,
-                HorizontalAlignment = HorizontalAlignment.Center
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Origin = new PointF(xOffset, yOffset)
             };
         }
 
-        private static string CutToMaximumLength(string input, int maxLength, string postfixIfCut = "…")
+        private static string CutToMaxLength(string input, int maxLength, string postfixIfCut = "…")
         {
             if (input == null || maxLength == 0)
                 return string.Empty;
 
             var needCut = input.Length > maxLength;
             return needCut ? input.Substring(0, maxLength - postfixIfCut.Length) + postfixIfCut : input;
+        }
+
+        private static string CutToMaxRow(string input, int maxLengthInRow)
+        {
+            var sb = new StringBuilder();
+            var stringCount = 0;
+
+            foreach (var ch in input)
+            {
+                var curLetter = ch.ToString();
+                if (curLetter != " " && curLetter != Environment.NewLine)
+                {
+                    stringCount++;
+                    sb.Append(curLetter);
+                }
+
+                if (stringCount == maxLengthInRow)
+                {
+                    sb.Append(" ");
+                    stringCount = 0;
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }

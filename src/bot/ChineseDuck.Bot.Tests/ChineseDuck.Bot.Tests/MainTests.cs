@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
+using System.IO;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces;
 using ChineseDuck.Bot.Providers;
@@ -72,19 +74,57 @@ namespace ChineseDuck.Bot.Tests
         {
             var prov = GetChineseWordParseProvider();
 
-            var grn = new FontFlashCardGenerator(prov);
-            var word = new Word
+            var words = new []
             {
-                OriginalWord = "明?白!!",
-                Pronunciation = "míng|bai",
-                Translation = "понимать",
-                Usage = "我明白你"
+                new Word
+                {
+                    OriginalWord = "明?白!!",
+                    Pronunciation = "míng|bai",
+                    Translation = "понимать",
+                    Usage = "我明白你"
+                },
+                new Word
+                {
+                    OriginalWord = "早饭",
+                    Pronunciation = "zǎo|fàn",
+                    Translation = "завтрак",
+                    Usage = null
+                },
+                new Word
+                {
+                    OriginalWord = "午饭",
+                    Pronunciation = "wǔ|fàn",
+                    Translation = "обед, полдник",
+                    Usage = null
+                },
+                new Word
+                {
+                    OriginalWord = "晚饭",
+                    Pronunciation = "wǎn|fàn",
+                    Translation = "ужин",
+                    Usage = null
+                },
+                new Word
+                {
+                    OriginalWord = "晚饭晚饭晚饭晚饭晚饭晚饭晚饭晚饭晚饭晚饭",
+                    Pronunciation = "wǎn|fàn|wǎn|fàn|wǎn|fàn|wǎn|fàn|wǎn|fàn|wǎn|fàn|wǎn|fàn|wǎn|fàn|wǎn|fàn|wǎn|fàn",
+                    Translation = "ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин",
+                    Usage = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+                }
             };
 
-            var result = grn.Generate(word, ELearnMode.FullView);
+            var grn = new FontFlashCardGenerator(prov);
 
-            Assert.IsTrue(result.ImageBody?.Length > 0);
-            System.IO.File.WriteAllBytes(@"D:\test.png", result.ImageBody);
+           // var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            foreach (var word in words)
+            {
+                var result = grn.Generate(word, ELearnMode.FullView);
+
+                Assert.IsTrue(result.ImageBody?.Length > 0);
+                Assert.IsTrue(result.Height > 0);
+                Assert.IsTrue(result.Width > 0);
+                // File.WriteAllBytes(Path.Combine(baseDir, Guid.NewGuid() + ".png"), result.ImageBody);
+            }
         }
 
         public static IChineseWordParseProvider GetChineseWordParseProvider()

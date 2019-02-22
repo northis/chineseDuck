@@ -135,12 +135,12 @@ namespace ChineseDuck.Bot.TextBuilder
         /// <param name="endPoint">The point.</param>
         void IGlyphRenderer.QuadraticBezierTo(PointF secondControlPoint, PointF endPoint)
         {
-            Vector2 startPointVector = _currentPoint;
+            var startPointVector = _currentPoint;
             Vector2 controlPointVector = secondControlPoint;
             Vector2 endPointVector = endPoint;
 
-            Vector2 c1 = (((controlPointVector - startPointVector) * 2) / 3) + startPointVector;
-            Vector2 c2 = (((controlPointVector - endPointVector) * 2) / 3) + endPointVector;
+            var c1 = (controlPointVector - startPointVector) * 2 / 3 + startPointVector;
+            var c2 = (controlPointVector - endPointVector) * 2 / 3 + endPointVector;
 
             Builder.AddBezier(startPointVector, c1, c2, endPoint);
             _currentPoint = endPoint;
