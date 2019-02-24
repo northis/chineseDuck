@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.IO;
+﻿using System.Drawing;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces;
 using ChineseDuck.Bot.Providers;
@@ -42,15 +40,9 @@ namespace ChineseDuck.Bot.Tests
             Assert.IsTrue(wordsResult.SuccessfulWords[0].OriginalWord == "你有病吗?你有药吗?");
             //Assert.IsTrue(wordsResult.SuccessfulWords[0].PinyinWord == "míng|bai");
             Assert.IsTrue(wordsResult.SuccessfulWords[0].Translation == "- ты больной? (шутл.) - а есть лекарство?");
-
-
+            
             var result = prov.GetOrderedSyllables(wordsResult.SuccessfulWords[0]);
             Assert.AreEqual("yào", result[7].Pinyin);
-        }
-
-        [Test]
-        public void AnswerPollTest()
-        {
         }
 
         [Test]
@@ -115,7 +107,7 @@ namespace ChineseDuck.Bot.Tests
 
             var grn = new FontFlashCardGenerator(prov);
 
-           // var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+           //var baseDir = AppDomain.CurrentDomain.BaseDirectory;
             foreach (var word in words)
             {
                 var result = grn.Generate(word, ELearnMode.FullView);
@@ -123,7 +115,7 @@ namespace ChineseDuck.Bot.Tests
                 Assert.IsTrue(result.ImageBody?.Length > 0);
                 Assert.IsTrue(result.Height > 0);
                 Assert.IsTrue(result.Width > 0);
-                // File.WriteAllBytes(Path.Combine(baseDir, Guid.NewGuid() + ".png"), result.ImageBody);
+                //File.WriteAllBytes(Path.Combine(baseDir, Guid.NewGuid() + ".png"), result.ImageBody);
             }
         }
 

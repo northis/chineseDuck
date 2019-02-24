@@ -10,14 +10,6 @@ export const RightWeightEnum = {
   admin: 3
 };
 
-export const GettingWordsStrategyEnum = {
-  NewFirst: 1,
-  OldFirst: 2,
-  NewMostDifficult: 3,
-  OldMostDifficult: 4,
-  Random: 5
-};
-
 export const FileTypeEnum = {
   orig: "orig",
   pron: "pron",
@@ -79,7 +71,7 @@ export const userSchema = {
     enum: Object.values(RightEnum),
     default: RightEnum.read
   },
-  mode: { type: String, enum: Object.values(LearnModeEnum) },
+  mode: { type: String, enum: Object.values(StrategyEnum) },
   currentFolder_id: Number,
   currentWord_id: Number
 };

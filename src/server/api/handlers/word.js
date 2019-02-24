@@ -4,7 +4,6 @@ import * as models from "../../../server/api/db/models";
 import { isNullOrUndefined, isNull } from "util";
 import mongoose from "mongoose";
 import * as errors from "../../errors";
-
 const catchUniqueName = (res, error) => {
   if (error.code == 11000) errors.e409(res, "Word object already exists.");
   else errors.e500(res, error.message);
@@ -425,11 +424,14 @@ export const study = {
         sortObj["score.lastView"] = 1;
         break;
       default:
+        sortObj = null;
         queryParamsArray.push({ $sample: { size: 1 } });
         break;
     }
 
-    queryParamsArray.push({ $sort: sortObj });
+    if (!isNull(sortObj))
+      queryParamsArray.push({ $sort: sortObj });
+
     queryParamsArray.push({ $limit: 1 });
     const words = await mh.word.aggregate(queryParamsArray);
     let word = {};

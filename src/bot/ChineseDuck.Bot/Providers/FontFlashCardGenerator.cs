@@ -40,8 +40,7 @@ namespace ChineseDuck.Bot.Providers
         private static readonly Font KaitiHanFont;
         private static readonly Font KaitiMainFont;
         private static readonly Font ArialUnicodeMainFont;
-
-
+        
         private static readonly Rgba32 MainColor = Rgba32.Black;
         private static readonly Rgba32 UsageColor = Rgba32.DarkGray;
         private static readonly Rgba32 BackgroundColor = Rgba32.FromHex("#FFFFFFA0");

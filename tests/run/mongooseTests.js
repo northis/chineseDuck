@@ -22,7 +22,7 @@ export default () => {
       lastCommand: "lastCommand",
       joinDate: new Date(),
       who: models.RightEnum.write,
-      mode: "mode"
+      mode: models.StrategyEnum.random
     };
     await mh.user.create(userObj);
     const insertedUser = await mh.user.findOne({ username: testUserName });
