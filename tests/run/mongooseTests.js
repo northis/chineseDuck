@@ -22,7 +22,7 @@ export default () => {
       lastCommand: "lastCommand",
       joinDate: new Date(),
       who: models.RightEnum.write,
-      mode: "mode"
+      mode: models.StrategyEnum.random
     };
     await mh.user.create(userObj);
     const insertedUser = await mh.user.findOne({ username: testUserName });
@@ -76,7 +76,6 @@ export default () => {
         originalWordCount: 0,
         originalWordSuccessCount: 0,
         lastView: new Date(),
-        isInLearnMode: false,
         pronunciationCount: 0,
         pronunciationSuccessCount: 0,
         translationCount: 0,

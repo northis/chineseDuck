@@ -1,5 +1,4 @@
 import axios from "axios";
-import { isNull, isNullOrUndefined } from "util";
 import { ActionContext } from "vuex";
 import { route, routes } from "../services/routeService";
 import * as I from "../types/interfaces";
@@ -18,7 +17,7 @@ const actions = {
   ): Promise<void> {
     try {
       const resp = await axios.get(
-        route(routes._word_folder__folderId_, currentFolderId)
+        route(routes._word_folder__folderId__count__count_, currentFolderId, 0)
       );
       const data: I.IWord[] = resp.data;
 

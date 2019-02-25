@@ -4,8 +4,16 @@ export default { _word:
      express: '/word' },
   _word_folder__folderId_:
    { value: '/word/folder/{folderId}',
-     actions: { put: ["write"], get: ["write"] },
+     actions: { put: ["write"] },
      express: '/word/folder/:folderId' },
+  _word_folder__folderId__count__count_:
+   { value: '/word/folder/{folderId}/count/{count}',
+     actions: { get: ["write"] },
+     express: '/word/folder/:folderId/count/:count' },
+  _word_folder__folderId__user__userId__count__count_:
+   { value: '/word/folder/{folderId}/user/{userId}/count/{count}',
+     actions: { get: ["admin"] },
+     express: '/word/folder/:folderId/user/:userId/count/:count' },
   _word__wordId__rename:
    { value: '/word/{wordId}/rename',
      actions: { put: ["write"] },
@@ -22,10 +30,26 @@ export default { _word:
    { value: '/word/user/{userId}/search/{wordEntry}',
      actions: { get: ["admin"] },
      express: '/word/user/:userId/search/:wordEntry' },
+  _word_user__userId__nextWord__mode_:
+   { value: '/word/user/{userId}/nextWord/{mode}',
+     actions: { put: ["admin"] },
+     express: '/word/user/:userId/nextWord/:mode' },
+  _word_user__userId__answers:
+   { value: '/word/user/{userId}/answers',
+     actions: { get: ["admin"] },
+     express: '/word/user/:userId/answers' },
+  _word_user__userId__currentWord:
+   { value: '/word/user/{userId}/currentWord',
+     actions: { get: ["admin"] },
+     express: '/word/user/:userId/currentWord' },
   _word_file__fileId_:
    { value: '/word/file/{fileId}',
-     actions: { get: ["read"] },
+     actions: { get: ["read"], delete: ["admin"] },
      express: '/word/file/:fileId' },
+  _word_file:
+   { value: '/word/file',
+     actions: { post: ["admin"] },
+     express: '/word/file' },
   _folder:
    { value: '/folder',
      actions: { post: ["write"], get: ["write"] },
@@ -64,5 +88,5 @@ export default { _word:
      express: '/user/currentFolder/:folderId' },
   _service_datetime:
    { value: '/service/datetime',
-     actions: { get: ["admin"] },
+     actions: { get: ["read"] },
      express: '/service/datetime' } }

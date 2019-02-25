@@ -2,14 +2,14 @@
   "openapi": "3.0.0",
   "servers": [
     {
-      "url": "https://udd3r.com/api/v1/"
+      "url": "https://chineseduck.online/api/v1/"
     }
   ],
   "info": {
     "description": "Chinese Duck Bot Api",
     "version": "1.1.1-oas3",
     "title": "Chinese Duck Bot Api",
-    "termsOfService": "https://udd3r.com/terms/",
+    "termsOfService": "https://chineseduck.online/terms/",
     "contact": {
       "email": "north@live.ru"
     },
@@ -145,16 +145,28 @@
           "description": "Word ids",
           "required": true
         }
-      },
+      }
+    },
+    "/word/folder/{folderId}/count/{count}": {
       "get": {
         "tags": ["word", "folder"],
         "description": "Get words by folder id",
         "operationId": "getWordsFolderId",
         "parameters": [
           {
-            "name": "folderId",
             "in": "path",
+            "name": "folderId",
             "description": "Folder id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "in": "path",
+            "name": "count",
+            "description": "Count limit",
             "required": true,
             "schema": {
               "type": "integer",
@@ -183,6 +195,68 @@
         "security": [
           {
             "cookieAuth": ["write"]
+          }
+        ]
+      }
+    },
+    "/word/folder/{folderId}/user/{userId}/count/{count}": {
+      "get": {
+        "tags": ["word", "folder", "user"],
+        "description": "Get words by folder id & user id",
+        "operationId": "getWordsFolderIdUserId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "folderId",
+            "description": "Folder id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "description": "User id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "in": "path",
+            "name": "count",
+            "description": "Count limit",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Word"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Folder/user is not found"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
           }
         ]
       }
@@ -400,6 +474,145 @@
         ]
       }
     },
+    "/word/user/{userId}/nextWord/{mode}": {
+      "put": {
+        "tags": ["word"],
+        "summary": "Set question to study for user and return right answer",
+        "description": "Set question to study for user and return right answer",
+        "operationId": "setQuestionByUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User entry to match",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "mode",
+            "in": "path",
+            "description": "Learn mode",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "NewFirst",
+                "OldFirst",
+                "NewMostDifficult",
+                "OldMostDifficult",
+                "Random"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Word"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You have no rights to do this"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ]
+      }
+    },
+    "/word/user/{userId}/answers": {
+      "get": {
+        "tags": ["word"],
+        "summary": "Get answers for current question",
+        "description": "Get answers for current question",
+        "operationId": "getAnswersByUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User id to match",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Word"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You have no rights to do this"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ]
+      }
+    },
+    "/word/user/{userId}/currentWord": {
+      "get": {
+        "tags": ["word"],
+        "summary": "Get current learning word for the user",
+        "description": "Get current learning word for the user",
+        "operationId": "getCurrentWord",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User id to match",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Word"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You have no rights to do this"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ]
+      }
+    },
     "/word/file/{fileId}": {
       "get": {
         "tags": ["word"],
@@ -438,6 +651,76 @@
         "security": [
           {
             "cookieAuth": ["read"]
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["word"],
+        "summary": "Delete file",
+        "operationId": "deleteFile",
+        "parameters": [
+          {
+            "name": "fileId",
+            "in": "path",
+            "description": "File id to delete",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "403": {
+            "description": "You have no rights to do this"
+          },
+          "404": {
+            "description": "File is not found"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ]
+      }
+    },
+    "/word/file": {
+      "post": {
+        "tags": ["word"],
+        "summary": "Add file",
+        "operationId": "addFile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WordFileBytes"
+              }
+            }
+          },
+          "description": "Word file that needs to be added to the store",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation，fileId",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You have no rights to do this"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
           }
         ]
       }
@@ -909,7 +1192,7 @@
         "operationId": "deleteUser",
         "parameters": [
           {
-            "name": "id",
+            "name": "userId",
             "in": "path",
             "description": "The user id that needs to be deleted.",
             "required": true,
@@ -990,7 +1273,7 @@
         },
         "security": [
           {
-            "cookieAuth": ["admin"]
+            "cookieAuth": ["read"]
           }
         ]
       }
@@ -1080,7 +1363,7 @@
       },
       "Score": {
         "type": "object",
-        "required": ["lastView", "isInLearnMode"],
+        "required": ["lastView"],
         "properties": {
           "originalWordCount": {
             "type": "integer",
@@ -1092,7 +1375,7 @@
           },
           "lastView": {
             "type": "string",
-            "format": "datetime"
+            "format": "date-time"
           },
           "lastLearned": {
             "type": "string",
@@ -1101,12 +1384,9 @@
           "lastLearnMode": {
             "type": "string"
           },
-          "isInLearnMode": {
-            "type": "boolean"
-          },
           "rightAnswerNumber": {
             "type": "integer",
-            "format": "int32"
+            "format": "int16"
           },
           "pronunciationCount": {
             "type": "integer",
@@ -1206,15 +1486,10 @@
       },
       "WordFile": {
         "type": "object",
-        "required": ["_id", "word_id", "createDate"],
+        "required": ["id", "createDate", "height", "width"],
         "properties": {
-          "_id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "word_id": {
-            "type": "integer",
-            "format": "int64"
+          "id": {
+            "type": "string"
           },
           "createDate": {
             "type": "string",
@@ -1229,6 +1504,19 @@
         },
         "xml": {
           "name": "WordFile"
+        }
+      },
+      "WordFileBytes": {
+        "type": "object",
+        "required": ["bytes"],
+        "properties": {
+          "bytes": {
+            "type": "string",
+            "format": "byte"
+          }
+        },
+        "xml": {
+          "name": "WordFileBytes"
         }
       },
       "ApiUser": {

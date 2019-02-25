@@ -8,7 +8,7 @@ export const main = {
    */
   get: function getDatetime(req, res, next) {
     var status = 200;
-    let ad = new Date().toJSON();
-    res.status(status).send({ datetime: ad });
+    let ad = new Date();
+    res.status(status).send(ad);
   }
 };

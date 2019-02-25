@@ -9,6 +9,7 @@ yarn-error.log
 .vs/
 bin/
 obj/
+logs/
 
 # Editor directories and files
 .idea
@@ -17,3 +18,5 @@ obj/
 *.njsproj
 apiKeys.js
 keys.js
+appsettings.json
+/ChineseDuck.Import/Properties/launchSettings.json

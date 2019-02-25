@@ -1,0 +1,15 @@
+﻿
+Relase notes:
+
+
+ver.1.0.0.0 (30 december 2018)
+=========================
+[+] website had been added
+[+] folders for words
+[+] new platform - netCore, nodeJS, vue.js, mongodb, linux-hosted
+
+ver.0.3.2.0 (22 april 2018)
+=========================
+[+] changed socks5 proxy
+
+A new updated version with the web site is coming soon!

@@ -68,7 +68,6 @@ export interface IScore {
   lastView: Date;
   lastLearned: Date;
   lastLearnMode: string;
-  isInLearnMode: boolean;
   rightAnswerNumber: number;
   pronunciationCount: number;
   pronunciationSuccessCount: number;

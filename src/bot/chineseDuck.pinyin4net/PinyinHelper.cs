@@ -43,12 +43,12 @@ namespace chineseDuck.pinyin4net {
         {
             Dict = new Dictionary<string, string>();
 
-            var exeFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase);
+            var exeFolder = AppDomain.CurrentDomain.BaseDirectory;
 
             if (exeFolder == null)
                 throw new InvalidOperationException("Unable to get the exec path");
 
-            var doc = XDocument.Load(Path.Combine(exeFolder, @"Resources\unicode_to_hanyu_pinyin.xml"));
+            var doc = XDocument.Load(Path.Combine(exeFolder, @"Resources/unicode_to_hanyu_pinyin.xml"));
 
             if (doc.Root == null)
                 throw new InvalidOperationException("Unable read the source xml");

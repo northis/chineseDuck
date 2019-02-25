@@ -1,5 +1,3 @@
-import mongoose from "mongoose";
-
 export const RightEnum = {
   read: "read",
   write: "write",
@@ -10,14 +8,6 @@ export const RightWeightEnum = {
   read: 1,
   write: 2,
   admin: 3
-};
-
-export const GettingWordsStrategyEnum = {
-  NewFirst: 1,
-  OldFirst: 2,
-  NewMostDifficult: 3,
-  OldMostDifficult: 4,
-  Random: 5
 };
 
 export const FileTypeEnum = {
@@ -34,7 +24,9 @@ export const PathWildcardEnum = {
   wordEntry: "{wordEntry}",
   fileId: "{fileId}",
   userId: "{userId}",
-  id: "{id}"
+  id: "{id}",
+  count: "{count}",
+  mode: "{mode}"
 };
 
 export const LearnModeEnum = {
@@ -60,6 +52,14 @@ export const ModelsEnum = {
   session: "session"
 };
 
+export const StrategyEnum = {
+  newFirst: "NewFirst",
+  oldFirst: "OldFirst",
+  newMostDifficult: "NewMostDifficult",
+  oldMostDifficult: "OldMostDifficult",
+  random: "Random"
+};
+
 export const userSchema = {
   _id: Number,
   username: String,
@@ -71,8 +71,9 @@ export const userSchema = {
     enum: Object.values(RightEnum),
     default: RightEnum.read
   },
-  mode: String,
-  currentFolder_id: Number
+  mode: { type: String, enum: Object.values(StrategyEnum) },
+  currentFolder_id: Number,
+  currentWord_id: Number
 };
 
 export const wordFileBodySchema = {
@@ -127,7 +128,6 @@ export const wordSchema = {
     lastView: { type: Date, default: new Date() },
     lastLearned: { type: Date, default: new Date() },
     lastLearnMode: { type: String, enum: Object.values(LearnModeEnum) },
-    isInLearnMode: Boolean,
     rightAnswerNumber: Number,
     pronunciationCount: Number,
     pronunciationSuccessCount: Number,

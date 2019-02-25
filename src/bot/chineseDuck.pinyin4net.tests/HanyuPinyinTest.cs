@@ -23,7 +23,6 @@
 
 using System;
 using NUnit.Framework;
-using Pinyin4net;
 using Pinyin4net.Exceptions;
 using Pinyin4net.Format;
 using Assert = NUnit.Framework.Assert;

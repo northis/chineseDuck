@@ -165,8 +165,20 @@ router
   .route(routes._word_folder__folderId_.express)
   .all(accessControl(routes._word_folder__folderId_))
   .all(folderControl)
-  .get(word.folderId.get)
   .put(word.folderId.put);
+
+router
+  .route(routes._word_folder__folderId__count__count_.express)
+  .all(accessControl(routes._word_folder__folderId__count__count_))
+  .all(folderControl)
+  .get(word.folderId.get);
+
+router
+  .route(routes._word_folder__folderId__user__userId__count__count_.express)
+  .all(
+    accessControl(routes._word_folder__folderId__user__userId__count__count_)
+  )
+  .get(word.folderId.get);
 
 router
   .route(routes._folder.express)
@@ -201,6 +213,11 @@ router
   .put(word.rename.put);
 
 router
+  .route(routes._word_file.express)
+  .all(accessControl(routes._word_file))
+  .post(word.file.post);
+
+router
   .route(routes._word__wordId__score.express)
   .all(accessControl(routes._word__wordId__score))
   .all(wordControl)
@@ -218,5 +235,28 @@ router
   .all(accessControl(routes._word_user__userId__search__wordEntry_))
   .all(userControl)
   .get(word.search.get);
+
+router
+  .route(routes._word_file__fileId_.express)
+  .all(accessControl(routes._word_file__fileId_))
+  .delete(word.file.delete);
+
+router
+  .route(routes._word_user__userId__nextWord__mode_.express)
+  .all(accessControl(routes._word_user__userId__nextWord__mode_))
+  .all(userControl)
+  .put(word.study.put);
+
+router
+  .route(routes._word_user__userId__answers.express)
+  .all(accessControl(routes._word_user__userId__answers))
+  .all(userControl)
+  .get(word.study.get);
+
+router
+  .route(routes._word_user__userId__currentWord.express)
+  .all(accessControl(routes._word_user__userId__currentWord))
+  .all(userControl)
+  .get(word.studyCurrent.get);
 
 export default router;
