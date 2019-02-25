@@ -18,7 +18,7 @@ export default async () => {
       it("main bot tests", done => {
         mh.word.remove({}).then(() => {
           const processNetCore = exec(
-            "dotnet test ./src/bot/chineseDuck.Bot.Tests/ChineseDuck.Bot.Tests/ChineseDuck.Bot.Tests.csproj -c Release -f netcoreapp2.1"
+            "dotnet test ./src/bot/chineseDuck.Bot.Tests/chineseDuck.Bot.Tests/chineseDuck.Bot.Tests.csproj -c Release -f netcoreapp2.1"
           );
 
           processNetCore.on("close", code => {

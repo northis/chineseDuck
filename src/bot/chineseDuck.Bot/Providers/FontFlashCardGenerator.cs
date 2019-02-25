@@ -35,8 +35,8 @@ namespace ChineseDuck.Bot.Providers
         private const int MainMaxCharsCount = MainMaxLineCharsCount * MainMaxLinesCount;
         private const int ViewPortWidth = MaxWidth - 2* Padding;
 
-        private const string KaiTiFile = @"Fonts\KaiTi.ttf";
-        private const string ArialUnicodeMsFile = @"Fonts\ArialUnicodeMS.ttf";
+        private const string KaiTiFile = @"Fonts/KaiTi.ttf";
+        private const string ArialUnicodeMsFile = @"Fonts/ArialUnicodeMS.ttf";
         private static readonly Font KaitiHanFont;
         private static readonly Font KaitiMainFont;
         private static readonly Font ArialUnicodeMainFont;

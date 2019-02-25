@@ -13,10 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.0.2105168" />
@@ -25,9 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\chineseDuck.Bot\ChineseDuck.Bot.csproj" />
-    <ProjectReference Include="..\chineseDuck.Common\ChineseDuck.Common.csproj" />
-    <ProjectReference Include="..\chineseDuck.pinyin4net\ChineseDuck.Pinyin4net.csproj" />
+    <ProjectReference Include="..\chineseDuck.Bot\chineseDuck.Bot.csproj" />
+    <ProjectReference Include="..\chineseDuck.Common\chineseDuck.Common.csproj" />
+    <ProjectReference Include="..\chineseDuck.pinyin4net\chineseDuck.pinyin4net.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\chineseDuck.pinyin4net\ChineseDuck.Pinyin4net.csproj" />
+    <ProjectReference Include="..\chineseDuck.pinyin4net\chineseDuck.pinyin4net.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="FDrawing\lashCardTemplate.xaml.cs">

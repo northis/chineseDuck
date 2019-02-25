@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\chineseDuck.pinyin4net\ChineseDuck.Pinyin4net.csproj" />
+    <ProjectReference Include="..\chineseDuck.pinyin4net\chineseDuck.Pinyin4net.csproj" />
   </ItemGroup>
 
 </Project>
