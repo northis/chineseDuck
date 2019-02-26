@@ -5,7 +5,7 @@
   "description": "Webpart of the Chinese Duck Bot system",
   "main": "server/index.js",
   "scripts": {
-    "test": "mocha --compilers js:@babel/register --require @babel/polyfill --sort --exit --no-deprecation tests/run/run.test.js --mode test --delay --timeout 60000",
+    "test": "mocha --require @babel/register --require @babel/polyfill --sort --exit --no-deprecation tests/run/run.test.js --mode test --delay --timeout 60000",
     "test-dbg": "mocha --compilers js:@babel/register --require @babel/polyfill --sort --exit --no-deprecation --inspect-brk=9229 tests/run/run.test.js --mode test --delay  --timeout 60000",
     "build-prod": "babel-node config/run start --mode production",
     "build-dev-run-dbg": "babel-node config/run start --mode development --nolazy --inspect-brk=9229 server/index.js",
@@ -49,7 +49,9 @@
     "@babel/node": "^7.0.0",
     "@babel/plugin-proposal-class-properties": "^7.3.3",
     "@babel/plugin-transform-runtime": "^7.2.0",
+    "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.3.1",
+    "@babel/register": "^7.0.0",
     "@types/node": "^9.6.32",
     "autoprefixer": "^8.6.5",
     "awesome-typescript-loader": "^5.2.1",

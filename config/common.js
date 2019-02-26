@@ -84,7 +84,7 @@ export const DebugKeys = {
   password: "5lJnlNrgDjeu"
 };
 
-export const Settings = {
+export let Settings = {
   mongoDbString: keys.mongoDbString,
   port: 3000,
   sessionsPass: keys.sessionsPass,

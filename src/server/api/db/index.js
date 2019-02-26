@@ -4,17 +4,7 @@ import mongoose from "mongoose";
 
 console.log(Settings.mongoDbString);
 
-mongoose.connect(
-  Settings.mongoDbString,
-  { useNewUrlParser: true }
-);
-// mongoose.set("debug", function(collectionName, method, query, doc, options) {
-//   console.info(
-//     `collectionName: ${collectionName}; method: ${method}; query: ${JSON.stringify(
-//       query
-//     )}`
-//   );
-// });
+mongoose.connect(Settings.mongoDbString, { useNewUrlParser: true });
 
 if (mongoose.connection._eventsCount == 0) {
   mongoose.connection.on("connected", () => {
