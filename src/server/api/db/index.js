@@ -1,5 +1,5 @@
 import { ModelsHolder } from "./modelsHolder";
-import { Settings, isTest } from "../../../../config/common";
+import { Settings } from "../../../../config/common";
 import mongoose from "mongoose";
 
 console.log(Settings.mongoDbString);
