@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import mongoose from "mongoose";
 import { testWordImg } from "../db/fileB64";
 import { mh } from "../../src/server/api/db/index";
 
