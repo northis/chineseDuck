@@ -42,7 +42,7 @@ const config = {
   mode,
   output: {
     path: CLIENT_DIR,
-    publicPath: "/build/public",
+    publicPath: "/",
     pathinfo: isVerbose,
     filename: isDebug ? "[name].js" : "[name].[chunkhash:8].js",
     chunkFilename: isDebug
@@ -343,21 +343,20 @@ const serverConfig = {
           ...rule,
           options: {
             ...rule.options,
-            presets: rule.options.presets.map(
-              preset =>
-                preset[0] !== "@babel/preset-env"
-                  ? preset
-                  : [
-                      "@babel/preset-env",
-                      {
-                        targets: {
-                          node: pkg.engines.node.match(/(\d+\.?)+/)[0]
-                        },
-                        useBuiltIns: false,
-                        debug: false,
-                        modules: false
-                      }
-                    ]
+            presets: rule.options.presets.map(preset =>
+              preset[0] !== "@babel/preset-env"
+                ? preset
+                : [
+                    "@babel/preset-env",
+                    {
+                      targets: {
+                        node: pkg.engines.node.match(/(\d+\.?)+/)[0]
+                      },
+                      useBuiltIns: false,
+                      debug: false,
+                      modules: false
+                    }
+                  ]
             )
           }
         };
