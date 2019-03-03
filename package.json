@@ -1,7 +1,7 @@
 {
   "name": "chinese_duck",
   "url": "https://t.me/DeathWhinny",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Webpart of the Chinese Duck Bot system",
   "main": "server/index.js",
   "scripts": {
