@@ -35,7 +35,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\chineseDuck.Bot\chineseDuck.Bot.csproj" />
-    <ProjectReference Include="..\chineseDuck.Common\chineseDuck.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

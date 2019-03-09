@@ -4,24 +4,27 @@ using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Rest.Api;
 using ChineseDuck.Bot.Rest.Client;
 using ChineseDuck.Bot.Rest.Model;
-using ChineseDuck.Common;
+using Microsoft.Extensions.Configuration;
 
 namespace ChineseDuck.Import
 {
     class Program
     {
-        private const string PasswordKey = "--password=";
-        private const string UserIdKey = "--userId=";
-        private const string OldSqlDbKey = "--OldSqlDb=";
-        private const string NewWebApiKey = "--NewWebApi=";
-
+        private const string PasswordKey = "password";
+        private const string UserIdKey = "userId";
+        private const string OldSqlDbKey = "OldSqlDb";
+        private const string NewWebApiKey = "NewWebApi";
 
         static void Main()
         {
-            var password = CommandLineHelper.GetParameter(PasswordKey);
-            var userId = CommandLineHelper.GetParameter(UserIdKey);
-            var connectionString = CommandLineHelper.GetParameter(OldSqlDbKey);
-            var site = CommandLineHelper.GetParameter(NewWebApiKey);
+            var configurationRoot = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            var password = configurationRoot[PasswordKey];
+            var userId = configurationRoot[UserIdKey];
+            var connectionString = configurationRoot[OldSqlDbKey];
+            var site = configurationRoot[NewWebApiKey];
 
             var apiClient = new ApiClient(site);
             var userApi = new UserApi(apiClient);
