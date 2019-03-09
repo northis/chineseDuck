@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "ChineseDuck.Import": {
-      "commandName": "Project",
-      "commandLineArgs": "--password=5lJnlNrgDjeu --userId=101 --OldSqlDb=\"data source=.;initial catalog=LearnChinese;Integrated Security=True\" --NewWebApi=https://chineseduck.online/api/v1/"
-    }
-  }
-}
