@@ -132,7 +132,7 @@ namespace ChineseDuck.Bot.Rest.Api
         {
             var path = "/user/login";
             var postBody = ApiClient.Serialize(apiUser);
-            var response = ApiClient.CallApi(path, Method.POST, postBody);
+            var response = ApiClient.CallApi(path, Method.POST, postBody, false);
 
             ApiClient.CheckResponse(response);
 

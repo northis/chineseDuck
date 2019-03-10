@@ -31,7 +31,8 @@ namespace ChineseDuck.BotService.MainExecution
         public int MaxInlineQueryLength = 5;
         public int MaxInlineSearchResult = 7;
 
-        public QueryHandler(TelegramBotClient client, ILogService logService, IWordRepository repository, AntiDdosChecker checker,string flashCardUrl, ICommandManager commandManager)
+        public QueryHandler(TelegramBotClient client, ILogService logService, IWordRepository repository,
+            AntiDdosChecker checker, string flashCardUrl, ICommandManager commandManager)
         {
             _client = client;
             _repository = repository;
