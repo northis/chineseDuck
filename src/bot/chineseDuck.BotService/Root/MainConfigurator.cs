@@ -4,6 +4,7 @@ using System.Reflection;
 using ChineseDuck.Bot.Interfaces;
 using ChineseDuck.Bot.Rest.Api;
 using ChineseDuck.Bot.Rest.Client;
+using ChineseDuck.Bot.Rest.Model;
 using ChineseDuck.Bot.Rest.Repository;
 using ChineseDuck.BotService.Commands;
 using ChineseDuck.BotService.Commands.Common;
@@ -95,6 +96,11 @@ namespace ChineseDuck.BotService.Root
             var restWordRepository = new RestWordRepository(wordApi, userApi, serviceApi, folderApi);
             var antiDdosChecker = new AntiDdosChecker(GetDateTime);
             var commandManager = new CommandManager(GetCommands);
+
+            apiClient.OnAuthenticationRequest += (o, e) =>
+            {
+                userApi.LoginUser(new ApiUser { Code = botSettings.UserId.ToString(), Id = botSettings.Password });
+            };
 
             services.AddSingleton(a => antiDdosChecker);
             services.AddSingleton(bS => botSettings);

@@ -32,7 +32,10 @@ namespace ChineseDuck.Import
             var serviceApi = new ServiceApi(apiClient);
             var datetime = serviceApi.GetDatetime() ?? DateTime.Now;
 
-            userApi.LoginUser(new ApiUser{ Code = password, Id = userId });
+            apiClient.OnAuthenticationRequest += (o, e) =>
+            {
+                userApi.LoginUser(new ApiUser {Code = password, Id = userId});
+            };
 
             using (var context = new LearnChineseContext(connectionString))
             {

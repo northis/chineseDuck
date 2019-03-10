@@ -13,6 +13,8 @@ namespace ChineseDuck.BotService.Root
             WebhookPublicUrl = configuration["WebhookPublicUrl"];
             ApiPublicUrl = configuration["ApiPublicUrl"];
             LocalPort = int.Parse(configuration["LocalPort"]);
+            Password = configuration["Password"];
+            UserId = long.Parse(configuration["UserId"]);
             Singleton = this;
         }
 
@@ -23,6 +25,8 @@ namespace ChineseDuck.BotService.Root
         public string WebhookPublicUrl { get; }
         public int LocalPort { get; }
         public string ApiPublicUrl { get; }
+        public string Password { get; }
+        public long UserId { get; }
 
         public static BotSettingHolder Singleton { get; private set; }
         #endregion

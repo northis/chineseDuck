@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
@@ -23,7 +24,12 @@ namespace ChineseDuck.Bot.Rest.Client
             RestClient = new RestClient(BasePath);
             DefaultHeaders = new Dictionary<string, string>();
         }
-    
+
+        /// <summary>
+        /// Fires when an authentication required.
+        /// </summary>
+        public event EventHandler OnAuthenticationRequest;
+
         /// <summary>
         /// Gets or sets the base path.
         /// </summary>
@@ -47,8 +53,9 @@ namespace ChineseDuck.Bot.Rest.Client
         /// <param name="path">URL path.</param>
         /// <param name="method">HTTP method.</param>
         /// <param name="postBody">HTTP body (POST request).</param>
+        /// <param name="useAuthenticate">If true, it will try to authenticate via calling OnAuthenticationRequest event.</param>
         /// <returns>Response</returns>
-        public IRestResponse CallApi(string path, Method method, string postBody = null)
+        public IRestResponse CallApi(string path, Method method, string postBody = null, bool useAuthenticate = true)
         {
             var request = new RestRequest(path, method);
    
@@ -58,8 +65,20 @@ namespace ChineseDuck.Bot.Rest.Client
 
             if (postBody != null)
                 request.AddParameter("application/json", postBody, ParameterType.RequestBody);
+            
+            var res = RestClient.Execute(request);
 
-            return RestClient.Execute(request);
+            if (useAuthenticate && (res.StatusCode == HttpStatusCode.Unauthorized ||
+                                     res.StatusCode == HttpStatusCode.Forbidden))
+            {
+                if (OnAuthenticationRequest != null)
+                {
+                    OnAuthenticationRequest(this, EventArgs.Empty);
+                    res = RestClient.Execute(request);
+                }
+            }
+
+            return res;
         }
     
         /// <summary>
