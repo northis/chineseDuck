@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ChineseDuck.BotService.Commands.Common;
-using ChineseDuck.WebBot.Commands.Enums;
+using chineseDuck.BotService.Commands.Common;
+using chineseDuck.BotService.Commands.Enums;
 
-namespace ChineseDuck.BotService.Commands
+namespace chineseDuck.BotService.Commands
 {
     public class CommandManager : ICommandManager
     {

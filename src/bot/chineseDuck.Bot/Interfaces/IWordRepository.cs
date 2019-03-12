@@ -44,5 +44,7 @@ namespace ChineseDuck.Bot.Interfaces
         LearnUnit GetNextWord(WordSettings settings);
 
         IWord GetCurrentWord(long userId);
+
+        string AddFile(byte[] bytes);
     }
 }

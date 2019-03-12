@@ -1,7 +1,7 @@
 ﻿using ChineseDuck.Bot.ObjectModels;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace ChineseDuck.WebBot.Commands.Common
+namespace chineseDuck.BotService.Commands.Common
 {
     public class AnswerItem
     {

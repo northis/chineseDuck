@@ -26,8 +26,9 @@ namespace ChineseDuck.Bot.Providers
                 throw new Exception($"There no words for this user which must be answered. userId={userId}");
 
             var learnMode = wordStat.Score.ToELearnMode(userId);
+            var file = _wordRepository.GetWordFlashCard(wordStat.CardAll.Id);
 
-            var result = new AnswerResult {WordStatistic = wordStat};
+            var result = new AnswerResult {WordStatistic = wordStat, Picture = file };
 
             switch (learnMode)
             {

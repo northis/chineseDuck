@@ -6,6 +6,7 @@ using ChineseDuck.Bot.Interfaces;
 using ChineseDuck.Bot.Interfaces.Data;
 using ChineseDuck.Bot.ObjectModels;
 using ChineseDuck.Bot.Rest.Api;
+using ChineseDuck.Bot.Rest.Model;
 
 namespace ChineseDuck.Bot.Rest.Repository
 {
@@ -194,6 +195,11 @@ namespace ChineseDuck.Bot.Rest.Repository
         {
             var word = _wordApi.GetCurrentWord(userId);
             return word;
+        }
+
+        public string AddFile(byte[] bytes)
+        {
+            return _wordApi.AddFile(new WordFileBytes {Bytes = bytes});
         }
     }
 }
