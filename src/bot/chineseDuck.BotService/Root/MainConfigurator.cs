@@ -63,26 +63,23 @@ namespace ChineseDuck.BotService.Root
 
         private CommandBase[] GetCommands()
         {
-            var cmd =
-                new CommandBase[]
-                {
-                    ServiceProvider.GetService<DefaultCommand>(),
-                    ServiceProvider.GetService<ImportCommand>(),
-                    ServiceProvider.GetService<AddCommand>(),
-                    ServiceProvider.GetService<ViewCommand>(),
-                    ServiceProvider.GetService<DeleteCommand>(),
-                    ServiceProvider.GetService<HelpCommand>(),
-                    ServiceProvider.GetService<StartCommand>(),
-                    ServiceProvider.GetService<LearnWritingCommand>(),
-                    ServiceProvider.GetService<LearnViewCommand>(),
-                    ServiceProvider.GetService<AboutCommand>(),
-                    ServiceProvider.GetService<ModeCommand>(),
-                    ServiceProvider.GetService<LearnSpeakCommand>(),
-                    ServiceProvider.GetService<LearnTranslationCommand>(),
-                    ServiceProvider.GetService<EditCommand>()
-                };
-
-            return cmd;
+            return new CommandBase[]
+            {
+                ServiceProvider.GetService<DefaultCommand>(),
+                ServiceProvider.GetService<ImportCommand>(),
+                ServiceProvider.GetService<AddCommand>(),
+                ServiceProvider.GetService<ViewCommand>(),
+                ServiceProvider.GetService<DeleteCommand>(),
+                ServiceProvider.GetService<HelpCommand>(),
+                ServiceProvider.GetService<StartCommand>(),
+                ServiceProvider.GetService<LearnWritingCommand>(),
+                ServiceProvider.GetService<LearnViewCommand>(),
+                ServiceProvider.GetService<AboutCommand>(),
+                ServiceProvider.GetService<ModeCommand>(),
+                ServiceProvider.GetService<LearnSpeakCommand>(),
+                ServiceProvider.GetService<LearnTranslationCommand>(),
+                ServiceProvider.GetService<EditCommand>()
+            }; ;
         }
 
         public void ConfigureServices(IServiceCollection services)

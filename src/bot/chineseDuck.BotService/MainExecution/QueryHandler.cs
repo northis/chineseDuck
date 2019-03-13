@@ -229,7 +229,7 @@ namespace ChineseDuck.BotService.MainExecution
                     Mode = EGettingWordsStrategy.Random.ToString()
                 });
 
-            var firstEntity = msg.Entities.FirstOrDefault();
+            var firstEntity = msg.Entities?.FirstOrDefault();
             if (firstEntity?.Type == MessageEntityType.BotCommand)
             {
                 var commandOnly = msg.Text.Substring(firstEntity.Offset, firstEntity.Length);
