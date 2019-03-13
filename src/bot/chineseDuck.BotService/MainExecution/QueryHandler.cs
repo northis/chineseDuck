@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using chineseDuck.BotService.Commands;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces;
 using ChineseDuck.Bot.ObjectModels;
-using ChineseDuck.BotService.Commands;
 using ChineseDuck.Common.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -229,7 +229,7 @@ namespace ChineseDuck.BotService.MainExecution
                     Mode = EGettingWordsStrategy.Random.ToString()
                 });
 
-            var firstEntity = msg.Entities.FirstOrDefault();
+            var firstEntity = msg.Entities?.FirstOrDefault();
             if (firstEntity?.Type == MessageEntityType.BotCommand)
             {
                 var commandOnly = msg.Text.Substring(firstEntity.Offset, firstEntity.Length);

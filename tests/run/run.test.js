@@ -1,7 +1,6 @@
 require("../common/testsInit")
   .default()
   .then(() => {
-    require("./mainTests")
-      .default()
-      .then(() => run());
+    require("./mainTests").default();
+    run();
   });

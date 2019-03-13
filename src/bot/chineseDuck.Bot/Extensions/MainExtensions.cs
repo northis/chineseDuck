@@ -2,6 +2,7 @@
 using System.Drawing;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces.Data;
+using ChineseDuck.Bot.ObjectModels;
 using ChineseDuck.Bot.Providers;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -32,13 +33,14 @@ namespace ChineseDuck.Bot.Extensions
 
             return learnMode;
         }
-        public static string ToHexString(this Color c)
-        {
-            return "#" + c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
-        }
         public static Rgba32 ToRgba32(this Color c)
         {
             return new Rgba32(c.R, c.G, c.B, c.A);
+        }
+
+        public static GenerateImageResult ToGenerateImageResult(this IWordFile file, byte[] bytes)
+        {
+            return new GenerateImageResult { Height = file.Height, Width = file.Width, ImageBody = bytes };
         }
     }
 }

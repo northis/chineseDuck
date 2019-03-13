@@ -118,23 +118,35 @@ namespace ChineseDuck.Bot.Tests
         public void LearnWordsTest()
         {
             var word = GetWord("做客");
+            var stat = word.Score.TranslationCount;
             var wordLearnUnit = GetLearnUnit(EGettingWordsStrategy.NewMostDifficult, ELearnMode.Translation);
             Assert.AreEqual(ClassicStudyProvider.PollAnswersCount, wordLearnUnit.Options.Length);
             Assert.AreEqual(1, wordLearnUnit.Options.Count(a => a == word.Translation));
-            
+            word = GetWord("做客");
+            Assert.AreEqual(stat + 1, word.Score.TranslationCount);
+
             word = GetWord("忘");
+            stat = word.Score.PronunciationCount;
             wordLearnUnit = GetLearnUnit(EGettingWordsStrategy.OldMostDifficult, ELearnMode.Pronunciation);
             Assert.AreEqual(ClassicStudyProvider.PollAnswersCount, wordLearnUnit.Options.Length);
             Assert.AreEqual(1, wordLearnUnit.Options.Count(a => a == word.Pronunciation));
+            word = GetWord("忘");
+            Assert.AreEqual(stat + 1, word.Score.PronunciationCount);
 
             word = GetWord("冰箱");
+            stat = word.Score.OriginalWordCount;
             wordLearnUnit = GetLearnUnit(EGettingWordsStrategy.NewFirst, ELearnMode.OriginalWord);
             Assert.AreEqual(ClassicStudyProvider.PollAnswersCount, wordLearnUnit.Options.Length);
             Assert.AreEqual(1, wordLearnUnit.Options.Count(a => a == word.OriginalWord));
+            word = GetWord("冰箱");
+            Assert.AreEqual(stat + 1, word.Score.OriginalWordCount);
 
             word = GetWord("只有");
+            stat = word.Score.ViewCount;
             wordLearnUnit = GetLearnUnit(EGettingWordsStrategy.OldFirst, ELearnMode.FullView);
             Assert.AreEqual(word.Id, wordLearnUnit.IdWord);
+            word = GetWord("只有");
+            Assert.AreEqual(stat + 1, word.Score.ViewCount);
         }
 
         LearnUnit GetLearnUnit(EGettingWordsStrategy strategy, ELearnMode mode)

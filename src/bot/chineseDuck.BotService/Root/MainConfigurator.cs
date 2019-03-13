@@ -1,22 +1,23 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using chineseDuck.BotService.Commands;
+using chineseDuck.BotService.Commands.Common;
 using ChineseDuck.Bot.Interfaces;
+using ChineseDuck.Bot.Providers;
 using ChineseDuck.Bot.Rest.Api;
 using ChineseDuck.Bot.Rest.Client;
 using ChineseDuck.Bot.Rest.Model;
 using ChineseDuck.Bot.Rest.Repository;
-using ChineseDuck.BotService.Commands;
-using ChineseDuck.BotService.Commands.Common;
 using ChineseDuck.BotService.MainExecution;
 using ChineseDuck.Common.Logging;
-using ChineseDuck.WebBot.Commands;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
+using YellowDuck.LearnChinese.Providers;
 
 namespace ChineseDuck.BotService.Root
 {
@@ -64,21 +65,21 @@ namespace ChineseDuck.BotService.Root
         {
             return new CommandBase[]
             {
-                //NinjectKernel.Get<DefaultCommand>(),
-                //NinjectKernel.Get<ImportCommand>(),
-                //NinjectKernel.Get<AddCommand>(),
-                //NinjectKernel.Get<ViewCommand>(),
-                //NinjectKernel.Get<DeleteCommand>(),
-                ServiceProvider.GetRequiredService<HelpCommand>(),
-                ServiceProvider.GetRequiredService<StartCommand>(),
-                //NinjectKernel.Get<LearnWritingCommand>(),
-                //NinjectKernel.Get<LearnViewCommand>(),
-                //NinjectKernel.Get<AboutCommand>(),
-                //NinjectKernel.Get<ModeCommand>(),
-                //NinjectKernel.Get<LearnSpeakCommand>(),
-                //NinjectKernel.Get<LearnTranslationCommand>(),
-                //NinjectKernel.Get<EditCommand>()
-            };
+                ServiceProvider.GetService<DefaultCommand>(),
+                ServiceProvider.GetService<ImportCommand>(),
+                ServiceProvider.GetService<AddCommand>(),
+                ServiceProvider.GetService<ViewCommand>(),
+                ServiceProvider.GetService<DeleteCommand>(),
+                ServiceProvider.GetService<HelpCommand>(),
+                ServiceProvider.GetService<StartCommand>(),
+                ServiceProvider.GetService<LearnWritingCommand>(),
+                ServiceProvider.GetService<LearnViewCommand>(),
+                ServiceProvider.GetService<AboutCommand>(),
+                ServiceProvider.GetService<ModeCommand>(),
+                ServiceProvider.GetService<LearnSpeakCommand>(),
+                ServiceProvider.GetService<LearnTranslationCommand>(),
+                ServiceProvider.GetService<EditCommand>()
+            }; ;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -99,7 +100,7 @@ namespace ChineseDuck.BotService.Root
 
             apiClient.OnAuthenticationRequest += (o, e) =>
             {
-                userApi.LoginUser(new ApiUser { Code = botSettings.UserId.ToString(), Id = botSettings.Password });
+                userApi.LoginUser(new ApiUser {Code = botSettings.Password, Id = botSettings.UserId.ToString()});
             };
 
             services.AddSingleton(a => antiDdosChecker);
@@ -110,12 +111,44 @@ namespace ChineseDuck.BotService.Root
             services.AddSingleton<IWordRepository>(restWordRepository);
 
             var flashCardUrl = $"{botSettings.ApiPublicUrl}/word/file";
-
             services.AddSingleton(qh =>
                 new QueryHandler(tClient, log4NetService, restWordRepository, antiDdosChecker, flashCardUrl, commandManager));
 
+            services.AddSingleton<ISyllableColorProvider, ClassicSyllableColorProvider>();
+            services.AddSingleton<IChineseWordParseProvider, PinyinChineseWordParseProvider>();
+            services.AddSingleton<IStudyProvider, ClassicStudyProvider>();
+            services.AddSingleton<ISyllablesToStringConverter, ClassicSyllablesToStringConverter>();
+            services.AddSingleton<IChinesePinyinConverter, Pinyin4NetConverter>();
+            services.AddSingleton<IFlashCardGenerator, FontFlashCardGenerator>();
+
+            services.AddTransient(a => new AboutCommand(ReleaseNotesInfo));
+            services.AddTransient(a => new HelpCommand(GetCommands));
+            services.AddTransient(a => new StartCommand(GetCommands));
+
+            services.AddTransient(a => new DefaultCommand(ServiceProvider.GetService<IWordRepository>()));
+            services.AddTransient(a => new ImportCommand(ServiceProvider.GetService<IChineseWordParseProvider>(),
+                ServiceProvider.GetService<IWordRepository>(), ServiceProvider.GetService<IFlashCardGenerator>()));
+            services.AddTransient(a => new AddCommand(ServiceProvider.GetService<IChineseWordParseProvider>(), ServiceProvider.GetService<IWordRepository>(), ServiceProvider.GetService<IFlashCardGenerator>()));
+            services.AddTransient(a => new ViewCommand(ServiceProvider.GetService<IWordRepository>()));
+            services.AddTransient(a => new DeleteCommand(ServiceProvider.GetService<IWordRepository>()));
+            services.AddTransient(a => new EditCommand(ServiceProvider.GetService<IWordRepository>(),
+                ServiceProvider.GetService<IChineseWordParseProvider>(), ServiceProvider.GetService<ImportCommand>(),
+                ServiceProvider.GetService<IFlashCardGenerator>()));
+            services.AddTransient(a => new LearnWritingCommand(ServiceProvider.GetService<IStudyProvider>(),
+                ServiceProvider.GetService<EditCommand>()));
+            services.AddTransient(a => new LearnViewCommand(ServiceProvider.GetService<IStudyProvider>(),
+                ServiceProvider.GetService<EditCommand>()));
+            services.AddTransient(a => new LearnSpeakCommand(ServiceProvider.GetService<IStudyProvider>(),
+                ServiceProvider.GetService<EditCommand>()));
+            services.AddTransient(a => new LearnTranslationCommand(ServiceProvider.GetService<IStudyProvider>(),
+                ServiceProvider.GetService<EditCommand>()));
+            services.AddTransient(a => new ModeCommand(ServiceProvider.GetService<IWordRepository>()));
+
+            services.AddSingleton(a => new AntiDdosChecker(GetDateTime));
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
+
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime applicationLifetime)
         {
             ServiceProvider = app.ApplicationServices;

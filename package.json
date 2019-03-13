@@ -5,8 +5,8 @@
   "description": "Webpart of the Chinese Duck Bot system",
   "main": "server/index.js",
   "scripts": {
-    "test": "mocha --require @babel/register --require @babel/polyfill --sort --exit --no-deprecation ./tests/run/run.test.js --mode test --timeout 60000",
-    "test-dbg": "mocha --require @babel/register --require @babel/polyfill --sort --exit --no-deprecation --inspect-brk=9229 tests/run/run.test.js --mode test --delay  --timeout 60000",
+    "test": "mocha --require @babel/register --require @babel/polyfill --sort --exit --delay --no-deprecation tests/run/run.test.js --mode test --timeout 60000",
+    "test-dbg": "mocha --require @babel/register --require @babel/polyfill --sort --exit --no-deprecation --inspect-brk=9229 tests/run/run.test.js --mode test --delay --timeout 60000",
     "build-prod": "babel-node config/run start --mode production",
     "build-dev-run-dbg": "babel-node config/run start --mode development --nolazy --inspect-brk=9229 server/index.js",
     "build-dev-run": "babel-node config/run start --mode development",

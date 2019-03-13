@@ -429,8 +429,7 @@ export const study = {
         break;
     }
 
-    if (!isNull(sortObj))
-      queryParamsArray.push({ $sort: sortObj });
+    if (!isNull(sortObj)) queryParamsArray.push({ $sort: sortObj });
 
     queryParamsArray.push({ $limit: 1 });
     const words = await mh.word.aggregate(queryParamsArray);
@@ -457,6 +456,7 @@ export const study = {
           word.score.translationCount++;
           break;
         default:
+          word.score.lastView = new Date();
           word.score.viewCount++;
           break;
       }

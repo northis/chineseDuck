@@ -7,5 +7,6 @@ namespace ChineseDuck.Bot.ObjectModels
         public bool Success { get; set; }
 
         public IWord WordStatistic { get; set; }
+        public byte[] Picture { get; set; }
     }
 }

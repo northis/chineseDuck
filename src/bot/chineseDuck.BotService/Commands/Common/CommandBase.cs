@@ -1,9 +1,8 @@
 ﻿using System;
+using chineseDuck.BotService.Commands.Enums;
 using ChineseDuck.BotService.MainExecution;
-using ChineseDuck.WebBot.Commands.Common;
-using ChineseDuck.WebBot.Commands.Enums;
 
-namespace ChineseDuck.BotService.Commands.Common
+namespace chineseDuck.BotService.Commands.Common
 {
     public abstract class CommandBase
     {
