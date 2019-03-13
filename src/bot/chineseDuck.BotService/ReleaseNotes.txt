@@ -1,8 +1,11 @@
-﻿
-Relase notes:
+﻿Relase notes:
 
 
-ver.1.0.0.0 (30 december 2018)
+ver.0.3.3.0 (14 march 2019)
+=========================
+[+] alpha release
+
+ver.0.3.2.1 (30 december 2018)
 =========================
 [+] website had been added
 [+] folders for words
