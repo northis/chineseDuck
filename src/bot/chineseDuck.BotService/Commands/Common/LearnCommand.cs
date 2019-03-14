@@ -33,10 +33,13 @@ namespace chineseDuck.BotService.Commands.Common
         {
             var buttons = new List<InlineKeyboardButton[]>();
             foreach (var option in lUnit.Options)
+            {
+                var answer = string.Join("", option.Take(MaxAnswerLength));
                 buttons.Add(new []
                 {
-                    new InlineKeyboardButton{ Text = string.Join("", option.Take(MaxAnswerLength)), CallbackData = ""}
+                    new InlineKeyboardButton{ Text = answer, CallbackData = answer}
                 });
+            }
 
             previousAnswerItem.Markup = new InlineKeyboardMarkup(buttons);
             previousAnswerItem.Picture = lUnit.Picture;
