@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Reflection;
 using chineseDuck.BotService.Commands.Common;
 using chineseDuck.BotService.Commands.Enums;
 using ChineseDuck.BotService.MainExecution;
@@ -11,10 +9,12 @@ namespace chineseDuck.BotService.Commands
     public class AboutCommand : CommandBase
     {
         private readonly string _releaseNotes;
+        private readonly string _mainAboutString;
 
-        public AboutCommand(string releaseNotes)
+        public AboutCommand(string releaseNotes, string mainAboutString)
         {
             _releaseNotes = releaseNotes;
+            _mainAboutString = mainAboutString;
         }
 
         public override string GetCommandIconUnicode()
@@ -34,21 +34,9 @@ namespace chineseDuck.BotService.Commands
 
         public override AnswerItem Reply(MessageItem mItem)
         {
-            var copywrite = "0";
-            var version = "0";
-
-            var assembly = Assembly.GetExecutingAssembly();
-            if (assembly.Location != null)
-            {
-                var fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-                copywrite = fvi.LegalCopyright;
-                version = fvi.ProductVersion;
-            }
-
             return new AnswerItem
             {
-                Message =
-                    $"Chinese Duck Bot ver. {version}{Environment.NewLine}{copywrite}{Environment.NewLine}Contact me: @DeathWhinny{Environment.NewLine}Rate me: http://bit.ly/2pWjKuc {Environment.NewLine}{_releaseNotes}",
+                Message = _mainAboutString + Environment.NewLine + _releaseNotes,
                 Markup = new ReplyKeyboardRemove()
             };
         }

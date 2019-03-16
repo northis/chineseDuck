@@ -1,8 +1,8 @@
 {
   "name": "chinese_duck",
   "url": "https://t.me/DeathWhinny",
-  "version": "0.3.3",
-  "description": "Webpart of the Chinese Duck Bot system",
+  "version": "0.4.0",
+  "description": "Chinese Duck Bot",
   "main": "server/index.js",
   "scripts": {
     "test": "mocha --require @babel/register --require @babel/polyfill --sort --exit --delay --no-deprecation tests/run/run.test.js --mode test --timeout 60000",
@@ -41,7 +41,7 @@
   "bugs": {
     "url": "https://github.com/northis/chineseDuck/issues"
   },
-  "homepage": "https://github.com/northis/chineseDuck#readme",
+  "homepage": "https://github.com/northis/chineseDuck",
   "devDependencies": {
     "@babel/cli": "^7.1.2",
     "@babel/core": "^7.3.3",

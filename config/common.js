@@ -1,5 +1,4 @@
 import pkg from "../package.json";
-import { isNullOrUndefined } from "util";
 
 let keys = {
   telegramApiId: 0,
