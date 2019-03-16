@@ -1,7 +1,20 @@
-# ChineseDuck
+## Chinese Duck Bot
 
-The main web application for the Chinese Duck Bot
-And VS Code!
+Telegram bot @ChineseDuckBot to study Chinese language via memorizing the flashcards.
+# Key features
+* Generating flashcards based on users' vocabulary
+* Tone highlighting with colors
+* Auto-split word and phrases to syllables
+* Web-part to view user's words
+* Folders to group user's words
+* Several modes how to learn the words - by viewing or by multipal-chioce tests
+* Collection personal score
+* Bulk import words from .csv file
+* Webpart can work even if telegram addresses (https://t.me & so on) are blocked in your country.
+
+# Roadmap
+* Pre-installed cards for HSK1, HSK2,... to bulk import to a separate folder.
+* Using webpart to manipulating the words
 
 Usage:
 npm run build-dev (dev build)

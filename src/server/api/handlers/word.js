@@ -29,6 +29,7 @@ export const main = {
    */
   post: async function addWord(req, res, next) {
     try {
+      req.body.lastModified = Date.now();
       const word = await mh.word.create(req.body);
 
       await updateWordCount(word.folder_id);
@@ -518,16 +519,11 @@ export const studyCurrent = {
    * responses: 200
    */ get: async function getCurrentWord(req, res, next) {
     const userId = req.params.userId;
-    const wordEntry = req.params.wordEntry;
+    const user = await mh.user.findOne({ _id: userId });
 
-    let words = await mh.word.find({
-      originalWord: {
-        $regex: wordEntry,
-        $options: "i"
-      },
-      owner_id: userId,
-      folder_id: user.currentFolder_id
+    let word = await mh.word.findOne({
+      _id: user.currentWord_id
     });
-    res.json(words);
+    res.json(word);
   }
 };

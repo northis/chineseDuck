@@ -1,4 +1,5 @@
 FROM microsoft/dotnet:latest
-COPY bin/Debug/netcoreapp2.1/publish/ /root/
+WORKDIR /app
+COPY bin/Debug/netcoreapp2.1/publish /app
 EXPOSE 8080/tcp
-ENTRYPOINT dotnet /root/chineseDuck.BotService.dll
+ENTRYPOINT dotnet /app/chineseDuck.BotService.dll

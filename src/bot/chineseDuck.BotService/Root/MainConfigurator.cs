@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using Telegram.Bot;
 using YellowDuck.LearnChinese.Providers;
 
@@ -29,7 +30,7 @@ namespace ChineseDuck.BotService.Root
         }
         
         private string _releaseNotesInfo;
-        private static string _currentDir;
+        private string _aboutInfo;
 
         public string ReleaseNotesInfo
         {
@@ -44,19 +45,28 @@ namespace ChineseDuck.BotService.Root
             }
         }
 
-        public string CurrentDir
+        public string AboutInfo
         {
             get
             {
-                if (_currentDir != null)
-                    return _currentDir;
+                if (_aboutInfo != null) return _aboutInfo;
 
-                var thisLocation = Assembly.GetCallingAssembly().Location;
-                _currentDir = Path.GetDirectoryName(thisLocation);
+                var path = Path.Combine(CurrentDir, "package.json");
+                if (File.Exists(path))
+                {
+                    dynamic json = JObject.Parse(File.ReadAllText(path));
+                    _aboutInfo = $"{json.description} ver. {json.version}{Environment.NewLine}Author: {json.author}{Environment.NewLine}Contact me: @DeathWhinny{Environment.NewLine}Github: {json.homepage} {Environment.NewLine}";
+                }
+                else
+                {
+                    _aboutInfo = string.Empty;
+                }
 
-                return _currentDir;
+                return _aboutInfo;
             }
         }
+
+        public string CurrentDir => AppDomain.CurrentDomain.BaseDirectory;
 
         public IConfiguration Configuration { get; }
         public IServiceProvider ServiceProvider { get; private set; }
@@ -121,7 +131,7 @@ namespace ChineseDuck.BotService.Root
             services.AddSingleton<IChinesePinyinConverter, Pinyin4NetConverter>();
             services.AddSingleton<IFlashCardGenerator, FontFlashCardGenerator>();
 
-            services.AddTransient(a => new AboutCommand(ReleaseNotesInfo));
+            services.AddTransient(a => new AboutCommand(ReleaseNotesInfo, AboutInfo));
             services.AddTransient(a => new HelpCommand(GetCommands));
             services.AddTransient(a => new StartCommand(GetCommands));
 
