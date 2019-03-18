@@ -99,6 +99,12 @@ namespace ChineseDuck.Bot.Rest.Repository
             return word;
         }
 
+        public IUser GetUser(long userId)
+        {
+            var user = _userApi.GetUserById(userId);
+            return user;
+        }
+
         public IWord GetWord(string wordOriginal, long userId)
         {
             var word = _wordApi.GetWordsByUser(wordOriginal, userId).FirstOrDefault();
@@ -195,6 +201,22 @@ namespace ChineseDuck.Bot.Rest.Repository
         {
             var word = _wordApi.GetCurrentWord(userId);
             return word;
+        }
+
+        public void SetCurrentFolder(long userId, long folderId)
+        {
+            var user = _userApi.GetUserById(userId);
+
+            if (user == null)
+                throw new InvalidOperationException("No user found");
+
+            user.CurrentFolderId = folderId;
+            _userApi.UpdateUser(userId, user);
+        }
+
+        public IFolder[] GetUserFolders(long userId)
+        {
+            return _folderApi.GetFoldersForUser(userId);
         }
 
         public string AddFile(byte[] bytes)

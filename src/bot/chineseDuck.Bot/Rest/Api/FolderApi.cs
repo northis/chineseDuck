@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using System.Linq;
 using ChineseDuck.Bot.Interfaces.Data;
 using ChineseDuck.Bot.Rest.Client;
+using ChineseDuck.Bot.Rest.Model;
 using RestSharp;
 
 namespace ChineseDuck.Bot.Rest.Api
@@ -101,7 +104,7 @@ namespace ChineseDuck.Bot.Rest.Api
             var response = ApiClient.CallApi(path, Method.GET);
 
             ApiClient.CheckResponse(response);
-            return ApiClient.Deserialize<IFolder[]>(response);
+            return ApiClient.Deserialize<List<Folder>>(response).Cast<IFolder>().ToArray();
         }
               
         public IFolder[] GetFoldersForUser (long userId)
@@ -110,7 +113,7 @@ namespace ChineseDuck.Bot.Rest.Api
             var response = ApiClient.CallApi(path, Method.GET);
 
             ApiClient.CheckResponse(response);
-            return ApiClient.Deserialize<IFolder[]>(response);
+            return ApiClient.Deserialize<List<Folder>>(response).Cast<IFolder>().ToArray();
         }
                
         public IWord[] GetWordsFolderId (long folderId)
@@ -119,7 +122,7 @@ namespace ChineseDuck.Bot.Rest.Api
             var response = ApiClient.CallApi(path, Method.GET);
 
             ApiClient.CheckResponse(response);
-            return ApiClient.Deserialize<IWord[]>(response);
+            return ApiClient.Deserialize<List<Word>>(response).Cast<IWord>().ToArray();
         }
     
         /// <summary>

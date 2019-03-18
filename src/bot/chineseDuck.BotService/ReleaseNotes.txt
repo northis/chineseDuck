@@ -1,21 +1,9 @@
-﻿Relase notes:
+﻿Release notes:
 
-ver.0.4.0.0 (18 march 2019)
+ver.0.5.0.0 (25 march 2019)
 =========================
-[*] fixes
+[*] beta is ready
 
-ver.0.3.3.0 (14 march 2019)
+ver.0.0.1.0 (01 may 2017)
 =========================
-[+] alpha release
-
-ver.0.3.2.1 (30 december 2018)
-=========================
-[+] website had been added
-[+] folders for words
-[+] new platform - netCore, nodeJS, vue.js, mongodb, linux-hosted
-
-ver.0.3.2.0 (22 april 2018)
-=========================
-[+] changed socks5 proxy
-
-A new updated version with the web site is coming soon!
+[+] first version
