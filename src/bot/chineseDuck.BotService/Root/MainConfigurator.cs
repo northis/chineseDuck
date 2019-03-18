@@ -55,7 +55,7 @@ namespace ChineseDuck.BotService.Root
                 if (File.Exists(path))
                 {
                     dynamic json = JObject.Parse(File.ReadAllText(path));
-                    _aboutInfo = $"{json.description} ver. {json.version}{Environment.NewLine}Author: {json.author}{Environment.NewLine}Contact me: @DeathWhinny{Environment.NewLine}Github: {json.homepage} {Environment.NewLine}";
+                    _aboutInfo = $"{json.description} ver. {json.version}{Environment.NewLine}Author: {json.author}{Environment.NewLine}Contact me: @DeathWhinny{Environment.NewLine}Web-part: {json.url}{Environment.NewLine}Github: {json.homepage} {Environment.NewLine}";
                 }
                 else
                 {
@@ -75,20 +75,21 @@ namespace ChineseDuck.BotService.Root
         {
             return new CommandBase[]
             {
-                ServiceProvider.GetService<DefaultCommand>(),
-                ServiceProvider.GetService<ImportCommand>(),
-                ServiceProvider.GetService<AddCommand>(),
-                ServiceProvider.GetService<ViewCommand>(),
-                ServiceProvider.GetService<DeleteCommand>(),
-                ServiceProvider.GetService<HelpCommand>(),
-                ServiceProvider.GetService<StartCommand>(),
-                ServiceProvider.GetService<LearnWritingCommand>(),
-                ServiceProvider.GetService<LearnViewCommand>(),
                 ServiceProvider.GetService<AboutCommand>(),
-                ServiceProvider.GetService<ModeCommand>(),
+                ServiceProvider.GetService<AddCommand>(),
+                ServiceProvider.GetService<DefaultCommand>(),
+                ServiceProvider.GetService<DeleteCommand>(),
+                ServiceProvider.GetService<EditCommand>(),
+                ServiceProvider.GetService<FolderCommand>(),
+                ServiceProvider.GetService<ImportCommand>(),
+                ServiceProvider.GetService<HelpCommand>(),
                 ServiceProvider.GetService<LearnSpeakCommand>(),
                 ServiceProvider.GetService<LearnTranslationCommand>(),
-                ServiceProvider.GetService<EditCommand>()
+                ServiceProvider.GetService<LearnViewCommand>(),
+                ServiceProvider.GetService<LearnWritingCommand>(),
+                ServiceProvider.GetService<ModeCommand>(),
+                ServiceProvider.GetService<StartCommand>(),
+                ServiceProvider.GetService<ViewCommand>(),
             }; ;
         }
 
@@ -133,7 +134,8 @@ namespace ChineseDuck.BotService.Root
 
             services.AddTransient(a => new AboutCommand(ReleaseNotesInfo, AboutInfo));
             services.AddTransient(a => new HelpCommand(GetCommands));
-            services.AddTransient(a => new StartCommand(GetCommands));
+            services.AddTransient(a => new StartCommand(GetCommands, botSettings.WebhookPublicUrl));
+            services.AddTransient(a => new FolderCommand(ServiceProvider.GetService<IWordRepository>(), botSettings.FolderManagementText));
 
             services.AddTransient(a => new DefaultCommand(ServiceProvider.GetService<IWordRepository>()));
             services.AddTransient(a => new ImportCommand(ServiceProvider.GetService<IChineseWordParseProvider>(),

@@ -5,10 +5,8 @@
         Default,
         Import,
         Add,
-        Clean,
         View,
         Delete,
-        Share,
         Help,
         Start,
         LearnWriting,
@@ -17,6 +15,7 @@
         LearnView,
         About,
         Mode,
-        Edit
+        Edit,
+        Folder
     }
 }

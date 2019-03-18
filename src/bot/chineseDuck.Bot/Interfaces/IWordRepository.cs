@@ -45,6 +45,11 @@ namespace ChineseDuck.Bot.Interfaces
 
         IWord GetCurrentWord(long userId);
 
+        void SetCurrentFolder(long userId, long folderId);
+        IFolder[] GetUserFolders(long userId);
+
         string AddFile(byte[] bytes);
+
+        IUser GetUser(long userId);
     }
 }

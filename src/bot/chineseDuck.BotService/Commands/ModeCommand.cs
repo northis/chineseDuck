@@ -35,6 +35,7 @@ namespace chineseDuck.BotService.Commands
         public override AnswerItem Reply(MessageItem mItem)
         {
             if (string.IsNullOrWhiteSpace(mItem.TextOnly))
+            {
                 return new AnswerItem
                 {
                     Message = "Choose learn words mode:",
@@ -82,8 +83,10 @@ namespace chineseDuck.BotService.Commands
                         }
                     })
                 };
+            }
 
             if (Enum.TryParse(mItem.TextOnly, true, out EGettingWordsStrategy strategy))
+            {
                 try
                 {
                     _repository.SetLearnMode(mItem.ChatId, strategy);
@@ -95,11 +98,14 @@ namespace chineseDuck.BotService.Commands
                         Message = e.Message
                     };
                 }
+            }
             else
+            {
                 return new AnswerItem
                 {
                     Message = "This mode is not supported"
                 };
+            }
 
             return new AnswerItem
             {

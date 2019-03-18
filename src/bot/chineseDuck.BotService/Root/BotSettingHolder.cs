@@ -15,6 +15,7 @@ namespace ChineseDuck.BotService.Root
             LocalPort = int.Parse(configuration["LocalPort"]);
             Password = configuration["Password"];
             UserId = long.Parse(configuration["UserId"]);
+            FolderManagementText = configuration["FolderManagementText"];
             Singleton = this;
         }
 
@@ -27,6 +28,7 @@ namespace ChineseDuck.BotService.Root
         public string ApiPublicUrl { get; }
         public string Password { get; }
         public long UserId { get; }
+        public string FolderManagementText { get; }
 
         public static BotSettingHolder Singleton { get; private set; }
         #endregion
