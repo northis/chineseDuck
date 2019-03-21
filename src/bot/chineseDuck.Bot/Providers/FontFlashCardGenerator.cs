@@ -43,7 +43,7 @@ namespace ChineseDuck.Bot.Providers
         
         private static readonly Rgba32 MainColor = Rgba32.Black;
         private static readonly Rgba32 UsageColor = Rgba32.DarkGray;
-        private static readonly Rgba32 BackgroundColor = Rgba32.FromHex("#FFFFFFA0");
+        private static readonly Rgba32 BackgroundColor = Rgba32.FromHex("#D3D3D390");
 
         static FontFlashCardGenerator()
         {

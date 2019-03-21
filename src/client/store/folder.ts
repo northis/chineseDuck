@@ -30,6 +30,7 @@ const actions = {
     if (isNullOrUndefined(context.state.currentFolder)) {
       throw new Error("No items to save");
     }
+    context.state.currentFolder.wordsCount = 0;
     await axios.post(route(routes._folder), context.state.currentFolder);
     context.commit(mutations.setCurrentFolder.name, null);
   },

@@ -65,7 +65,7 @@ docker network create --subnet=10.1.1.0/24 udd3rnet
 
 ### Mongo db
 
-Let's create a mongo db image `mongo:v1`
+Let's create a mongo db image `mongo:latest`
 
 ```
 docker pull mongo

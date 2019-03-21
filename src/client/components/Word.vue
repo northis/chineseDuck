@@ -6,32 +6,109 @@
           <div class="input-group">
             <input type="text"
                    class="form-control"
-                   placeholder="Find words..."></div>
+                   placeholder="Find words...">
+          </div>
         </div>
       </div>
     </div>
 
     <div class="row">
-      <div class="col-sm-nopadding">
-        <!-- <div class="progress margin-noside">
-            <div class="progress-bar progress-bar-striped progress-bar-animated"
-                 role="progressbar"
-                 aria-valuenow="100"
-                 aria-valuemin="0"
-                 aria-valuemax="100"
-                 style="width: 100%" />
+      <div class="col">
+      </div>
 
-                 
-          </div> -->
+      <div class="col-auto nopadding">
+        <div class="margin-top">
+          <div class="input-group">
+            <select class="combobox form-control"
+                    :disabled="!hasSelectedWords"
+                    @selectedChanged="selectedChanged">
+              <option disabled
+                      selected
+                      hidden
+                      value="">
+                <span>Select a folder to move words </span>
+              </option>
+              <option v-for="folder in folders"
+                      :key="folder._id"
+                      :value="folder._id"> {{folder.name}}</option>
+            </select>
+            <div class="input-group-append">
+              <button type="button"
+                      :disabled="!hasSelectedWords"
+                      class="btn btn-outline-success">Move selected</button>
+              <button type="button"
+                      class="btn btn-outline-success"
+                      :disabled="isAllSelected">Select all</button>
+              <button type="button"
+                      class="btn btn-outline-success"
+                      :disabled="isAllUnSelected">Unselect all</button>
+            </div>
+
+            <!-- <button type="button"
+                        data-toggle="tooltip"
+                        title="Go to the words in this folder"
+                        class="btn btn-outline-primary darkColor"
+                        v-show="!isNoEdit" 
+               v-if=""
+                        @click="goToWords(folder)">
+                  To words
+                  <img src="../assets/images/arrow-right-circle.svg"
+                       class="align-middle" />
+                </button>
+                <button type="button"
+                        v-if="folder._id != userFolder"
+                        data-toggle="tooltip"
+                        title="Set current learning folder"
+                        class="btn btn-outline-success"
+                        v-show="!isNoEdit"
+                        @click="setUserCurrent(folder)">
+                  <img src="../assets/images/flag.svg"
+                       class="align-middle" />
+                </button>
+                <button type="button"
+                        data-toggle="tooltip"
+                        title="Rename the folder"
+                        class="btn btn-outline-secondary"
+                        v-show="!(folder && folder._id == 0) && !isNoEdit"
+                        @click="editFolder(folder)">
+                  <img src="../assets/images/italic.svg"
+                       class="align-middle" />
+                </button> -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-nopadding">
+        <div class="progress marginagble"
+             v-if="isLoading">
+          <div class="progress-bar progress-bar-striped progress-bar-animated"
+               role="progressbar"
+               aria-valuenow="100"
+               aria-valuemin="0"
+               aria-valuemax="100"
+               style="width: 100%" />
+        </div>
         <app-virtualScrollList id="wordScroller"
                                class="list-group marginagble">
-          <div class="list-group-item list-group-item-action flex-column align-items-start d-flex w-100 justify-content-between"
+          <div class="list-group-item flex-column align-items-start d-flex w-100 justify-content-between"
                v-for="word in words"
                :key="word._id">
             <div class="container nopadding"
                  :width="word.full.width"
                  :height="word.full.height">
               <div class="row">
+                <div class="col-md-auto">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox"
+                           :id="word._id"
+                           v-model="word.isChecked"
+                           class="custom-control-input">
+                    <label class="custom-control-label"
+                           :for="word._id">
+                    </label>
+                  </div>
+                </div>
                 <div class="col">
                   <img :src="getFileIdPath(word.full.id)"
                        :height="word.full.height"
@@ -66,16 +143,16 @@ import VirtualScrollList from "./framework/VirtualScrollList.vue";
 import { isNullOrUndefined } from "util";
 import { route, routes } from "../services/routeService";
 import { scoreToString } from "../services/convertService";
+import folder from "../store/folder";
+
 @Component({
   components: {
     "app-virtualScrollList": VirtualScrollList
   }
 })
 export default class Word extends Vue {
-  @State
-  word: I.IWordState;
-  @Provide()
-  IsLoading = false;
+  @State word: I.IWordState;
+  @State folder: I.IFolderState;
 
   counter = 0;
 
@@ -86,16 +163,12 @@ export default class Word extends Vue {
     return scoreToString(score);
   }
 
-  loadImage(wordItem: I.IWord) {
-    this.counter++;
-    console.info(this.counter);
-  }
-
   mounted() {
     this.resize();
     window.addEventListener("resize", this.resize);
 
     const idFolder = +this.$route.params.id;
+    this.folderStore.dispatch(folder.actions.fetchFolders)(this.$store);
     this.store.dispatch(word.actions.fetchWords)(this.$store, idFolder);
   }
   destroyed() {
@@ -106,8 +179,27 @@ export default class Word extends Vue {
     return getStoreAccessors<I.IWordState, ST.IRootState>(ST.Modules.word);
   }
 
+  get folderStore() {
+    return getStoreAccessors<I.IFolderState, ST.IRootState>(ST.Modules.folder);
+  }
+
   get words() {
     return this.store.read(word.getters.getWords)(this.$store);
+  }
+  get hasSelectedWords() {
+    return this.store.read(word.getters.hasSelectedWords)(this.$store);
+  }
+  get isAllSelected() {
+    return this.store.read(word.getters.isAllSelected)(this.$store);
+  }
+  get isAllUnSelected() {
+    return this.store.read(word.getters.isAllUnSelected)(this.$store);
+  }
+  get isLoading() {
+    return this.store.read(word.getters.isLoading)(this.$store);
+  }
+  get folders() {
+    return this.folderStore.read(folder.getters.getFolders)(this.$store);
   }
 
   resize() {
@@ -132,9 +224,21 @@ export default class Word extends Vue {
     scroller.style.height =
       (allheight - topOffset - marginBottom - marginTop).toString() + "px";
   }
+
+  @Emit()
+  wordCheck(value: boolean) {}
+
+  @Emit()
+  selectedChanged(value: number) {
+    console.log("folder" + value);
+  }
 }
 </script>
 
 <style lang="scss" scoped>
 @import "../assets/styles/mainStyles.scss";
+
+button:disabled {
+  border-color: #28a745;
+}
 </style>
