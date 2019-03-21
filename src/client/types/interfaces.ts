@@ -16,6 +16,7 @@ export interface IFolderState {
 export interface IWordState {
   words: IWord[];
   currentWord: IWord | null;
+  isLoading: boolean;
 }
 
 export interface ITelMasks {
@@ -60,6 +61,7 @@ export interface IWord {
   folder_id: number;
   lastModified?: Date;
   score: IScore;
+  isChecked: boolean;
 }
 
 export interface IScore {
