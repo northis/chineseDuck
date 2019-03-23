@@ -14,7 +14,8 @@
                    class="form-control"
                    v-model="SearchText"
                    :disabled="isNoEdit"
-                   placeholder="Find folder..."></div>
+                   placeholder="Find folder...">
+          </div>
         </div>
       </div>
     </div>
@@ -32,7 +33,7 @@
                  style="width: 100%" />
           </div>
           <div class="list-group">
-            <div class="list-group-item list-group-item-action flex-column align-items-start d-flex w-100 justify-content-between"
+            <div class="list-group-item flex-column align-items-start d-flex w-100 justify-content-between"
                  :class="{hoverable: !(folder._id == userFolder ||  folder._id == 0 || currentFolder && folder._id == currentFolder._id)}"
                  v-for="folder in filteredFolders"
                  :key="folder._id">

@@ -19,6 +19,10 @@ Telegram bot @ChineseDuckBot to study Chinese language via memorizing the flashc
 - Pre-installed cards for HSK1, HSK2,... to bulk import to a separate folder.
 - Using webpart to manipulating the words
 
+## API
+
+You can find the description of Chinese Duck Bot Api on [our Swagger page](https://app.swaggerhub.com/apis/northis/chineseDuckApi/1.1.1-oas3).
+
 ## Build
 
 1. Create a `keys.js` file in the root of the project folder based on `keys.template.js` file.

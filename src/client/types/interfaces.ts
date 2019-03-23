@@ -17,6 +17,8 @@ export interface IWordState {
   words: IWord[];
   currentWord: IWord | null;
   isLoading: boolean;
+  newFolderId: number;
+  currentFolderId: number;
 }
 
 export interface ITelMasks {
