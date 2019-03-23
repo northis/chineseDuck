@@ -9,6 +9,16 @@ const mutations = {
   setWords(state: I.IWordState, payload: I.IWord[]): void {
     state.words = payload;
   },
+  setFolder(state: I.IWordState, payload: number): void {
+    // tslint:disable-next-line:no-console
+    console.log(payload + "p");
+    state.currentFolderId = payload;
+  },
+  setAllWords(state: I.IWordState, payload: boolean): void {
+    state.words.forEach(a => {
+      a.isChecked = payload;
+    });
+  },
   setLoading(state: I.IWordState, payload: boolean): void {
     state.isLoading = payload;
   }
@@ -27,6 +37,32 @@ const actions = {
       const data: I.IWord[] = resp.data;
 
       context.commit(mutations.setWords.name, data);
+      return Promise.resolve();
+    } catch (e) {
+      return Promise.reject(e);
+    } finally {
+      context.commit(mutations.setLoading.name, false);
+    }
+  },
+
+  async moveWords(
+    context: ActionContext<I.IWordState, ST.IRootState>
+  ): Promise<void> {
+    try {
+      context.commit(mutations.setLoading.name, true);
+      const ids = context.state.words
+        .filter(a => a.isChecked === true)
+        .map(a => a._id);
+      await axios.put(
+        route(routes._word_folder__folderId_, context.state.newFolderId),
+        ids
+      );
+      // tslint:disable-next-line:no-console
+      console.log(context.state.currentFolderId);
+      await context.dispatch(
+        actions.fetchWords.name,
+        context.state.currentFolderId
+      );
       return Promise.resolve();
     } catch (e) {
       return Promise.reject(e);
@@ -57,7 +93,9 @@ const getters = {
 const stateItem: I.IWordState = {
   words: [],
   currentWord: null,
-  isLoading: false
+  isLoading: false,
+  newFolderId: 0,
+  currentFolderId: 0
 };
 
 const word = {

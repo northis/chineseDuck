@@ -12,75 +12,9 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col">
-      </div>
-
-      <div class="col-auto nopadding">
-        <div class="margin-top">
-          <div class="input-group">
-            <select class="combobox form-control"
-                    :disabled="!hasSelectedWords"
-                    @selectedChanged="selectedChanged">
-              <option disabled
-                      selected
-                      hidden
-                      value="">
-                <span>Select a folder to move words </span>
-              </option>
-              <option v-for="folder in folders"
-                      :key="folder._id"
-                      :value="folder._id"> {{folder.name}}</option>
-            </select>
-            <div class="input-group-append">
-              <button type="button"
-                      :disabled="!hasSelectedWords"
-                      class="btn btn-outline-success">Move selected</button>
-              <button type="button"
-                      class="btn btn-outline-success"
-                      :disabled="isAllSelected">Select all</button>
-              <button type="button"
-                      class="btn btn-outline-success"
-                      :disabled="isAllUnSelected">Unselect all</button>
-            </div>
-
-            <!-- <button type="button"
-                        data-toggle="tooltip"
-                        title="Go to the words in this folder"
-                        class="btn btn-outline-primary darkColor"
-                        v-show="!isNoEdit" 
-               v-if=""
-                        @click="goToWords(folder)">
-                  To words
-                  <img src="../assets/images/arrow-right-circle.svg"
-                       class="align-middle" />
-                </button>
-                <button type="button"
-                        v-if="folder._id != userFolder"
-                        data-toggle="tooltip"
-                        title="Set current learning folder"
-                        class="btn btn-outline-success"
-                        v-show="!isNoEdit"
-                        @click="setUserCurrent(folder)">
-                  <img src="../assets/images/flag.svg"
-                       class="align-middle" />
-                </button>
-                <button type="button"
-                        data-toggle="tooltip"
-                        title="Rename the folder"
-                        class="btn btn-outline-secondary"
-                        v-show="!(folder && folder._id == 0) && !isNoEdit"
-                        @click="editFolder(folder)">
-                  <img src="../assets/images/italic.svg"
-                       class="align-middle" />
-                </button> -->
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-nopadding">
-        <div class="progress marginagble"
+    <div class="row align-items-center">
+      <div class="col marginagble">
+        <div class="progress margin-top"
              v-if="isLoading">
           <div class="progress-bar progress-bar-striped progress-bar-animated"
                role="progressbar"
@@ -89,9 +23,48 @@
                aria-valuemax="100"
                style="width: 100%" />
         </div>
+      </div>
+
+      <div class="col-auto nopadding">
+        <div class="margin-top">
+          <div class="input-group">
+            <select class="combobox form-control"
+                    :disabled="!hasSelectedWords"
+                    v-model="word.newFolderId">
+              <option disabled
+                      selected
+                      hidden
+                      value="">
+                <span>Check words and folder to move</span>
+              </option>
+              <option v-for="folder in folders"
+                      :key="folder._id"
+                      :value="folder._id"> {{folder.name}}</option>
+            </select>
+            <div class="input-group-append">
+              <button type="button"
+                      :disabled="!hasSelectedWords"
+                      @click="moveWords()"
+                      class="btn btn-outline-success">Move selected</button>
+              <button type="button"
+                      class="btn btn-outline-success"
+                      @click="setAllWords(true)"
+                      :disabled="isAllSelected">Select all</button>
+              <button type="button"
+                      class="btn btn-outline-success"
+                      @click="setAllWords(false)"
+                      :disabled="isAllUnSelected">Unselect all</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-nopadding">
         <app-virtualScrollList id="wordScroller"
                                class="list-group marginagble">
           <div class="list-group-item flex-column align-items-start d-flex w-100 justify-content-between"
+               v-show="!isLoading"
                v-for="word in words"
                :key="word._id">
             <div class="container nopadding"
@@ -168,6 +141,7 @@ export default class Word extends Vue {
     window.addEventListener("resize", this.resize);
 
     const idFolder = +this.$route.params.id;
+    this.store.commit(word.mutations.setFolder)(this.$store, idFolder);
     this.folderStore.dispatch(folder.actions.fetchFolders)(this.$store);
     this.store.dispatch(word.actions.fetchWords)(this.$store, idFolder);
   }
@@ -202,6 +176,14 @@ export default class Word extends Vue {
     return this.folderStore.read(folder.getters.getFolders)(this.$store);
   }
 
+  setAllWords(state: boolean) {
+    this.store.commit(word.mutations.setAllWords)(this.$store, state);
+  }
+
+  moveWords() {
+    this.store.dispatch(word.actions.moveWords)(this.$store);
+  }
+
   resize() {
     const scroller = document.getElementById("wordScroller");
 
@@ -223,14 +205,6 @@ export default class Word extends Vue {
 
     scroller.style.height =
       (allheight - topOffset - marginBottom - marginTop).toString() + "px";
-  }
-
-  @Emit()
-  wordCheck(value: boolean) {}
-
-  @Emit()
-  selectedChanged(value: number) {
-    console.log("folder" + value);
   }
 }
 </script>
