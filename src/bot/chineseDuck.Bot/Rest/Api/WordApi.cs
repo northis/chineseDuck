@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces.Data;
 using ChineseDuck.Bot.Rest.Client;
@@ -195,7 +196,7 @@ namespace ChineseDuck.Bot.Rest.Api
 
         public IWord[] GetWordsByUser(string wordEntry, long userId)
         {
-            var path = $"/word/user/{userId}/search/{wordEntry}"; //TODO wordEntry encode? 
+            var path = $"/word/user/{userId}/search/{wordEntry}"; 
             var response = ApiClient.CallApi(path, Method.GET);
 
             ApiClient.CheckResponse(response);

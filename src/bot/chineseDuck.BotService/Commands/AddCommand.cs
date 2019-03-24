@@ -10,7 +10,7 @@ namespace chineseDuck.BotService.Commands
     public class AddCommand : ImportCommand
     {
         public AddCommand(IChineseWordParseProvider parseProvider, IWordRepository repository,
-            IFlashCardGenerator flashCardGenerator) : base(parseProvider, repository, flashCardGenerator)
+            IFlashCardGenerator flashCardGenerator) : base(parseProvider, repository, flashCardGenerator, 0)
         {
         }
 

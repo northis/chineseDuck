@@ -10,8 +10,6 @@ const mutations = {
     state.words = payload;
   },
   setFolder(state: I.IWordState, payload: number): void {
-    // tslint:disable-next-line:no-console
-    console.log(payload + "p");
     state.currentFolderId = payload;
   },
   setAllWords(state: I.IWordState, payload: boolean): void {
@@ -57,8 +55,7 @@ const actions = {
         route(routes._word_folder__folderId_, context.state.newFolderId),
         ids
       );
-      // tslint:disable-next-line:no-console
-      console.log(context.state.currentFolderId);
+
       await context.dispatch(
         actions.fetchWords.name,
         context.state.currentFolderId

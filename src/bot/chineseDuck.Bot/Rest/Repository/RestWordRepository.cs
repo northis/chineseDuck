@@ -33,6 +33,8 @@ namespace ChineseDuck.Bot.Rest.Repository
         public void AddWord(IWord word, long idUser)
         {
             word.OwnerId = idUser;
+            var user = _userApi.GetUserById(idUser);
+            word.FolderId = user.CurrentFolderId;
             _wordApi.AddWord(word);
         }
 
