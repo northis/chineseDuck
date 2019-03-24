@@ -10,9 +10,15 @@ const catchUniqueName = (res, error) => {
 };
 
 const updateWordCount = async folderId => {
+  folderId = +folderId;
+
   if (folderId !== 0) {
     const wordsCount = await mh.word.count({ folder_id: folderId });
-    await mh.folder.updateOne({ _id: folderId }, { wordsCount: wordsCount });
+
+    await mh.folder.updateOne(
+      { _id: folderId },
+      { wordsCount: wordsCount, activityDate: Date.now() }
+    );
   }
 };
 
@@ -30,6 +36,7 @@ export const main = {
   post: async function addWord(req, res, next) {
     try {
       req.body.lastModified = Date.now();
+
       const word = await mh.word.create(req.body);
 
       await updateWordCount(word.folder_id);
@@ -175,14 +182,21 @@ export const folderId = {
     if (!Array.isArray(idWordArray))
       return errors.e400(res, "Bad words id array");
 
-    idWordArray.forEach(async id => {
-      const word = await mh.word.findOne({ _id: id });
+    for (const id of idWordArray) {
+      const word = await mh.word.findOne({
+        _id: id
+      });
       await mh.word.updateOne(
-        { _id: id, owner_id: idUser },
-        { folder_id: folderId }
+        {
+          _id: id,
+          owner_id: idUser
+        },
+        {
+          folder_id: folderId
+        }
       );
       await updateWordCount(word.folder_id);
-    });
+    }
 
     await updateWordCount(folderId);
 

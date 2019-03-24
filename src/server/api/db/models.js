@@ -116,24 +116,27 @@ export const wordSchema = {
   translation: String,
   usage: String,
   syllablesCount: { type: Number, min: 1, max: 8000 },
-  folder_id: Number,
+  folder_id: { type: Number, default: 0 },
   lastModified: { type: Date, default: new Date() },
   full: wordFileBodySchema,
   trans: wordFileBodySchema,
   pron: wordFileBodySchema,
   orig: wordFileBodySchema,
   score: {
-    originalWordCount: Number,
-    originalWordSuccessCount: Number,
+    originalWordCount: { type: Number, default: 0 },
+    originalWordSuccessCount: { type: Number, default: 0 },
     lastView: { type: Date, default: new Date() },
     lastLearned: { type: Date, default: new Date() },
-    lastLearnMode: { type: String, enum: Object.values(LearnModeEnum) },
-    rightAnswerNumber: Number,
-    pronunciationCount: Number,
-    pronunciationSuccessCount: Number,
-    translationCount: Number,
-    translationSuccessCount: Number,
-    viewCount: Number
+    lastLearnMode: {
+      type: String,
+      enum: Object.values(LearnModeEnum)
+    },
+    rightAnswerNumber: { type: Number, default: 0 },
+    pronunciationCount: { type: Number, default: 0 },
+    pronunciationSuccessCount: { type: Number, default: 0 },
+    translationCount: { type: Number, default: 0 },
+    translationSuccessCount: { type: Number, default: 0 },
+    viewCount: { type: Number, default: 0 }
   }
 };
 

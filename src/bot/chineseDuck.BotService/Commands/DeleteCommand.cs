@@ -53,10 +53,19 @@ namespace chineseDuck.BotService.Commands
             {
                 try
                 {
-                    var word = _repository.GetWord(long.Parse(mItem.TextOnly.Replace(YesAnswer, string.Empty)));
-                    _repository.DeleteWord(word.Id);
+                    var wordText = mItem.TextOnly.Replace(YesAnswer, string.Empty);
+                    var word = _repository.GetWord(wordText, mItem.ChatId);
 
-                    message = $"Word {word.OriginalWord} has been removed";
+                    if (word == null)
+                    {
+                        message = $"Word {wordText} is not found";
+                    }
+                    else
+                    {
+                        _repository.DeleteWord(word.Id);
+                        message = $"Word {word.OriginalWord} has been removed";
+                    }
+
                 }
                 catch (Exception e)
                 {

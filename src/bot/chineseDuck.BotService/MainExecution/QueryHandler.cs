@@ -25,6 +25,7 @@ namespace ChineseDuck.BotService.MainExecution
         private readonly TelegramBotClient _client;
         private readonly string _flashCardUrl;
         private readonly ICommandManager _commandManager;
+        private readonly uint _maxUploadFileSize;
         private readonly IWordRepository _repository;
         private readonly ILogService _logService;
 
@@ -32,13 +33,14 @@ namespace ChineseDuck.BotService.MainExecution
         public int MaxInlineSearchResult = 7;
 
         public QueryHandler(TelegramBotClient client, ILogService logService, IWordRepository repository,
-            AntiDdosChecker checker, string flashCardUrl, ICommandManager commandManager)
+            AntiDdosChecker checker, string flashCardUrl, ICommandManager commandManager, uint maxUploadFileSize)
         {
             _client = client;
             _repository = repository;
             _checker = checker;
             _flashCardUrl = flashCardUrl;
             _commandManager = commandManager;
+            _maxUploadFileSize = maxUploadFileSize;
             _logService = logService;
         }
 
@@ -183,15 +185,24 @@ namespace ChineseDuck.BotService.MainExecution
                     TextOnly = noEmojiCmd.Replace(possiblePreviousCommand, string.Empty)
                 };
 
-                // TODO
-                //if (msg.Document != null)
-                //{
-                //    var file = await _client.GetFileAsync(msg.Document.FileId);
-
-                //    mItem.FileStream = file.FileStream;
-                //}
-
-                await HandleCommand(mItem);
+                try
+                {
+                    if (msg.Document != null)
+                    {
+                        if (msg.Document.FileSize <= _maxUploadFileSize)
+                        {
+                            var file = await _client.GetFileAsync(msg.Document.FileId);
+                            mItem.Stream = new MemoryStream();
+                            await _client.DownloadFileAsync(file.FilePath, mItem.Stream);
+                        }
+                        mItem.FileSize = msg.Document.FileSize;
+                    }
+                    await HandleCommand(mItem);
+                }
+                finally
+                {
+                    mItem.Stream?.Close();
+                }
             }
         }
 

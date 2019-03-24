@@ -67,6 +67,7 @@ namespace ChineseDuck.BotService.Root
         }
 
         public string CurrentDir => AppDomain.CurrentDomain.BaseDirectory;
+        public uint MaxUploadFileSize => 8192;
 
         public IConfiguration Configuration { get; }
         public IServiceProvider ServiceProvider { get; private set; }
@@ -123,7 +124,7 @@ namespace ChineseDuck.BotService.Root
 
             var flashCardUrl = $"{botSettings.ApiPublicUrl}/word/file";
             services.AddSingleton(qh =>
-                new QueryHandler(tClient, log4NetService, restWordRepository, antiDdosChecker, flashCardUrl, commandManager));
+                new QueryHandler(tClient, log4NetService, restWordRepository, antiDdosChecker, flashCardUrl, commandManager, MaxUploadFileSize));
 
             services.AddSingleton<ISyllableColorProvider, ClassicSyllableColorProvider>();
             services.AddSingleton<IChineseWordParseProvider, PinyinChineseWordParseProvider>();
@@ -139,7 +140,8 @@ namespace ChineseDuck.BotService.Root
 
             services.AddTransient(a => new DefaultCommand(ServiceProvider.GetService<IWordRepository>()));
             services.AddTransient(a => new ImportCommand(ServiceProvider.GetService<IChineseWordParseProvider>(),
-                ServiceProvider.GetService<IWordRepository>(), ServiceProvider.GetService<IFlashCardGenerator>()));
+                ServiceProvider.GetService<IWordRepository>(), ServiceProvider.GetService<IFlashCardGenerator>(),
+                MaxUploadFileSize));
             services.AddTransient(a => new AddCommand(ServiceProvider.GetService<IChineseWordParseProvider>(), ServiceProvider.GetService<IWordRepository>(), ServiceProvider.GetService<IFlashCardGenerator>()));
             services.AddTransient(a => new ViewCommand(ServiceProvider.GetService<IWordRepository>()));
             services.AddTransient(a => new DeleteCommand(ServiceProvider.GetService<IWordRepository>()));

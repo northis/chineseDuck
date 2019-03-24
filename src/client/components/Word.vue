@@ -12,10 +12,66 @@
       </div>
     </div>
 
-    <div class="row align-items-center">
-      <div class="col marginagble">
-        <div class="progress margin-top"
-             v-if="isLoading">
+    <div class="row align-items-center"
+         :disabled="isLoading">
+
+      <div class="col-auto nopadding">
+        <div class="margin-top">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <button type="button"
+                      disabled
+                      style="opacity: 1; background: transparent; border-color: transparent"
+                      class="btn btn-light">
+                <b>{{"/" + currentFolderName}}</b></button>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+
+      </div>
+      <div class="col-auto nopadding">
+        <div class="margin-top">
+          <div class="input-group">
+            <button type="button"
+                    disabled
+                    v-if="!hasSelectedWords"
+                    style="opacity: 1; background: transparent; border-color: transparent"
+                    class="btn btn-light">
+              Check to move</button>
+            <select class="combobox form-control"
+                    v-if="hasSelectedWords"
+                    v-model="word.newFolderId">
+              <option v-for="folder in folders"
+                      :key="folder._id"
+                      :value="folder._id"> {{folder.name}}</option>
+            </select>
+            <div class="input-group-append">
+              <button type="button"
+                      v-if="hasSelectedWords"
+                      @click="moveWords()"
+                      class="btn btn-outline-success">Move selected</button>
+              <button type="button"
+                      class="btn btn-outline-success"
+                      @click="setAllWords(true)"
+                      v-if="!isAllSelected">Select all</button>
+              <button type="button"
+                      class="btn btn-outline-success"
+                      @click="setAllWords(false)"
+                      v-if="!isAllUnSelected">Unselect all</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row"
+         v-if="isLoading">
+      <div class="col-sm-nopadding">
+        <div class="progress margin-top">
           <div class="progress-bar progress-bar-striped progress-bar-animated"
                role="progressbar"
                aria-valuenow="100"
@@ -24,47 +80,14 @@
                style="width: 100%" />
         </div>
       </div>
-
-      <div class="col-auto nopadding">
-        <div class="margin-top">
-          <div class="input-group">
-            <select class="combobox form-control"
-                    :disabled="!hasSelectedWords"
-                    v-model="word.newFolderId">
-              <option disabled
-                      selected
-                      hidden
-                      value="">
-                <span>Check words and folder to move</span>
-              </option>
-              <option v-for="folder in folders"
-                      :key="folder._id"
-                      :value="folder._id"> {{folder.name}}</option>
-            </select>
-            <div class="input-group-append">
-              <button type="button"
-                      :disabled="!hasSelectedWords"
-                      @click="moveWords()"
-                      class="btn btn-outline-success">Move selected</button>
-              <button type="button"
-                      class="btn btn-outline-success"
-                      @click="setAllWords(true)"
-                      :disabled="isAllSelected">Select all</button>
-              <button type="button"
-                      class="btn btn-outline-success"
-                      @click="setAllWords(false)"
-                      :disabled="isAllUnSelected">Unselect all</button>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
     <div class="row">
       <div class="col-sm-nopadding">
         <app-virtualScrollList id="wordScroller"
+                               v-show="!isLoading"
                                class="list-group marginagble">
+
           <div class="list-group-item flex-column align-items-start d-flex w-100 justify-content-between"
-               v-show="!isLoading"
                v-for="word in words"
                :key="word._id">
             <div class="container nopadding"
@@ -140,7 +163,7 @@ export default class Word extends Vue {
     this.resize();
     window.addEventListener("resize", this.resize);
 
-    const idFolder = +this.$route.params.id;
+    const idFolder = this.currentFolderId;
     this.store.commit(word.mutations.setFolder)(this.$store, idFolder);
     this.folderStore.dispatch(folder.actions.fetchFolders)(this.$store);
     this.store.dispatch(word.actions.fetchWords)(this.$store, idFolder);
@@ -174,6 +197,14 @@ export default class Word extends Vue {
   }
   get folders() {
     return this.folderStore.read(folder.getters.getFolders)(this.$store);
+  }
+  get currentFolderId() {
+    return +this.$route.params.id;
+  }
+  get currentFolderName() {
+    return this.folders
+      .filter(a => a._id === this.currentFolderId)
+      .map(a => a.name)[0];
   }
 
   setAllWords(state: boolean) {
