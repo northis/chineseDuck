@@ -16,7 +16,6 @@ export default () => {
   it("user", async function() {
     let userObj = {
       username: testUserName,
-      tokenHash: "tokenHash",
       sessionId: "sessionId",
       lastCommand: "lastCommand",
       joinDate: new Date(),

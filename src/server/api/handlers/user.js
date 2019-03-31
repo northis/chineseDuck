@@ -2,8 +2,6 @@ import passport from "../../security/passport";
 import * as errors from "../../errors";
 import mh from "../../../server/api/db";
 import { isNullOrUndefined } from "util";
-import { sendCode, signIn } from "../../services/telegram";
-import { RightEnum } from "../../../server/api/db/models";
 
 const catchUniqueName = (res, error) => {
   if (error.code == 11000)
@@ -97,7 +95,6 @@ export const id = {
       { _id: userId },
       {
         username: user.username,
-        tokenHash: user.username,
         lastCommand: user.lastCommand,
         who: user.who,
         mode: user.mode,
@@ -131,60 +128,15 @@ export const login = {
    * produces: application/json
    * responses: 200, 400, 404
    */
-  post: function loginUser(req, res, next) {
-    const status = 200;
-
+  get: function loginUser(req, res, next) {
+    req.body = req.query;
     passport.authenticate("local", (err, user) => {
       req.login(user, err => {
-        if (err === undefined) {
-          if (req.body.remember) {
-            req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 90; // 90 days
-          } else {
-            req.session.cookie.maxAge = 1000 * 60 * 60; // 1 hour
-          }
-
-          return res
-            .status(status)
-            .send("You were authenticated & logged in!\n");
-        } else {
-          errors.e400(res, err);
-        }
+        if (!user) errors.e403(res);
+        else if (err) errors.e400(res, err);
+        else res.redirect("/");
       });
     })(req, res, next);
-  }
-};
-
-/**
- * Operations on /user/auth
- */
-export const auth = {
-  /**
-   * summary: Send the auth code to user via sms
-   * description:
-   * parameters: body
-   * produces: application/json
-   * responses: 200, 400, 404
-   */
-  post: async function authUser(req, res, next) {
-    if (
-      !req.body.phone ||
-      req.body.phone.length > 20 ||
-      !req.body.phone.startsWith("+")
-    ) {
-      errors.e400(res);
-      return;
-    }
-
-    const status = 200;
-    let result = await sendCode(req.body.phone);
-
-    if (result.phone_code_hash === "") {
-      errors.e404(res);
-    } else {
-      return res
-        .status(status)
-        .send(JSON.stringify({ hash: result.phone_code_hash }));
-    }
   }
 };
 

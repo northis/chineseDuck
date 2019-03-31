@@ -7,7 +7,7 @@
   ],
   "info": {
     "description": "Chinese Duck Bot Api",
-    "version": "1.1.1-oas3",
+    "version": "1.2",
     "title": "Chinese Duck Bot Api",
     "termsOfService": "https://chineseduck.online/terms/",
     "contact": {
@@ -1013,52 +1013,42 @@
         ]
       }
     },
-    "/user/auth": {
-      "post": {
-        "tags": ["user"],
-        "summary": "Send the auth code to user via sms",
-        "operationId": "authUser",
-        "responses": {
-          "200": {
-            "description": "Auth code sent, hash in object",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiUser"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid phone supplied"
-          },
-          "404": {
-            "description": "Phone number is not registred"
-          }
-        },
-        "security": [
-          {
-            "cookieAuth": ["read"]
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "string"
-              }
-            }
-          },
-          "description": "The user phone for auth",
-          "required": true
-        }
-      }
-    },
     "/user/login": {
-      "post": {
+      "get": {
         "tags": ["user"],
         "summary": "Logs user into the system",
         "operationId": "loginUser",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "auth_date",
+            "description": "Hash valid until",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "in": "query",
+            "name": "id",
+            "description": "User id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "in": "query",
+            "name": "hash",
+            "description": "Hash",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successfully authenticated. The session ID is returned in a cookie named `JSESSIONID`. You need to include this cookie in subsequent requests."
@@ -1074,18 +1064,7 @@
           {
             "cookieAuth": ["read"]
           }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ApiUser"
-              }
-            }
-          },
-          "description": "The user object for auth",
-          "required": true
-        }
+        ]
       }
     },
     "/user/logout": {
@@ -1308,9 +1287,6 @@
           "username": {
             "type": "string"
           },
-          "tokenHash": {
-            "type": "string"
-          },
           "lastCommand": {
             "type": "string"
           },
@@ -1517,26 +1493,6 @@
         },
         "xml": {
           "name": "WordFileBytes"
-        }
-      },
-      "ApiUser": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "code": {
-            "type": "string"
-          },
-          "hash": {
-            "type": "string"
-          },
-          "remember": {
-            "type": "boolean"
-          }
-        },
-        "xml": {
-          "name": "ApiUser"
         }
       }
     },

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using chineseDuck.Bot.Security;
 using chineseDuck.BotService.Commands;
 using chineseDuck.BotService.Commands.Common;
 using ChineseDuck.Bot.Interfaces;
@@ -91,6 +92,7 @@ namespace ChineseDuck.BotService.Root
                 ServiceProvider.GetService<ModeCommand>(),
                 ServiceProvider.GetService<StartCommand>(),
                 ServiceProvider.GetService<ViewCommand>(),
+                ServiceProvider.GetService<WebCommand>()
             }; ;
         }
 
@@ -102,7 +104,8 @@ namespace ChineseDuck.BotService.Root
 
             var apiClient = new ApiClient(botSettings.ApiPublicUrl);
             var wordApi = new WordApi(apiClient);
-            var userApi = new UserApi(apiClient);
+            var signer = new AuthSigner(botSettings.TelegramBotKey);
+            var userApi = new UserApi(apiClient, signer);
             var serviceApi = new ServiceApi(apiClient);
             var folderApi = new FolderApi(apiClient);
             var log4NetService = new Log4NetService();
@@ -112,7 +115,7 @@ namespace ChineseDuck.BotService.Root
 
             apiClient.OnAuthenticationRequest += (o, e) =>
             {
-                userApi.LoginUser(new ApiUser {Code = botSettings.Password, Id = botSettings.UserId.ToString()});
+                userApi.LoginUser(new ApiUser {Id = botSettings.UserId.ToString()});
             };
 
             services.AddSingleton(a => antiDdosChecker);
@@ -157,6 +160,7 @@ namespace ChineseDuck.BotService.Root
             services.AddTransient(a => new LearnTranslationCommand(ServiceProvider.GetService<IStudyProvider>(),
                 ServiceProvider.GetService<EditCommand>()));
             services.AddTransient(a => new ModeCommand(ServiceProvider.GetService<IWordRepository>()));
+            services.AddTransient(a => new WebCommand(signer, botSettings.ApiPublicUrl));
 
             services.AddSingleton(a => new AntiDdosChecker(GetDateTime));
 

@@ -16,6 +16,7 @@
         About,
         Mode,
         Edit,
-        Folder
+        Folder,
+        Web
     }
 }

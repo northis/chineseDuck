@@ -1,20 +1,5 @@
 import pkg from "../package.json";
 
-let keys = {
-  telegramApiId: 0,
-  telegramAppKey: "0",
-  mongoDbString: "mongodb://user:password@localhost:27017/chineseDuck",
-  sessionsPass: "pass"
-};
-
-try {
-  keys = require("../keys.js").Keys;
-} catch (error) {
-  console.error(error);
-}
-
-export const Keys = keys;
-
 export const ModeEnum = {
   Development: "development",
   Production: "production",
@@ -28,6 +13,23 @@ export function getMode() {
     return mode == undefined ? ModeEnum.Production : mode;
   }
 }
+
+let keys = {
+  telegramApiId: 0,
+  telegramBotKey: "000000000:AAAAAAAAAAAAAA_AAAAAAAAAAAAAAAAAAAA",
+  mongoDbString: "mongodb://user:password@localhost:27017/chineseDuck",
+  sessionsPass: "pass"
+};
+
+if (getMode() !== ModeEnum.Test) {
+  try {
+    keys = require("../keys.js").Keys;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const Keys = keys;
 
 export function isDebug() {
   return getMode() !== ModeEnum.Production;
@@ -55,28 +57,26 @@ export function shuffle(a) {
 }
 
 export function getFooterMarkupLine() {
-  return `<p>${pkg.description} - ${pkg.version} | <a href=${
-    pkg.url
-  }>Contact me</a> | <a href=https://t.me/DeathWhinny>GitHub</a> | <a href=/api/docs>Api</a></p>`;
+  return `<p>${pkg.description} - ${
+    pkg.version
+  } | <a href=https://t.me/DeathWhinny>Contact me</a> | <a href=https://t.me/DeathWhinny>GitHub</a> | <a href=/api/docs>Api</a></p>`;
 }
 export function getFooterMarkup() {
-  return `<p>${pkg.description} - ${pkg.version}</p> <p><a href=${
-    pkg.url
-  }>Contact me</a> | <a href=https://t.me/DeathWhinny>GitHub</a> | <a href=/api/docs>Api</a></p>`;
+  return `<p>${pkg.description} - ${
+    pkg.version
+  }</p> <p><a href=https://t.me/DeathWhinny>Contact me</a> | <a href=${
+    pkg.homepage
+  }>GitHub</a> | <a href=/api/docs>Api</a></p>`;
 }
 
 export const DebugKeys = {
-  phone_code_hash: "06ad2b144ebb09eacd",
-  phone: "79200000000",
-  phone_code: 43312,
   user_id: 100,
   admin_id: 101,
   other_user_id: 102,
   not_existing_word_id: 1000,
   not_existing_file_id: "0bf1754ff5702c56dc023d5c",
   notAnumber: "notAnumber",
-  password_hash: "$2b$10$xkwscjZQ.KM3uf1ZG2totO8RRfASADnADfyGNn6t3R5XDva0HKQ3y",
-  password: "5lJnlNrgDjeu"
+  botKey: keys.telegramBotKey
 };
 
 export let Settings = {

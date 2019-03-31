@@ -8,6 +8,13 @@ export interface IAuthState {
   phone: string | null;
 }
 
+export interface ITelegramUser {
+  first_name: string | null;
+  last_name: string | null;
+  id: number;
+  username: string | null;
+}
+
 export interface IFolderState {
   folders: IFolder[];
   currentFolder: IFolder | null;
@@ -19,11 +26,6 @@ export interface IWordState {
   isLoading: boolean;
   newFolderId: number;
   currentFolderId: number;
-}
-
-export interface ITelMasks {
-  mainCountriesMasks: IPhoneMask[];
-  otherCountriesMasks: IPhoneMask[] | null;
 }
 
 export interface IUser {
@@ -79,9 +81,4 @@ export interface IScore {
   translationSuccessCount: number;
   viewCount: number;
   name: string;
-}
-
-export interface IPhoneMask {
-  m: string;
-  n: string;
 }

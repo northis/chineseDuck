@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using chineseDuck.Bot.Security;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces.Data;
 using ChineseDuck.Bot.ObjectModels;
@@ -34,7 +35,7 @@ namespace ChineseDuck.Bot.Tests
         private Word[] _testWords;
         private WordFileBytes[] _testWordFileBytes;
 
-        public string Password => _configurationRoot["TestSettings:password"];
+        public string BotKey => _configurationRoot["TestSettings:botKey"];
         public string UserId => _configurationRoot["TestSettings:userId"];
         public string AdminId => _configurationRoot["TestSettings:adminId"];
         public string WebApi => _configurationRoot["TestSettings:webApi"];
@@ -60,19 +61,18 @@ namespace ChineseDuck.Bot.Tests
         [OneTimeSetUp]
         public void Start()
         {
-
             var apiClient = new ApiClient(WebApi);
-            _userApi = new UserApi(apiClient);
+            var signer = new AuthSigner(BotKey);
+            _userApi = new UserApi(apiClient, signer);
             _wordApi = new WordApi(apiClient);
             _serviceApi = new ServiceApi(apiClient);
             _folderApi = new FolderApi(apiClient);
 
-            _userApi.LoginUser(new ApiUser { Code = Password, Id = AdminId });
+            _userApi.LoginUser(new ApiUser { Id = AdminId });
             _restWordRepository = new RestWordRepository(_wordApi, _userApi, _serviceApi, _folderApi);
 
             _testWords = GetTestWords();
             _testWordFileBytes = GetTestWordFileBytes();
-
 
             FillDb();
         }

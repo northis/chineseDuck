@@ -66,13 +66,9 @@ export default { _word:
    { value: '/user',
      actions: { post: ["admin"], get: ["write"] },
      express: '/user' },
-  _user_auth:
-   { value: '/user/auth',
-     actions: { post: ["read"] },
-     express: '/user/auth' },
   _user_login:
    { value: '/user/login',
-     actions: { post: ["read"] },
+     actions: { get: ["read"] },
      express: '/user/login' },
   _user_logout:
    { value: '/user/logout',
