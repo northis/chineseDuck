@@ -89,14 +89,6 @@ namespace ChineseDuck.Bot.Rest.Api
         {
             _authSigner = authSigner;
         }
-
-        private string GetAuthUrl(string userId)
-        {
-            var validTo = DateTime.UtcNow.ToUnixTime();
-            var hash = _authSigner.Sign($"auth_date={validTo}\nid={userId}");
-
-            return $"/user/login?auth_date={validTo}&id={userId}&hash={hash}";
-        }
            
         public ApiUser AuthUser (string body)
         {
@@ -145,7 +137,7 @@ namespace ChineseDuck.Bot.Rest.Api
             
         public void LoginUser (ApiUser apiUser)
         {
-            var path = GetAuthUrl(apiUser.Id);
+            var path = _authSigner.GetAuthUrl(apiUser.Id);
             var response = ApiClient.CallApi(path, Method.GET);
 
             ApiClient.CheckResponse(response);

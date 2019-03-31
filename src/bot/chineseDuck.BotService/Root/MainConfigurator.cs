@@ -92,6 +92,7 @@ namespace ChineseDuck.BotService.Root
                 ServiceProvider.GetService<ModeCommand>(),
                 ServiceProvider.GetService<StartCommand>(),
                 ServiceProvider.GetService<ViewCommand>(),
+                ServiceProvider.GetService<WebCommand>()
             }; ;
         }
 
@@ -159,6 +160,7 @@ namespace ChineseDuck.BotService.Root
             services.AddTransient(a => new LearnTranslationCommand(ServiceProvider.GetService<IStudyProvider>(),
                 ServiceProvider.GetService<EditCommand>()));
             services.AddTransient(a => new ModeCommand(ServiceProvider.GetService<IWordRepository>()));
+            services.AddTransient(a => new WebCommand(signer, botSettings.ApiPublicUrl));
 
             services.AddSingleton(a => new AntiDdosChecker(GetDateTime));
 

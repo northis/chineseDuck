@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using ChineseDuck.Bot.Extensions;
 
 namespace chineseDuck.Bot.Security
 {
@@ -24,6 +26,14 @@ namespace chineseDuck.Bot.Security
                     return string.Join(string.Empty, hash.Select(p => p.ToString("x2")));
                 }
             }
+        }
+
+        public string GetAuthUrl(string userId)
+        {
+            var validTo = DateTime.UtcNow.ToUnixTime();
+            var hash = Sign($"auth_date={validTo}\nid={userId}");
+
+            return $"/user/login?auth_date={validTo}&id={userId}&hash={hash}";
         }
     }
 }
