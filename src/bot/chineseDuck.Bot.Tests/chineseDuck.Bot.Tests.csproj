@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\chineseDuck.Bot\chineseDuck.Bot.csproj" />
-    <ProjectReference Include="..\..\chineseDuck.Common\chineseDuck.Common.csproj" />
+    <ProjectReference Include="..\chineseDuck.Bot\chineseDuck.Bot.csproj" />
+    <ProjectReference Include="..\chineseDuck.Common\chineseDuck.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

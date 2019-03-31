@@ -26,9 +26,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Pinyin4net.Exceptions;
+using chineseDuck.pinyin4net.Exceptions;
 
-namespace Pinyin4net.Format
+namespace chineseDuck.pinyin4net.Format
 {
     /// <summary>
     ///     This class can convert Hanyu pinyin between different format.

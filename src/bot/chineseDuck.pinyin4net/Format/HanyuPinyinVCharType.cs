@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **/
 
-namespace Pinyin4net.Format
+namespace chineseDuck.pinyin4net.Format
 {
     /// <summary>
     ///     Define the output format of character 'ü';

@@ -25,9 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Xml.Linq;
-using Pinyin4net.Format;
+using chineseDuck.pinyin4net.Format;
 
 namespace chineseDuck.pinyin4net {
     /// <summary>
