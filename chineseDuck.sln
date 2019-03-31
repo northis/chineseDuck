@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28010.2046
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChineseDuck.Pinyin4net", "src\bot\chineseDuck.pinyin4net\chineseDuck.pinyin4net.csproj", "{4E481BAD-B0B5-4271-A403-DA1EB6A9AD73}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChineseDuck.Pinyin4net.Tests", "src\bot\chineseDuck.pinyin4net.tests\chineseDuck.pinyin4net.Tests.csproj", "{3D076870-85B2-4431-A29E-5C17557D3AC2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChineseDuck.Pinyin4net.Tests", "src\bot\chineseDuck.pinyin4net.tests\chineseDuck.pinyin4net.tests.csproj", "{3D076870-85B2-4431-A29E-5C17557D3AC2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChineseDuck.Bot", "src\bot\chineseDuck.Bot\chineseDuck.Bot.csproj", "{FB01F0AD-2777-4A87-A289-C266CA549964}"
 EndProject
@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChineseDuck.BotService", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChineseDuck.Import", "src\bot\chineseDuck.Import\chineseDuck.Import.csproj", "{36F3322E-6746-4790-BA64-62F240ECE177}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChineseDuck.Bot.Tests", "src\bot\chineseDuck.Bot.Tests\chineseDuck.Bot.Tests\chineseDuck.Bot.Tests.csproj", "{EE81616C-14FD-44D4-AA20-EA9C4772AF13}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChineseDuck.Bot.Tests", "src\bot\chineseDuck.Bot.Tests\chineseDuck.Bot.Tests.csproj", "{EE81616C-14FD-44D4-AA20-EA9C4772AF13}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using chineseDuck.pinyin4net;
+using chineseDuck.pinyin4net.Format;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces;
-using Pinyin4net.Format;
 
 namespace ChineseDuck.Bot.Providers
 {

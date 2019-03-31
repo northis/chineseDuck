@@ -22,9 +22,9 @@
  **/
 
 using System;
+using chineseDuck.pinyin4net.Exceptions;
+using chineseDuck.pinyin4net.Format;
 using NUnit.Framework;
-using Pinyin4net.Exceptions;
-using Pinyin4net.Format;
 using Assert = NUnit.Framework.Assert;
 
 namespace chineseDuck.pinyin4net.tests {

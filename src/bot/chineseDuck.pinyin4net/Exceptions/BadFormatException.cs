@@ -23,7 +23,7 @@
 
 using System;
 
-namespace Pinyin4net.Exceptions
+namespace chineseDuck.pinyin4net.Exceptions
 {
     /// <summary>
     ///     An exception class indicates the wrong combination of pinyin output formats
