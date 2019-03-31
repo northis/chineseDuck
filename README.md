@@ -98,7 +98,6 @@ db.createUser(
 db.users.insert({
   _id: 1,
   username: "main_admin",
-  tokenHash: "0000000000000000000000000000.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   who: "admin",
   mode: "Random",
   currentFolder_id: 0,

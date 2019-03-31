@@ -13,6 +13,7 @@ import * as testEntities from "../db/testEntities";
 import * as moment from "moment";
 import { isNullOrUndefined } from "util";
 import * as fileB64 from "../db/fileB64";
+import { sign } from "../../src/server/security/telegram";
 
 const routes = rt.default;
 const urlJoin = uj.default;
@@ -26,49 +27,42 @@ export default () => {
   testService();
   testStudy();
 };
-
 function testUser() {
-  it(`${routes._user_auth.value} - post`, async () => {
-    const url = urlJoin(Settings.apiPrefix, routes._user_auth.value);
-    const response = await request(srv.default.app)
-      .post(url)
-      .set("Content-Type", "application/json")
-      .send({ phone: "+" + DebugKeys.phone });
+  it(`${routes._user_login.value} - get`, async () => {
+    const authDate = Date.now() / 1000;
+    const tohash = `auth_date=${authDate}\nid=${DebugKeys.user_id}`;
 
-    assert.ok(response.status === 200);
+    let hash = sign(tohash);
 
-    const resTest = JSON.parse(response.res.text);
-    assert.ok(resTest.hash == DebugKeys.phone_code_hash);
-  });
+    let url = urlJoin(
+      Settings.apiPrefix,
+      routes._user_login.value +
+        `?auth_date=${authDate}&id=${DebugKeys.user_id}&hash=${hash}`
+    );
 
-  it(`${routes._user_login.value} - post`, async () => {
-    const url = urlJoin(Settings.apiPrefix, routes._user_login.value);
     let response = await request(srv.default.app)
-      .post(url)
-      .set("Content-Type", "application/json")
-      .send({
-        id: "+" + DebugKeys.phone,
-        code: DebugKeys.phone_code + "",
-        hash: DebugKeys.phone_code_hash,
-        remember: false
-      });
+      .get(url)
+      .set("Content-Type", "application/json");
 
-    assert.ok(response.status === 200);
+    assert.ok(response.status === 200 || response.status === 302);
 
     let cookieRaw = response.header["set-cookie"];
     assert.ok(cookieRaw.length > 0);
     cookie = cookieRaw[0];
 
-    response = await request(srv.default.app)
-      .post(url)
-      .set("Content-Type", "application/json")
-      .send({
-        id: DebugKeys.admin_id + "",
-        code: DebugKeys.password,
-        remember: true
-      });
+    hash = sign(`auth_date=${authDate}\nid=${DebugKeys.admin_id}`);
 
-    assert.ok(response.status === 200);
+    url = urlJoin(
+      Settings.apiPrefix,
+      routes._user_login.value +
+        `?auth_date=${authDate}&id=${DebugKeys.admin_id}&hash=${hash}`
+    );
+
+    response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "application/json");
+
+    assert.ok(response.status === 200 || response.status === 302);
 
     cookieRaw = response.header["set-cookie"];
     assert.ok(cookieRaw.length > 0);

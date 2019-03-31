@@ -21,7 +21,7 @@ namespace ChineseDuck.Bot.Rest.Client
         public ApiClient(string basePath="https://chineseduck.online/api/v1")
         {
             BasePath = basePath;
-            RestClient = new RestClient(BasePath);
+            RestClient = new RestClient(BasePath){FollowRedirects = false};
             DefaultHeaders = new Dictionary<string, string>();
         }
 
@@ -202,7 +202,7 @@ namespace ChineseDuck.Bot.Rest.Client
         {
             if ((int)response.StatusCode >= 400)
                 throw new ApiException((int)response.StatusCode, $"Error calling {callerMethod}: {response.Content}", response.Content);
-            if (response.StatusCode == 0)
+            if (response.StatusCode == 0 && response.StatusCode != HttpStatusCode.Found)
                 throw new ApiException((int) response.StatusCode,
                     $"Error calling  {callerMethod}: {response.ErrorMessage}", response.ErrorMessage);
         }

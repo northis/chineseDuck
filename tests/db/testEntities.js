@@ -5,7 +5,6 @@ import { testWordImg } from "../db/fileB64";
 export const userWrite = {
   _id: DebugKeys.user_id,
   username: "userWrite",
-  tokenHash: "",
   lastCommand: "/LearnWriting",
   joinDate: new Date("2018-06-02T03:04:05"),
   who: models.RightEnum.write,
@@ -17,7 +16,6 @@ export const userWrite = {
 export const userAdmin = {
   _id: DebugKeys.admin_id,
   username: "userAdmin",
-  tokenHash: DebugKeys.password_hash,
   lastCommand: "/view",
   joinDate: new Date("2018-06-01T01:02:03"),
   who: models.RightEnum.admin,

@@ -1,47 +1,42 @@
 import passport from "passport";
 import Strategy from "passport-local";
-import { signIn } from "../../server/services/telegram";
 import mh from "../../server/api/db";
-const bcrypt = require("bcrypt");
+import { checkLogin } from "./telegram";
+import { isNullOrUndefined } from "util";
 
-async function onAuthRequest(req, id, code, done) {
-  let usr = undefined;
-  const idInt = id.startsWith("+") ? NaN : +id;
-  if (isNaN(idInt)) {
-    try {
-      const hashPhone = req.body.hash;
-      const remember = req.body.remember;
-      let usrResp = await signIn(id, code, hashPhone);
+const expirationTime = 60; // 60 seconds
 
-      usr = await mh.user.findOne({ _id: usrResp.user.id });
+async function onAuthRequest(req, id, hash, done) {
+  try {
+    const query = req.query;
+    const idUser = +query.id;
+    const auth_date = +query.auth_date;
+    const check = checkLogin(query);
 
-      if (usr == null) {
-        return done(null, false);
-      } else {
-        return done(null, { id: usrResp.user.id, remember });
-      }
-    } catch (e) {
-      return done(e);
+    if (isNullOrUndefined(check)) {
+      return done(null, false);
     }
-  } else {
-    usr = await mh.user.findOne({ _id: idInt });
+
+    const now = Date.now() / 1000;
+    if (auth_date + expirationTime < now) {
+      return done(null, false);
+    }
+
+    const usr = await mh.user.findOne({ _id: idUser });
+
     if (usr == null) return done(null, false);
 
-    const match = await bcrypt.compare(code, usr.tokenHash);
-
-    if (match) {
-      return done(null, { id: idInt, code: code });
-    }
-    return done(null, false);
+    return done(null, { id: usr._id });
+  } catch (e) {
+    return done(e, false);
   }
 }
 
-// configure passport.js to use the local strategy
 passport.use(
   new Strategy(
     {
       usernameField: "id",
-      passwordField: "code",
+      passwordField: "hash",
       passReqToCallback: true,
       session: true
     },
@@ -56,7 +51,6 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   const user = await mh.user.findOne({ _id: id });
-  user.tokenHash = "";
   done(null, user);
 });
 

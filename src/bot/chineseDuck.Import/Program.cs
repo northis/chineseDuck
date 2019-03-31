@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using chineseDuck.Bot.Security;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Rest.Api;
 using ChineseDuck.Bot.Rest.Client;
@@ -10,7 +11,7 @@ namespace ChineseDuck.Import
 {
     class Program
     {
-        private const string PasswordKey = "password";
+        private const string TelegramBotKey = "TelegramBotKey";
         private const string UserIdKey = "userId";
         private const string OldSqlDbKey = "OldSqlDb";
         private const string NewWebApiKey = "NewWebApi";
@@ -21,20 +22,21 @@ namespace ChineseDuck.Import
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            var password = configurationRoot[PasswordKey];
+            var telegramBotKey = configurationRoot[TelegramBotKey];
             var userId = configurationRoot[UserIdKey];
             var connectionString = configurationRoot[OldSqlDbKey];
             var site = configurationRoot[NewWebApiKey];
 
             var apiClient = new ApiClient(site);
-            var userApi = new UserApi(apiClient);
+            var signer = new AuthSigner(telegramBotKey);
+            var userApi = new UserApi(apiClient, signer);
             var wordApi = new WordApi(apiClient);
             var serviceApi = new ServiceApi(apiClient);
             var datetime = serviceApi.GetDatetime() ?? DateTime.Now;
 
             apiClient.OnAuthenticationRequest += (o, e) =>
             {
-                userApi.LoginUser(new ApiUser {Code = password, Id = userId});
+                userApi.LoginUser(new ApiUser {Id = userId});
             };
 
             using (var context = new LearnChineseContext(connectionString))

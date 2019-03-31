@@ -10,20 +10,9 @@ const mutations = {
   logOut(state: I.IAuthState): void {
     state.user = null;
     state.stage = E.EAuthStage.NoAuth;
-    state.hash = null;
-    state.phone = null;
   },
   setAuthState(state: I.IAuthState, payload: E.EAuthStage): void {
     state.stage = payload;
-  },
-  setPhone(state: I.IAuthState, payload: string): void {
-    state.phone = payload;
-  },
-  setPhoneHash(state: I.IAuthState, payload: string): void {
-    state.hash = payload;
-  },
-  setSaveAuth(state: I.IAuthState, payload: boolean): void {
-    state.saveAuth = payload;
   },
   setUser(state: I.IAuthState, payload: I.IUser): void {
     state.user = payload;
@@ -54,62 +43,6 @@ const actions = {
     } catch (e) {
       context.commit(mutations.logOut.name);
       return Promise.resolve(null);
-    }
-  },
-
-  async sendPhoneNumber(
-    context: ActionContext<I.IAuthState, ST.IRootState>,
-    phone: string
-  ): Promise<boolean> {
-    try {
-      context.commit(auth.mutations.setAuthState.name, E.EAuthStage.PhoneSent);
-      context.commit(mutations.setPhone.name, phone);
-
-      const result = await axios.post(route(routes._user_auth), {
-        phone
-      });
-
-      if (result.status === 200) {
-        const hash = result.data.hash;
-        if (hash === undefined) {
-          return Promise.reject("Something went wrong");
-        } else {
-          context.commit(mutations.setAuthState.name, E.EAuthStage.PhoneOk);
-          context.commit(mutations.setPhoneHash.name, hash);
-
-          return Promise.resolve(true);
-        }
-      } else {
-        context.commit(mutations.logOut.name);
-        return Promise.reject(result.statusText);
-      }
-    } catch (e) {
-      context.commit(mutations.logOut.name);
-      return Promise.reject(e);
-    }
-  },
-
-  async sendCode(
-    context: ActionContext<I.IAuthState, ST.IRootState>,
-    code: string
-  ): Promise<I.IUser | null> {
-    try {
-      context.commit(auth.mutations.setAuthState.name, E.EAuthStage.CodeSent);
-
-      const result = await axios.post(route(routes._user_login), {
-        code,
-        id: context.state.phone,
-        hash: context.state.hash,
-        remember: context.state.saveAuth
-      });
-
-      if (result.status === 200) {
-        return await actions.fetchUser(context);
-      }
-      return null;
-    } catch (e) {
-      context.commit(auth.mutations.setAuthState.name, E.EAuthStage.PhoneOk);
-      return Promise.reject(e);
     }
   },
 
@@ -150,15 +83,6 @@ const actions = {
 const getters = {
   isAuthenticated(state: I.IAuthState): boolean {
     return state.stage === E.EAuthStage.Auth;
-  },
-
-  getTelMasks(): I.ITelMasks {
-    const masksItem = {
-      mainCountriesMasks: require("../services/phoneService/masksMain.json") as I.IPhoneMask[],
-      otherCountriesMasks: require("../services/phoneService/masksOther.json") as I.IPhoneMask[]
-    };
-
-    return masksItem;
   }
 };
 
@@ -167,10 +91,7 @@ const auth = {
 
   state: {
     user: null,
-    stage: E.EAuthStage.NoAuth,
-    saveAuth: false,
-    hash: null,
-    phone: null
+    stage: E.EAuthStage.NoAuth
   },
   getters,
   mutations,

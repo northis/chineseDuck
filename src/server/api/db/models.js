@@ -63,7 +63,6 @@ export const StrategyEnum = {
 export const userSchema = {
   _id: Number,
   username: String,
-  tokenHash: String,
   lastCommand: String,
   joinDate: { type: Date, default: new Date() },
   who: {

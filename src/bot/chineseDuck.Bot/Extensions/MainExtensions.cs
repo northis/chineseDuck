@@ -42,5 +42,9 @@ namespace ChineseDuck.Bot.Extensions
         {
             return new GenerateImageResult { Height = file.Height, Width = file.Width, ImageBody = bytes };
         }
+        public static int ToUnixTime(this DateTime dt)
+        {
+            return (int) (dt - DateTime.UnixEpoch).TotalSeconds;
+        }
     }
 }

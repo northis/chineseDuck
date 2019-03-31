@@ -1,6 +1,9 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using chineseDuck.Bot.Security;
+using ChineseDuck.Bot.Extensions;
 using ChineseDuck.Bot.Interfaces.Data;
 using ChineseDuck.Bot.Rest.Client;
 using ChineseDuck.Bot.Rest.Model;
@@ -75,12 +78,24 @@ namespace ChineseDuck.Bot.Rest.Api
     /// </summary>
     public class UserApi : BaseApi, IUserApi
     {
+        private readonly AuthSigner _authSigner;
+
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="apiClient">An instance of ApiClient</param>
-        public UserApi(ApiClient apiClient) : base(apiClient)
+        /// <param name="authSigner">Authentication signer class for security</param>
+        public UserApi(ApiClient apiClient, AuthSigner authSigner) : base(apiClient)
         {
+            _authSigner = authSigner;
+        }
+
+        private string GetAuthUrl(string userId)
+        {
+            var validTo = DateTime.UtcNow.ToUnixTime();
+            var hash = _authSigner.Sign($"auth_date={validTo}\nid={userId}");
+
+            return $"/user/login?auth_date={validTo}&id={userId}&hash={hash}";
         }
            
         public ApiUser AuthUser (string body)
@@ -130,9 +145,8 @@ namespace ChineseDuck.Bot.Rest.Api
             
         public void LoginUser (ApiUser apiUser)
         {
-            var path = "/user/login";
-            var postBody = ApiClient.Serialize(apiUser);
-            var response = ApiClient.CallApi(path, Method.POST, postBody, false);
+            var path = GetAuthUrl(apiUser.Id);
+            var response = ApiClient.CallApi(path, Method.GET);
 
             ApiClient.CheckResponse(response);
 

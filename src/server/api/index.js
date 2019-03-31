@@ -14,8 +14,7 @@ const privateRoutesFilter = /^(?!.*(^\/user\/auth|^\/user\/login)).*$/g;
 
 var router = Router();
 
-router.route(routes._user_auth.value).post(user.auth.post);
-router.route(routes._user_login.value).post(user.login.post);
+router.route(routes._user_login.value).get(user.login.get);
 router.route(routes._user_logout.express).get(user.logout.get);
 router.route(routes._service_datetime.express).get(service.main.get);
 
