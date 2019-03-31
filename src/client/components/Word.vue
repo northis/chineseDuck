@@ -13,7 +13,7 @@
     </div>
 
     <div class="row align-items-center"
-         :disabled="isLoading">
+         v-show="!isLoading">
 
       <div class="col-auto nopadding">
         <div class="margin-top">
@@ -94,28 +94,25 @@
                  :width="word.full.width"
                  :height="word.full.height">
               <div class="row">
-                <div class="col-md-auto">
-                  <div class="custom-control custom-checkbox">
+
+                <div class="col">
+
+                  <div class="p-2 custom-control custom-checkbox">
                     <input type="checkbox"
                            :id="word._id"
                            v-model="word.isChecked"
                            class="custom-control-input">
                     <label class="custom-control-label"
                            :for="word._id">
+                      {{word.originalWord}} | {{word.pronunciation.replace(/\|/g," ")}} | {{word.translation}}
                     </label>
                   </div>
+                  <div class="p-2">{{scoreToString(word.score)}}</div>
                 </div>
                 <div class="col">
                   <img :src="getFileIdPath(word.full.id)"
                        :height="word.full.height"
                        :width="word.full.width" />
-                </div>
-
-                <div class="col">
-                  <div class="d-flex flex-column mb-3">
-                    <div class="p-2">{{word.originalWord}} | {{word.pronunciation.replace(/\|/g," ")}} | {{word.translation}}</div>
-                    <div class="p-2">{{scoreToString(word.score)}}</div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -132,7 +129,7 @@ import * as I from "../types/interfaces";
 import { State } from "vuex-class";
 import * as ST from "../store/types";
 import Component from "vue-class-component";
-import { Provide, Emit } from "vue-property-decorator";
+import { Emit } from "vue-property-decorator";
 import { getStoreAccessors } from "vuex-typescript";
 import word from "../store/word";
 import VirtualScrollList from "./framework/VirtualScrollList.vue";
@@ -161,7 +158,13 @@ export default class Word extends Vue {
 
   mounted() {
     this.resize();
+    this.scroll();
     window.addEventListener("resize", this.resize);
+
+    const scroller = this.getScroller();
+    if (!isNullOrUndefined(scroller)) {
+      scroller.addEventListener("scroll", this.scroll);
+    }
 
     const idFolder = this.currentFolderId;
     this.store.commit(word.mutations.setFolder)(this.$store, idFolder);
@@ -170,6 +173,12 @@ export default class Word extends Vue {
   }
   destroyed() {
     window.removeEventListener("resize", this.resize);
+    window.removeEventListener("scroll", this.scroll);
+
+    const scroller = this.getScroller();
+    if (!isNullOrUndefined(scroller)) {
+      scroller.removeEventListener("scroll", this.scroll);
+    }
   }
 
   get store() {
@@ -215,9 +224,32 @@ export default class Word extends Vue {
     this.store.dispatch(word.actions.moveWords)(this.$store);
   }
 
-  resize() {
-    const scroller = document.getElementById("wordScroller");
+  scroll() {
+    const scroller = this.getScroller();
+    if (isNullOrUndefined(scroller)) return;
 
+    const top = scroller.scrollTop;
+    if (top > 50) {
+      this.hideHeader();
+    } else {
+      this.showHeader();
+    }
+    this.resize();
+  }
+
+  hideHeader() {
+    document.getElementsByTagName("header")[0].style.display = "none";
+  }
+  showHeader() {
+    document.getElementsByTagName("header")[0].style.display = "block";
+  }
+
+  getScroller() {
+    return document.getElementById("wordScroller");
+  }
+
+  resize() {
+    const scroller = this.getScroller();
     if (isNullOrUndefined(scroller)) return;
 
     const allheight = Math.max(
