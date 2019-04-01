@@ -27,7 +27,7 @@ using chineseDuck.pinyin4net.Format;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
-namespace chineseDuck.pinyin4net.tests {
+namespace chineseDuck.pinyin4net.UnitTests {
     [TestFixture]
     public class HanyuPinyinTest {
         [Test]

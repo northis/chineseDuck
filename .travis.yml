@@ -7,6 +7,7 @@ matrix:
       script:
         - dotnet restore
         - dotnet build
+        - dotnet test ./src/bot/chineseDuck.Bot.UnitTests/chineseDuck.Bot.UnitTests.csproj -c Release -f netcoreapp2.1
     - node_js: "10"
       install:
         - npm install
