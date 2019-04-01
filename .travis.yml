@@ -6,6 +6,7 @@ matrix:
       solution: chineseDuck.sln
       script:
         - dotnet restore
+        - dotnet build
     - node_js: "10"
       install:
         - npm install
