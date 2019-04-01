@@ -1,15 +1,11 @@
-matrix:
-  include:
-    - language: csharp
-      mono: none
-      dotnet: 2.1.502
-      solution: chineseDuck.sln
-      script:
-        - dotnet restore
-        - dotnet build
-        - dotnet test ./src/bot/chineseDuck.Bot.UnitTests/chineseDuck.Bot.UnitTests.csproj -c Release -f netcoreapp2.1
-    - node_js: "10"
-      install:
-        - npm install
-      script:
-        - npm run test
+language: node_js
+node_js: "10"
+dotnet: 2.1.502
+solution: chineseDuck.sln
+install:
+  - npm install
+script:
+  - dotnet restore
+  - dotnet build
+  - dotnet test ./src/bot/chineseDuck.Bot.UnitTests/chineseDuck.Bot.UnitTests.csproj -c Release -f netcoreapp2.1
+  - npm run test
