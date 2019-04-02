@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces;
 using ChineseDuck.Bot.Providers;

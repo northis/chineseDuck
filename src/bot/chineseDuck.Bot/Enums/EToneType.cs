@@ -1,4 +1,4 @@
-﻿namespace ChineseDuck.Bot.Enums
+namespace ChineseDuck.Bot.Enums
 {
     public enum EToneType
     {

@@ -1,4 +1,4 @@
-﻿using ChineseDuck.Import.EfModels;
+using ChineseDuck.Import.EfModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChineseDuck.Import

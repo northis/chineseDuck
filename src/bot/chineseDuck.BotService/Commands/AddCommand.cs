@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using chineseDuck.BotService.Commands.Common;
 using chineseDuck.BotService.Commands.Enums;

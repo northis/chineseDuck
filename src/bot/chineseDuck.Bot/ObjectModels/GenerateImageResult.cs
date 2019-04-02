@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using ChineseDuck.Bot.Interfaces.Data;
 using ChineseDuck.Bot.Rest.Model;
 

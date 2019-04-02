@@ -1,4 +1,4 @@
-﻿namespace ChineseDuck.Bot.ObjectModels
+namespace ChineseDuck.Bot.ObjectModels
 {
     public sealed class LearnUnit
     {

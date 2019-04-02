@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using ChineseDuck.BotService.Root;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;

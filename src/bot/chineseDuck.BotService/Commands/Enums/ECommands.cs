@@ -1,4 +1,4 @@
-﻿namespace chineseDuck.BotService.Commands.Enums
+namespace chineseDuck.BotService.Commands.Enums
 {
     public enum ECommands
     {

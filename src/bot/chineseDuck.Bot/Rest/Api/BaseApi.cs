@@ -1,4 +1,4 @@
-﻿using ChineseDuck.Bot.Rest.Client;
+using ChineseDuck.Bot.Rest.Client;
 
 namespace ChineseDuck.Bot.Rest.Api
 {
