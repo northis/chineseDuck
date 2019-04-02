@@ -4,7 +4,12 @@ solution: chineseDuck.sln
 install:
   - npm install
 script:
+  - dos2unix ${TRAVIS_BUILD_DIR}/*
   - dotnet restore
   - dotnet build
   - dotnet test ./src/bot/chineseDuck.Bot.UnitTests/chineseDuck.Bot.UnitTests.csproj -c Release -f netcoreapp2.1
   - npm run test
+addons:
+  apt:
+    packages:
+      - dos2unix
