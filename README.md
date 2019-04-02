@@ -1,5 +1,7 @@
 # Chinese Duck Bot
 
+[![Build Status](https://travis-ci.org/northis/chineseDuck.svg?branch=master)](https://travis-ci.org/northis/chineseDuck)
+
 Telegram bot @ChineseDuckBot to study Chinese language via memorizing the flashcards.
 
 ## Key features
