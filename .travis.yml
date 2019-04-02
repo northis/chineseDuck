@@ -1,6 +1,8 @@
 language: csharp
 dotnet: 2.1.502
 solution: chineseDuck.sln
+before_install:
+  - sudo apt-get install libcurl3
 install:
   - npm install
 script:
