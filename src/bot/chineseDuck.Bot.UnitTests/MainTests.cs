@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces;
 using ChineseDuck.Bot.Providers;
@@ -6,11 +6,10 @@ using ChineseDuck.Bot.Rest.Model;
 using NUnit.Framework;
 using YellowDuck.LearnChinese.Providers;
 
-namespace ChineseDuck.Bot.Tests
+namespace chineseDuck.Bot.UnitTests
 {
     public class Tests
     {
-
         [Test]
         public void AddWordToDictionaryTest()
         {

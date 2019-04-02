@@ -1,4 +1,4 @@
-﻿using ChineseDuck.Bot.ObjectModels;
+using ChineseDuck.Bot.ObjectModels;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace chineseDuck.BotService.Commands.Common

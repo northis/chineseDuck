@@ -1,4 +1,4 @@
-﻿using chineseDuck.BotService.Commands.Common;
+using chineseDuck.BotService.Commands.Common;
 using chineseDuck.BotService.Commands.Enums;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces;

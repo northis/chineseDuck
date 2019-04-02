@@ -1,4 +1,4 @@
-﻿namespace ChineseDuck.Import.EfModels
+namespace ChineseDuck.Import.EfModels
 {
     public partial class FolderWord
     {

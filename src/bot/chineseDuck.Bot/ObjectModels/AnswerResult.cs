@@ -1,4 +1,4 @@
-﻿using ChineseDuck.Bot.Interfaces.Data;
+using ChineseDuck.Bot.Interfaces.Data;
 
 namespace ChineseDuck.Bot.ObjectModels
 {

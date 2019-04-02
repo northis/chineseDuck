@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using chineseDuck.BotService.Commands.Common;
 using chineseDuck.BotService.Commands.Enums;
 

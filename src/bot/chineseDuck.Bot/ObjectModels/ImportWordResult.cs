@@ -1,4 +1,4 @@
-﻿using ChineseDuck.Bot.Rest.Model;
+using ChineseDuck.Bot.Rest.Model;
 
 namespace ChineseDuck.Bot.ObjectModels
 {

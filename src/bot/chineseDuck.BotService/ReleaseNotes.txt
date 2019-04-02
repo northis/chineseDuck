@@ -1,4 +1,4 @@
-﻿Release notes:
+Release notes:
 
 ver.0.5.0.0 (31 march 2019)
 =========================

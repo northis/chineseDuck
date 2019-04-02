@@ -1,4 +1,4 @@
-﻿using ChineseDuck.Bot.Interfaces;
+using ChineseDuck.Bot.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

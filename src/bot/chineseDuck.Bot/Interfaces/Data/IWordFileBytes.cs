@@ -1,4 +1,4 @@
-﻿namespace ChineseDuck.Bot.Interfaces.Data
+namespace ChineseDuck.Bot.Interfaces.Data
 {
     public interface IWordFileBytes
     {

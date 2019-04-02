@@ -1,4 +1,4 @@
-﻿using ChineseDuck.Bot.Enums;
+using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.ObjectModels;
 
 namespace ChineseDuck.Bot.Interfaces
