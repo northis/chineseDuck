@@ -2,6 +2,8 @@ import { mh, defaultFolderId } from "../../../server/api/db";
 // import JSONStream from "JSONStream";
 import * as folderVal from "../../../shared/validation";
 import * as errors from "../../errors";
+import { Settings } from "../../../../config/common";
+import { isNullOrUndefined, isArray, isNumber } from "util";
 
 const catchUniqueName = (res, error) => {
   if (error.code == 11000)
@@ -164,5 +166,45 @@ export const user = {
   get: async function getFoldersForCurrentUser(req, res) {
     const idUser = req.params.userId;
     await getFoldersByUser(req, res, idUser);
+  }
+};
+
+/**
+ * Operations on /folder/template & /folder/template/user/{userId}
+ */
+export const template = {
+  get: async function getTemplateFolders(req, res) {
+    const folders = await mh.folder
+      .find({ owner_id: Settings.serverUserId }, { owner_id: false })
+      .sort({ name: 1 });
+    res.json(folders);
+  },
+  post: async function addTemplateFolders(req, res, next) {
+    const idUser = req.params.userId;
+    const folderIds = req.body;
+
+    if (
+      isNullOrUndefined(folderIds) ||
+      !isArray(folderIds) ||
+      !folderIds.every(a => isNumber(a))
+    ) {
+      errors.e400(res);
+      return;
+    }
+    for (const folderId of folderIds) {
+      try {
+        const folderDb = await mh.folder.create({
+          name: name,
+          owner_id: idUser,
+          activityDate: new Date(),
+          wordsCount: wordsCount
+        });
+        res.status(200).send(folderDb);
+      } catch (e) {
+        catchUniqueName(res, e);
+      }
+    }
+
+    //await createFolderByUser(req, res, idUser);
   }
 };

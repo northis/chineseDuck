@@ -38,4 +38,12 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Hsk\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\shared\hsk\HSK1en.csv" Link="Hsk\HSK1en.csv" />
+  </ItemGroup>
+
 </Project>

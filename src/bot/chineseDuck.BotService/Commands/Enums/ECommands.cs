@@ -17,6 +17,7 @@ namespace chineseDuck.BotService.Commands.Enums
         Mode,
         Edit,
         Folder,
+        PreInstall,
         Web
     }
 }
