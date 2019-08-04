@@ -32,6 +32,7 @@ namespace ChineseDuck.BotService.Root
         
         private string _releaseNotesInfo;
         private string _aboutInfo;
+        private string _preInstalledFolder;
 
         public string ReleaseNotesInfo
         {
@@ -43,6 +44,16 @@ namespace ChineseDuck.BotService.Root
                 _releaseNotesInfo = File.Exists(path) ? File.ReadAllText(path) : string.Empty;
 
                 return _releaseNotesInfo;
+            }
+        }
+        public string PreInstalledFolder
+        {
+            get
+            {
+                if (_preInstalledFolder != null) return _preInstalledFolder;
+
+                _preInstalledFolder = Path.Combine(CurrentDir, "Hsk");
+                return _preInstalledFolder;
             }
         }
 
@@ -160,6 +171,7 @@ namespace ChineseDuck.BotService.Root
             services.AddTransient(a => new LearnTranslationCommand(ServiceProvider.GetService<IStudyProvider>(),
                 ServiceProvider.GetService<EditCommand>()));
             services.AddTransient(a => new ModeCommand(ServiceProvider.GetService<IWordRepository>()));
+            services.AddTransient(a => new PreInstallCommand(PreInstalledFolder));
             services.AddTransient(a => new WebCommand(signer, botSettings.ApiPublicUrl));
 
             services.AddSingleton(a => new AntiDdosChecker(GetDateTime));

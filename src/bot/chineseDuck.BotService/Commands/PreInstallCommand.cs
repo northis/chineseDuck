@@ -5,25 +5,30 @@ using System.Linq;
 using chineseDuck.BotService.Commands.Common;
 using chineseDuck.BotService.Commands.Enums;
 using ChineseDuck.BotService.MainExecution;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace chineseDuck.BotService.Commands
 {
     public class PreInstallCommand : CommandBase
     {
-        private readonly Dictionary<string, string> _foldersDictionary = new Dictionary<string, string>();
+        private readonly HashSet<string> _presets;
         private const string Extension = ".csv";
 
         public PreInstallCommand(string preInstalledFolderPath)
         {
             var filePaths = Directory.GetFiles(preInstalledFolderPath);
 
+            var files = new List<string>();
             foreach (var filePath in filePaths)
             {
-                if(!filePath.EndsWith(Extension))
+                if(!filePath.EndsWith(Extension) || !File.Exists(filePath))
                     continue;
 
-
+                var fileName = Path.GetFileNameWithoutExtension(filePath);
+                files.Add(fileName);
             }
+
+            _presets = new HashSet<string>(files.OrderBy(a => a));
         }
 
         public override string GetCommandIconUnicode()
@@ -43,12 +48,27 @@ namespace chineseDuck.BotService.Commands
 
         public override AnswerItem Reply(MessageItem mItem)
         {
-            return new AnswerItem
+            var answerItem = new AnswerItem();
+            if (string.IsNullOrEmpty(mItem.TextOnly))
             {
-                Message = _mainAboutString + Environment.NewLine + _releaseNotes,
-                Markup = new ReplyKeyboardRemove()
-            };
+                answerItem.Message ="Available pre-installed word folders:";
+                var buttonRows = _presets.Select(a => new[]
+                {
+                    new InlineKeyboardButton
+                    {
+                        Text = a,
+                        CallbackData = a
+                    }
+                });
+
+                answerItem.Markup = new InlineKeyboardMarkup(buttonRows);
+            }
+            else
+            {
+                // Load from file and push to the store
+            }
+
+            return answerItem;
         }
     }
-
 }
