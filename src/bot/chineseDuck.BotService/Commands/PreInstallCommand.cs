@@ -1,34 +1,39 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using chineseDuck.BotService.Commands.Common;
 using chineseDuck.BotService.Commands.Enums;
+using ChineseDuck.Bot.Interfaces;
+using ChineseDuck.Bot.Rest.Model;
 using ChineseDuck.BotService.MainExecution;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace chineseDuck.BotService.Commands
 {
-    public class PreInstallCommand : CommandBase
+    public class PreInstallCommand : ImportCommand
     {
-        private readonly HashSet<string> _presets;
+        private readonly IChineseWordParseProvider _parseProvider;
+        private readonly IWordRepository _repository;
+        private readonly Dictionary<string, byte[]> _presets = new Dictionary<string, byte[]>();
         private const string Extension = ".csv";
 
-        public PreInstallCommand(string preInstalledFolderPath)
+        public PreInstallCommand(IChineseWordParseProvider parseProvider, IWordRepository repository,
+            IFlashCardGenerator flashCardGenerator, uint maxImportFileSize, string preInstalledFolderPath) : base(
+            parseProvider, repository, flashCardGenerator, maxImportFileSize)
         {
+            _parseProvider = parseProvider;
+            _repository = repository;
             var filePaths = Directory.GetFiles(preInstalledFolderPath);
 
-            var files = new List<string>();
-            foreach (var filePath in filePaths)
+            foreach (var filePath in filePaths.OrderBy(a => a))
             {
-                if(!filePath.EndsWith(Extension) || !File.Exists(filePath))
+                if (!filePath.EndsWith(Extension) || !File.Exists(filePath))
                     continue;
 
                 var fileName = Path.GetFileNameWithoutExtension(filePath);
-                files.Add(fileName);
+                var fileBody = File.ReadAllBytes(filePath);
+                _presets.Add(fileName, fileBody);
             }
-
-            _presets = new HashSet<string>(files.OrderBy(a => a));
         }
 
         public override string GetCommandIconUnicode()
@@ -49,25 +54,36 @@ namespace chineseDuck.BotService.Commands
         public override AnswerItem Reply(MessageItem mItem)
         {
             var answerItem = new AnswerItem();
-            if (string.IsNullOrEmpty(mItem.TextOnly))
+            var param = mItem.TextOnly;
+
+            if (_presets.TryGetValue(param, out var preset))
             {
-                answerItem.Message ="Available pre-installed word folders:";
+                var lines = BytesToLines(preset);
+                var result = _parseProvider.ImportWords(lines, false);
+
+                var idFolder = _repository.AddFolder(new Folder {Name = param, OwnerId = mItem.UserId});
+                _repository.SetCurrentFolder(mItem.UserId, idFolder);
+
+                var uploadWords = UploadWords(result, mItem.UserId);
+
+                answerItem.Message = uploadWords.SuccessfulWords.Any()
+                    ? $"Folder {preset} has been added."
+                    : $"Can't add {preset} folder.";
+            }
+            else
+            {
+                answerItem.Message = "Available pre-installed word folders:";
                 var buttonRows = _presets.Select(a => new[]
                 {
                     new InlineKeyboardButton
                     {
-                        Text = a,
-                        CallbackData = a
+                        Text = a.Key,
+                        CallbackData = a.Key
                     }
                 });
 
                 answerItem.Markup = new InlineKeyboardMarkup(buttonRows);
             }
-            else
-            {
-                // Load from file and push to the store
-            }
-
             return answerItem;
         }
     }

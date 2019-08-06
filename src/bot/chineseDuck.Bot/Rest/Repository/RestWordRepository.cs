@@ -38,6 +38,14 @@ namespace ChineseDuck.Bot.Rest.Repository
             _wordApi.AddWord(word);
         }
 
+        public long AddFolder(IFolder folder)
+        {
+            _folderApi.CreateFolder(folder);
+            var folders = _folderApi.GetFoldersForUser(folder.OwnerId);
+
+            return folders.Where(a => a.Name == folder.Name).Select(a => a.Id).First();
+        }
+
         public void DeleteWord(long wordId)
         {
             _wordApi.DeleteWord(wordId);

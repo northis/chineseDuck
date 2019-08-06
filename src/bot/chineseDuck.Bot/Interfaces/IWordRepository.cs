@@ -10,6 +10,7 @@ namespace ChineseDuck.Bot.Interfaces
         void AddUser(IUser user);
 
         void AddWord(IWord word, long idUser);
+        long AddFolder(IFolder folder);
 
         void DeleteWord(long wordId);
 

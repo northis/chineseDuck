@@ -171,7 +171,9 @@ namespace ChineseDuck.BotService.Root
             services.AddTransient(a => new LearnTranslationCommand(ServiceProvider.GetService<IStudyProvider>(),
                 ServiceProvider.GetService<EditCommand>()));
             services.AddTransient(a => new ModeCommand(ServiceProvider.GetService<IWordRepository>()));
-            services.AddTransient(a => new PreInstallCommand(PreInstalledFolder));
+            services.AddTransient(a => new PreInstallCommand(ServiceProvider.GetService<IChineseWordParseProvider>(),
+                ServiceProvider.GetService<IWordRepository>(), ServiceProvider.GetService<IFlashCardGenerator>(),
+                MaxUploadFileSize, PreInstalledFolder));
             services.AddTransient(a => new WebCommand(signer, botSettings.ApiPublicUrl));
 
             services.AddSingleton(a => new AntiDdosChecker(GetDateTime));

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Text;
 using chineseDuck.BotService.Commands.Common;
@@ -9,6 +8,8 @@ using chineseDuck.BotService.Commands.Enums;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces;
 using ChineseDuck.Bot.Interfaces.Data;
+using ChineseDuck.Bot.ObjectModels;
+using ChineseDuck.Bot.Rest.Model;
 using ChineseDuck.BotService.MainExecution;
 
 namespace chineseDuck.BotService.Commands
@@ -85,10 +86,8 @@ namespace chineseDuck.BotService.Commands
                         $"File couldn't be larger than {_maxImportFileSize} bytes.{Environment.NewLine}{loadFileMessage}"
                 };
             }
-            
-            var str = Encoding.UTF8.GetString(mItem.Stream.ToArray());
-            var lines = str.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
-            
+
+            var lines = BytesToLines(mItem.Stream.ToArray());
             var result = SaveAnswerItem(lines, mItem.UserId);
 
             if (result == null)
@@ -100,6 +99,12 @@ namespace chineseDuck.BotService.Commands
             }
 
             return result;
+        }
+
+        protected string[] BytesToLines(byte[] input)
+        {
+            var str = Encoding.UTF8.GetString(input);
+            return str.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         internal void UploadFiles(IWord word)
@@ -121,10 +126,34 @@ namespace chineseDuck.BotService.Commands
             word.CardTranslation = imageResult.ToWordFile(fileId);
         }
 
+        protected ImportWordResult UploadWords(ImportWordResult importedResult, long userId)
+        {
+            var badWords = new List<string>();
+            var goodWords = new List<Word>();
+
+            foreach (var word in importedResult.SuccessfulWords)
+            {
+                try
+                {
+                    UploadFiles(word);
+
+                    _repository.AddWord(word, userId);
+                    goodWords.Add(word);
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine(ex);
+                    badWords.Add(ex.Message);
+                }
+            }
+
+            badWords.AddRange(importedResult.FailedWords);
+            return new ImportWordResult(goodWords.ToArray(), badWords.ToArray());
+        }
+
         protected AnswerItem SaveAnswerItem(string[] wordStrings, long userId)
         {
             var usePinyin = GetUsePinyin(wordStrings);
-
             var answer = new AnswerItem
             {
                 Message = GetCommandIconUnicode()
@@ -146,31 +175,19 @@ namespace chineseDuck.BotService.Commands
             if (result == null)
                 return answer;
 
-            var badWords = new List<string>();
-            var goodWords = new List<IWord>();
-            foreach (var word in result.SuccessfulWords)
-                try
-                {
-                    UploadFiles(word);
+            var uploadedResult = UploadWords(result, userId);
 
-                    _repository.AddWord(word, userId);
-                    goodWords.Add(word);
-                }
-                catch (Exception ex)
-                {
-                    Trace.WriteLine(ex);
-                    badWords.Add(ex.Message);
-                }
-
-            badWords.AddRange(result.FailedWords);
-
-            if (goodWords.Any())
+            if (uploadedResult.SuccessfulWords.Any())
+            {
                 answer.Message +=
-                    $"These words have been added ({goodWords.Count}): {Environment.NewLine} {string.Join(Environment.NewLine, goodWords.Select(a => a.OriginalWord))}{Environment.NewLine}";
+                    $"These words have been added ({uploadedResult.SuccessfulWords.Length}): {Environment.NewLine} {string.Join(Environment.NewLine, uploadedResult.SuccessfulWords.Select(a => a.OriginalWord))}{Environment.NewLine}";
+            }
 
-            if (badWords.Any())
+            if (uploadedResult.FailedWords.Any())
+            {
                 answer.Message +=
-                    $"These words have some parse troubles ({badWords.Count}): {Environment.NewLine} {string.Join(Environment.NewLine, badWords)}";
+                    $"These words have some parse troubles ({uploadedResult.FailedWords.Length}): {Environment.NewLine} {string.Join(Environment.NewLine, uploadedResult.FailedWords)}";
+            }
 
             return answer;
         }
