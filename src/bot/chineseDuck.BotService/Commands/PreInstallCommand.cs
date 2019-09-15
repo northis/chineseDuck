@@ -14,15 +14,17 @@ namespace chineseDuck.BotService.Commands
     {
         private readonly IChineseWordParseProvider _parseProvider;
         private readonly IWordRepository _repository;
+        private readonly long _serverUserId;
         private readonly Dictionary<string, byte[]> _presets = new Dictionary<string, byte[]>();
         private const string Extension = ".csv";
 
         public PreInstallCommand(IChineseWordParseProvider parseProvider, IWordRepository repository,
-            IFlashCardGenerator flashCardGenerator, uint maxImportFileSize, string preInstalledFolderPath) : base(
+            IFlashCardGenerator flashCardGenerator, uint maxImportFileSize, string preInstalledFolderPath, long serverUserId) : base(
             parseProvider, repository, flashCardGenerator, maxImportFileSize)
         {
             _parseProvider = parseProvider;
             _repository = repository;
+            _serverUserId = serverUserId;
             var filePaths = Directory.GetFiles(preInstalledFolderPath);
 
             foreach (var filePath in filePaths.OrderBy(a => a))
@@ -60,11 +62,14 @@ namespace chineseDuck.BotService.Commands
             {
                 var lines = BytesToLines(preset);
                 var result = _parseProvider.ImportWords(lines, false);
+                // use ServiceCommandPassword param to close access
+                // refresh the template folders = delete+re-creation
+                // and move the rest of the command to another.
 
-                var idFolder = _repository.AddFolder(new Folder {Name = param, OwnerId = mItem.UserId});
-                _repository.SetCurrentFolder(mItem.UserId, idFolder);
+                var idFolder = _repository.AddFolder(new Folder {Name = param, OwnerId = _serverUserId });
+                _repository.SetCurrentFolder(_serverUserId, idFolder);
 
-                var uploadWords = UploadWords(result, mItem.UserId);
+                var uploadWords = UploadWords(result, _serverUserId);
 
                 answerItem.Message = uploadWords.SuccessfulWords.Any()
                     ? $"Folder {preset} has been added."

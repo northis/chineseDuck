@@ -191,20 +191,41 @@ export const template = {
       errors.e400(res);
       return;
     }
+
+    const folders = [];
     for (const folderId of folderIds) {
       try {
+        const folderTemplate = await mh.folder.findOne(
+          { _id: folderId },
+          { _id: false }
+        );
+
+        if (isNullOrUndefined(folderTemplate)) {
+          continue;
+        }
+
         const folderDb = await mh.folder.create({
-          name: name,
+          name: folderTemplate.name,
           owner_id: idUser,
           activityDate: new Date(),
-          wordsCount: wordsCount
+          wordsCount: folderTemplate.wordsCount
         });
-        res.status(200).send(folderDb);
+
+       const words = await mh.word
+         .find({ owner_id: Settings.serverUserId, folder_id = folderId })
+         .sort({ name: 1 });
+
+      for (const word of words) {
+        word.folder_id = folderDb._id;
+        word.owner_id = idUser;
+        delete word._id;
+        await mh.word.create(word);
+      }
+      folders.push(folderDb);
       } catch (e) {
         catchUniqueName(res, e);
       }
+      res.status(200).send(folders);
     }
-
-    //await createFolderByUser(req, res, idUser);
   }
 };
