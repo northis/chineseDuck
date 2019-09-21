@@ -115,6 +115,11 @@ namespace ChineseDuck.Bot.Rest.Repository
             return user;
         }
 
+        public void DeleteFolder(long folderId)
+        {
+            _folderApi.DeleteFolder(folderId);
+        }
+
         public IWord GetWord(string wordOriginal, long userId)
         {
             var word = _wordApi.GetWordsByUser(wordOriginal, userId).FirstOrDefault();

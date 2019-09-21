@@ -14,6 +14,7 @@ namespace ChineseDuck.BotService.Root
             ApiPublicUrl = configuration["ApiPublicUrl"];
             LocalPort = int.Parse(configuration["LocalPort"]);
             UserId = long.Parse(configuration["UserId"]);
+            AdminUserId = long.Parse(configuration["AdminUserId"]);
             ServerUserId = long.Parse(configuration["ServerUserId"]);
             ServiceCommandPassword = configuration["ServiceCommandPassword"];
             FolderManagementText = configuration["FolderManagementText"];
@@ -28,6 +29,7 @@ namespace ChineseDuck.BotService.Root
         public int LocalPort { get; }
         public string ApiPublicUrl { get; }
         public long UserId { get; }
+        public long AdminUserId { get; }
         public long ServerUserId { get; }
         public string ServiceCommandPassword { get; }
         public string FolderManagementText { get; }

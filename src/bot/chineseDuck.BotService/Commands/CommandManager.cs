@@ -8,28 +8,29 @@ namespace chineseDuck.BotService.Commands
 {
     public class CommandManager : ICommandManager
     {
-        private Dictionary<ECommands, CommandBase> _commandHandlers;
-        private readonly Func<CommandBase[]> _getCommands;
-
-        public Dictionary<ECommands, CommandBase> CommandHandlers
-        {
-            get
-            {
-                return _commandHandlers ?? (_commandHandlers = _getCommands()
-                           .OrderBy(a => a.GetCommandType().ToString())
-                           .ToDictionary(a => a.GetCommandType(), a => a));
-            }
-        }
+        private readonly Dictionary<string, ECommands> _hiddenCommandsMapping;
+        public Dictionary<ECommands, CommandBase> CommandHandlers { get; }
 
         public CommandBase GetCommandHandler(string command)
         {
-            var commandEnum = CommandBase.GetCommandType(command);
+            if (!_hiddenCommandsMapping.TryGetValue(command, out var commandEnum))
+            {
+                commandEnum = CommandBase.GetCommandType(command);
+            }
             return CommandHandlers[commandEnum];
         }
 
-        public CommandManager(Func<CommandBase[]> getCommands)
+        public CommandManager(Func<CommandBase[]> getCommands, Func<CommandBase[]> getHiddenCommands, Dictionary<string, ECommands> hiddenCommandsMapping)
         {
-            _getCommands = getCommands;
+            _hiddenCommandsMapping = hiddenCommandsMapping;
+            CommandHandlers = new Dictionary<ECommands, CommandBase>(getCommands()
+                .OrderBy(a => a.GetCommandTypeString())
+                .ToDictionary(a => a.GetCommandType(), a => a));
+
+            foreach (var hiddenCommand in getHiddenCommands())
+            {
+                CommandHandlers.Add(hiddenCommand.GetCommandType(), hiddenCommand);
+            }
         }
     }
 }

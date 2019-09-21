@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using chineseDuck.Bot.Security;
@@ -10,6 +11,7 @@ using ChineseDuck.Bot.Rest.Api;
 using ChineseDuck.Bot.Rest.Client;
 using ChineseDuck.Bot.Rest.Model;
 using ChineseDuck.Bot.Rest.Repository;
+using chineseDuck.BotService.Commands.Enums;
 using ChineseDuck.BotService.MainExecution;
 using ChineseDuck.Common.Logging;
 using Microsoft.AspNetCore.Builder;
@@ -90,6 +92,7 @@ namespace ChineseDuck.BotService.Root
             {
                 ServiceProvider.GetService<AboutCommand>(),
                 ServiceProvider.GetService<AddCommand>(),
+                ServiceProvider.GetService<AdminCommand>(),
                 ServiceProvider.GetService<DefaultCommand>(),
                 ServiceProvider.GetService<DeleteCommand>(),
                 ServiceProvider.GetService<EditCommand>(),
@@ -101,10 +104,19 @@ namespace ChineseDuck.BotService.Root
                 ServiceProvider.GetService<LearnViewCommand>(),
                 ServiceProvider.GetService<LearnWritingCommand>(),
                 ServiceProvider.GetService<ModeCommand>(),
+                ServiceProvider.GetService<PreInstallCommand>(),
                 ServiceProvider.GetService<StartCommand>(),
                 ServiceProvider.GetService<ViewCommand>(),
                 ServiceProvider.GetService<WebCommand>()
             }; ;
+        }
+
+        private CommandBase[] GetHiddenCommands()
+        {
+            return new CommandBase[]
+            {
+                ServiceProvider.GetService<AdminCommand>()
+            };
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -122,7 +134,9 @@ namespace ChineseDuck.BotService.Root
             var log4NetService = new Log4NetService();
             var restWordRepository = new RestWordRepository(wordApi, userApi, serviceApi, folderApi);
             var antiDdosChecker = new AntiDdosChecker(GetDateTime);
-            var commandManager = new CommandManager(GetCommands);
+
+            var commandManager = new CommandManager(GetCommands, GetHiddenCommands,
+                new Dictionary<string, ECommands> {{botSettings.ServiceCommandPassword, ECommands.Admin}});
 
             apiClient.OnAuthenticationRequest += (o, e) =>
             {
@@ -171,9 +185,14 @@ namespace ChineseDuck.BotService.Root
             services.AddTransient(a => new LearnTranslationCommand(ServiceProvider.GetService<IStudyProvider>(),
                 ServiceProvider.GetService<EditCommand>()));
             services.AddTransient(a => new ModeCommand(ServiceProvider.GetService<IWordRepository>()));
+
             services.AddTransient(a => new PreInstallCommand(ServiceProvider.GetService<IChineseWordParseProvider>(),
                 ServiceProvider.GetService<IWordRepository>(), ServiceProvider.GetService<IFlashCardGenerator>(),
-                MaxUploadFileSize, PreInstalledFolder, botSettings.ServerUserId));
+                MaxUploadFileSize, PreInstalledFolder, botSettings.ServerUserId, botSettings.AdminUserId, botSettings.ServiceCommandPassword));
+
+            services.AddTransient(a => new AdminCommand(ServiceProvider.GetService<IChineseWordParseProvider>(),
+                ServiceProvider.GetService<IWordRepository>(), ServiceProvider.GetService<IFlashCardGenerator>(),
+                MaxUploadFileSize, PreInstalledFolder, botSettings.ServerUserId, botSettings.AdminUserId));
             services.AddTransient(a => new WebCommand(signer, botSettings.ApiPublicUrl));
 
             services.AddSingleton(a => new AntiDdosChecker(GetDateTime));
