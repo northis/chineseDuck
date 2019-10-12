@@ -258,4 +258,16 @@ router
   .all(userControl)
   .get(word.studyCurrent.get);
 
+router
+  .route(routes._folder_template.express)
+  .all(accessControl(routes._folder_template))
+  .all(userControl)
+  .get(folder.template.get);
+
+router
+  .route(routes._folder_template_user__userId_.express)
+  .all(accessControl(routes._folder_template_user__userId_))
+  .all(userControl)
+  .post(folder.template.post);
+
 export default router;

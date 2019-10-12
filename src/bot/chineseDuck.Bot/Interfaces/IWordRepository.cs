@@ -32,5 +32,7 @@ namespace ChineseDuck.Bot.Interfaces
         string AddFile(byte[] bytes);
         IUser GetUser(long userId);
         void DeleteFolder(long folderId);
+        IFolder[] GetTemplateFolders();
+        void SetTemplateFolder(long userId, long[] folderTemplateIds);
     }
 }

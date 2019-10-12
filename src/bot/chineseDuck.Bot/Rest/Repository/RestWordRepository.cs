@@ -120,6 +120,16 @@ namespace ChineseDuck.Bot.Rest.Repository
             _folderApi.DeleteFolder(folderId);
         }
 
+        public IFolder[] GetTemplateFolders()
+        {
+           return _folderApi.GetTemplateFolders();
+        }
+
+        public void SetTemplateFolder(long userId, long[] folderTemplateIds)
+        {
+            _folderApi.AddTemplateFolders(userId, folderTemplateIds);
+        }
+
         public IWord GetWord(string wordOriginal, long userId)
         {
             var word = _wordApi.GetWordsByUser(wordOriginal, userId).FirstOrDefault();

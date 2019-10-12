@@ -186,9 +186,7 @@ namespace ChineseDuck.BotService.Root
                 ServiceProvider.GetService<EditCommand>()));
             services.AddTransient(a => new ModeCommand(ServiceProvider.GetService<IWordRepository>()));
 
-            services.AddTransient(a => new PreInstallCommand(ServiceProvider.GetService<IChineseWordParseProvider>(),
-                ServiceProvider.GetService<IWordRepository>(), ServiceProvider.GetService<IFlashCardGenerator>(),
-                MaxUploadFileSize, PreInstalledFolder, botSettings.ServerUserId, botSettings.AdminUserId, botSettings.ServiceCommandPassword));
+            services.AddTransient(a => new PreInstallCommand(ServiceProvider.GetService<IWordRepository>()));
 
             services.AddTransient(a => new AdminCommand(ServiceProvider.GetService<IChineseWordParseProvider>(),
                 ServiceProvider.GetService<IWordRepository>(), ServiceProvider.GetService<IFlashCardGenerator>(),

@@ -1,3 +1,4 @@
+using System.Linq;
 using chineseDuck.BotService.Commands.Common;
 using chineseDuck.BotService.Commands.Enums;
 using ChineseDuck.Bot.Interfaces;
@@ -33,26 +34,28 @@ namespace chineseDuck.BotService.Commands
         public override AnswerItem Reply(MessageItem mItem)
         {
             var answerItem = new AnswerItem();
-            var param = mItem.TextOnly;
+            var text = mItem.TextOnly;
 
-            // Get templates from the rep
-            //if (_presets.TryGetValue(param, out var preset))
-            //{
-            //}
-            //else
-            //{
-            //    answerItem.Message = "Available pre-installed word folders:";
-            //    var buttonRows = _presets.Select(a => new[]
-            //    {
-            //        new InlineKeyboardButton
-            //        {
-            //            Text = a.Key,
-            //            CallbackData = a.Key
-            //        }
-            //    });
+            long.TryParse(text, out var selectedFolder);
+            if (selectedFolder == 0)
+            {
+                var folders = _repository.GetTemplateFolders();
+                answerItem.Message = "Available pre-installed word folders:";
+                var buttonRows = folders.Select(a => new[]
+                {
+                    new InlineKeyboardButton
+                    {
+                        Text = a.Name,
+                        CallbackData = a.Id.ToString()
+                    }
+                });
 
-            //    answerItem.Markup = new InlineKeyboardMarkup(buttonRows);
-            //}
+                answerItem.Markup = new InlineKeyboardMarkup(buttonRows);
+            }
+            else
+            {
+                _repository.SetTemplateFolder(mItem.ChatId, new [] {selectedFolder});
+            }
             return answerItem;
         }
     }
