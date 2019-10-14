@@ -88,7 +88,7 @@ export class ModelsHolder {
 
     folderSchemaObj.index({ owner_id: 1, name: "text" }, { unique: true });
     wordSchemaObj.index(
-      { originalWord: "text", owner_id: 1 },
+      { originalWord: "text", owner_id: 1, folder_id: 1 },
       { unique: true }
     );
     wordSchemaObj.index({ lastModified: -1 });
