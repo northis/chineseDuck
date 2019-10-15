@@ -92,7 +92,6 @@ namespace ChineseDuck.BotService.Root
             {
                 ServiceProvider.GetService<AboutCommand>(),
                 ServiceProvider.GetService<AddCommand>(),
-                ServiceProvider.GetService<AdminCommand>(),
                 ServiceProvider.GetService<DefaultCommand>(),
                 ServiceProvider.GetService<DeleteCommand>(),
                 ServiceProvider.GetService<EditCommand>(),
