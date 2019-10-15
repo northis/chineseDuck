@@ -54,6 +54,14 @@ export default { _word:
    { value: '/folder',
      actions: { post: ["write"], get: ["write"] },
      express: '/folder' },
+  _folder_template:
+   { value: '/folder/template',
+     actions: { get: ["write"] },
+     express: '/folder/template' },
+  _folder_template_user__userId_:
+   { value: '/folder/template/user/{userId}',
+     actions: { post: ["admin"] },
+     express: '/folder/template/user/:userId' },
   _folder_user__userId_:
    { value: '/folder/user/{userId}',
      actions: { get: ["admin"], post: ["admin"] },

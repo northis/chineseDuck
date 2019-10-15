@@ -17,6 +17,11 @@ namespace chineseDuck.BotService.Commands.Common
         public abstract string GetCommandTextDescription();
         public abstract ECommands GetCommandType();
 
+        public virtual string GetCommandTypeString()
+        {
+            return GetCommandType().ToString();
+        }
+
         public static ECommands GetCommandType(string command)
         {
             if (string.IsNullOrWhiteSpace(command))

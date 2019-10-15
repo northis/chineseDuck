@@ -6,8 +6,9 @@ export const init = async () => {
   let userWrite = testEntities.userWrite;
   userWrite._id = DebugKeys.user_id;
 
-  await createUser(userWrite);
-  await createUser(testEntities.userAdmin);
+  await createUser(userWrite, testEntities.folderTemplate);
+  await createUser(testEntities.userAdmin, testEntities.folderTemplate);
+  await createUser(testEntities.userServer, testEntities.folderRealTemplate);
 };
 
 export const wipeCollections = async () => {
@@ -16,9 +17,9 @@ export const wipeCollections = async () => {
   await mh.folder.remove({});
 };
 
-const createUser = async userEntity => {
+const createUser = async (userEntity, folderTemplate) => {
   const userDb = await mh.user.create(userEntity);
-  const folder = testEntities.folderTemplate;
+  const folder = folderTemplate;
   folder.owner_id = userDb._id;
   folder.wordsCount = 2;
   const folderDb = await mh.folder.create(folder);

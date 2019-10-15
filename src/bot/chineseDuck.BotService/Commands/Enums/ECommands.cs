@@ -2,6 +2,7 @@ namespace chineseDuck.BotService.Commands.Enums
 {
     public enum ECommands
     {
+        Admin,
         Default,
         Import,
         Add,
@@ -17,6 +18,7 @@ namespace chineseDuck.BotService.Commands.Enums
         Mode,
         Edit,
         Folder,
+        PreInstall,
         Web
     }
 }

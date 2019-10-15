@@ -2,6 +2,8 @@ import { mh, defaultFolderId } from "../../../server/api/db";
 // import JSONStream from "JSONStream";
 import * as folderVal from "../../../shared/validation";
 import * as errors from "../../errors";
+import { Settings } from "../../../../config/common";
+import { isNullOrUndefined, isArray, isNumber } from "util";
 
 const catchUniqueName = (res, error) => {
   if (error.code == 11000)
@@ -164,5 +166,67 @@ export const user = {
   get: async function getFoldersForCurrentUser(req, res) {
     const idUser = req.params.userId;
     await getFoldersByUser(req, res, idUser);
+  }
+};
+
+/**
+ * Operations on /folder/template & /folder/template/user/{userId}
+ */
+export const template = {
+  get: async function getTemplateFolders(req, res) {
+    const folders = await mh.folder
+      .find({ owner_id: Settings.serverUserId }, { owner_id: false })
+      .sort({ name: 1 });
+    res.json(folders);
+  },
+  post: async function addTemplateFolders(req, res, next) {
+    const idUser = req.params.userId;
+    const folderIds = req.body;
+
+    if (
+      isNullOrUndefined(folderIds) ||
+      !isArray(folderIds) ||
+      !folderIds.every(a => isNumber(a))
+    ) {
+      errors.e400(res);
+      return;
+    }
+
+    const folders = [];
+    for (const folderId of folderIds) {
+      try {
+        const folderTemplate = await mh.folder.findOne(
+          { _id: folderId },
+          { _id: false }
+        );
+
+        if (isNullOrUndefined(folderTemplate)) {
+          continue;
+        }
+
+        const folderDb = await mh.folder.create({
+          name: folderTemplate.name,
+          owner_id: idUser,
+          activityDate: new Date(),
+          wordsCount: folderTemplate.wordsCount
+        });
+
+        const words = await mh.word
+          .find({ owner_id: Settings.serverUserId, folder_id: folderId })
+          .sort({ name: 1 });
+
+        for (const word of words) {
+          word.folder_id = folderDb._id;
+          word.owner_id = idUser;
+          delete word._id;
+          const clonedObject = JSON.parse(JSON.stringify(word));
+          await mh.word.create(clonedObject);
+        }
+        folders.push(folderDb);
+      } catch (e) {
+        catchUniqueName(res, e);
+      }
+      res.status(200).send(folders);
+    }
   }
 };
