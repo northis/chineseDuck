@@ -42,7 +42,7 @@ namespace chineseDuck.BotService.Commands
 
         public override ECommands GetCommandType()
         {
-            return ECommands.PreInstall;
+            return ECommands.Admin;
         }
 
         public override AnswerItem Reply(MessageItem mItem)

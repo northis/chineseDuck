@@ -108,7 +108,7 @@ namespace ChineseDuck.BotService.Root
                 ServiceProvider.GetService<StartCommand>(),
                 ServiceProvider.GetService<ViewCommand>(),
                 ServiceProvider.GetService<WebCommand>()
-            }; ;
+            };
         }
 
         private CommandBase[] GetHiddenCommands()
