@@ -1096,7 +1096,7 @@ function tesPreInstalled() {
       .send([templateFolder._id]);
     assert.ok(response.status === 200);
 
-    userFolder = await mh.folder.findOne({
+    userFolders = await mh.folder.find({
       owner_id: DebugKeys.user_id,
       name: templateFolder.name
     });
