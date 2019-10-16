@@ -55,6 +55,7 @@ namespace chineseDuck.BotService.Commands
             else
             {
                 _repository.SetTemplateFolder(mItem.ChatId, new [] {selectedFolder});
+                answerItem.Message = "The folder has been added";
             }
             return answerItem;
         }
