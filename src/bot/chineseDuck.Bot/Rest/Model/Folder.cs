@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 using ChineseDuck.Bot.Interfaces.Data;
+using chineseDuck.Bot.Serialization;
 using Newtonsoft.Json;
 
 namespace ChineseDuck.Bot.Rest.Model
@@ -44,6 +45,7 @@ namespace ChineseDuck.Bot.Rest.Model
         /// </summary>
         [DataMember(Name = "activityDate", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "activityDate")]
+        [JsonConverter(typeof(MillisecondEpochConverter))]
         public DateTime ActivityDate { get; set; }
 
         /// <summary>

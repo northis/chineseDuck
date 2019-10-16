@@ -43,7 +43,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\shared\hsk\HSK1en.csv" Link="Hsk\HSK1en.csv" />
+    <None Include="..\..\shared\hsk\HSK1en.csv" Link="Hsk\HSK1en.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
