@@ -196,9 +196,7 @@ export const template = {
     for (const folderId of folderIds) {
       try {
         const folderTemplate = await mh.folder.findOne(
-          { _id: folderId },
-          { _id: false }
-        );
+          { _id: folderId });
 
         if (isNullOrUndefined(folderTemplate)) {
           continue;

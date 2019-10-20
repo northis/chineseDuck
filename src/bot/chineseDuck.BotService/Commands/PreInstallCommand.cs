@@ -45,7 +45,7 @@ namespace chineseDuck.BotService.Commands
                 {
                     new InlineKeyboardButton
                     {
-                        Text = a.Name,
+                        Text = a.Name + " (" + a.WordsCount + ")",
                         CallbackData = a.Id.ToString()
                     }
                 });

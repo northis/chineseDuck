@@ -1,4 +1,6 @@
 #!/bin/bash
+echo "Resetting the repository..."
+git reset --hard
 echo "Pulling from the repository..."
 git pull
 echo "Stopping containers..."
