@@ -9,7 +9,7 @@ const catchUniqueName = (res, error) => {
   if (error.code == 11000)
     errors.e409(
       res,
-      "A folder with that name already exists. Release you imagination and try again."
+      "A folder of word with that name already exists. Release you imagination and try again."
     );
   else errors.e500(res, error.message);
 };
@@ -195,8 +195,7 @@ export const template = {
     const folders = [];
     for (const folderId of folderIds) {
       try {
-        const folderTemplate = await mh.folder.findOne(
-          { _id: folderId });
+        const folderTemplate = await mh.folder.findOne({ _id: folderId });
 
         if (isNullOrUndefined(folderTemplate)) {
           continue;
@@ -215,14 +214,14 @@ export const template = {
 
         for (const word of words) {
           word.folder_id = folderDb._id;
+          word.lastModified = Date.now();
           word.owner_id = idUser;
-          delete word._id;
-          const clonedObject = JSON.parse(JSON.stringify(word));
-          await mh.word.create(clonedObject);
+          await mh.word.create(word);
         }
         folders.push(folderDb);
       } catch (e) {
         catchUniqueName(res, e);
+        return;
       }
       res.status(200).send(folders);
     }
