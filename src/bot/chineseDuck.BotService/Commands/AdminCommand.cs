@@ -42,7 +42,7 @@ namespace chineseDuck.BotService.Commands
 
         public override ECommands GetCommandType()
         {
-            return ECommands.PreInstall;
+            return ECommands.Admin;
         }
 
         public override AnswerItem Reply(MessageItem mItem)
@@ -74,6 +74,7 @@ namespace chineseDuck.BotService.Commands
                 var lines = BytesToLines(fileBody);
                 var result = _parseProvider.ImportWords(lines, false);
 
+                //OwnerId will be taken from cookies, so we may not to specify it here
                 var idFolder = _repository.AddFolder(new Folder { Name = fileName, OwnerId = _serverUserId });
                 _repository.SetCurrentFolder(_serverUserId, idFolder);
                 var uploadWords = UploadWords(result, _serverUserId);

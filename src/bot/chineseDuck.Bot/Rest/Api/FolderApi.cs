@@ -161,7 +161,7 @@ namespace ChineseDuck.Bot.Rest.Api
 
         public void AddTemplateFolders(long userId, long[] folderIds)
         {
-            var path = $"/folder/user/{userId}";
+            var path = $"/folder/template/user/{userId}";
             var postBody = ApiClient.Serialize(folderIds);
             var response = ApiClient.CallApi(path, Method.POST, postBody);
 

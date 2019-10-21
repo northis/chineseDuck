@@ -45,7 +45,7 @@ namespace chineseDuck.BotService.Commands
                 {
                     new InlineKeyboardButton
                     {
-                        Text = a.Name,
+                        Text = a.Name + " (" + a.WordsCount + ")",
                         CallbackData = a.Id.ToString()
                     }
                 });
@@ -55,6 +55,7 @@ namespace chineseDuck.BotService.Commands
             else
             {
                 _repository.SetTemplateFolder(mItem.ChatId, new [] {selectedFolder});
+                answerItem.Message = "The folder has been added";
             }
             return answerItem;
         }

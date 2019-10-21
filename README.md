@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/northis/chineseDuck.svg?branch=master)](https://travis-ci.org/northis/chineseDuck)
 
-Telegram bot @ChineseDuckBot to study Chinese language via memorizing the flashcards.
+Telegram bot @ChineseDuckBot to study Chinese language via memorizing flashcards.
 
 ## Key features
 
@@ -15,15 +15,15 @@ Telegram bot @ChineseDuckBot to study Chinese language via memorizing the flashc
 - Collection personal score
 - Bulk import words from .csv file
 - Webpart can work even if telegram addresses (https://t.me & so on) are blocked in your country.
+- Pre-installed cards for HSK1, HSK2,... to bulk import to a separate folder.
 
 ## Roadmap
 
-- Pre-installed cards for HSK1, HSK2,... to bulk import to a separate folder.
 - Using webpart to manipulating the words
 
 ## API
 
-You can find the description of Chinese Duck Bot Api on [our Swagger page](https://app.swaggerhub.com/apis/northis/chineseDuckApi/1.1.1-oas3).
+You can find the description of Chinese Duck Bot Api on [our Swagger page](https://app.swaggerhub.com/apis/northis/chineseDuckApi/1.3).
 
 ## Build
 
@@ -204,3 +204,9 @@ docker run --name=bot_netcore --restart=unless-stopped --net udd3rnet --ip 10.1.
 ## Import from SQL db
 
 If you want to run import from the previous version of the Bot (https://github.com/northis/YellowDuck), go to `src\bot\chineseDuck.Import` folder and add a `appsettings.json` based on `appsettings.template.json`.
+
+## Update production
+Update production server from the repository
+```
+bash update_prod.sh
+```

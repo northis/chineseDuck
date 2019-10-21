@@ -78,7 +78,7 @@ export let Settings = {
   port: 3000,
   sessionsPass: keys.sessionsPass,
   answersCount: 4,
-  serverUserId: 0,
+  serverUserId: 1,
   apiPrefix: "/api/v1/",
   docsPrefix: "/api/docs/",
   getLocalApiAddress: () =>
