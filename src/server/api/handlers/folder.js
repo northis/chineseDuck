@@ -207,15 +207,18 @@ export const template = {
           activityDate: new Date(),
           wordsCount: folderTemplate.wordsCount
         });
+        const folderDbId = folderDb._id;
 
         const words = await mh.word
           .find({ owner_id: Settings.serverUserId, folder_id: folderId })
+          .select("-_id -__v")
           .sort({ name: 1 });
 
         for (const word of words) {
-          word.folder_id = folderDb._id;
+          word.folder_id = folderDbId;
           word.lastModified = Date.now();
           word.owner_id = idUser;
+          word.isNew = true;
           await mh.word.create(word);
         }
         folders.push(folderDb);
