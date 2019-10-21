@@ -1,7 +1,7 @@
 {
   "name": "chinese_duck",
   "url": "https://chineseduck.online",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Chinese Duck Bot",
   "main": "server/index.js",
   "scripts": {
