@@ -139,7 +139,7 @@ namespace ChineseDuck.Bot.Providers
                 {
                     var renderOptions = GetRenderOptions(ArialUnicodeMainFont, y);
                     var transChars = CutToMaxRow(CutToMaxLength(word.Translation, MainMaxCharsCount, string.Empty),
-                        MainMaxLineCharsCount, true);
+                        MainMaxLineCharsCount);
                     var size = TextMeasurer.Measure(transChars, renderOptions);
                     y += size.Height + LineSpace;
 
@@ -152,7 +152,7 @@ namespace ChineseDuck.Bot.Providers
 
                 if (learnMode == ELearnMode.FullView && !string.IsNullOrEmpty(word.Usage))
                 {
-                    var usageChars = CutToMaxRow(CutToMaxLength(word.Usage, MainMaxCharsCount), MainMaxLineCharsCount, true);
+                    var usageChars = CutToMaxRow(CutToMaxLength(word.Usage, MainMaxCharsCount), MainMaxLineCharsCount);
                     var renderOptions = GetRenderOptions(KaitiMainFont, y);
                     var size = TextMeasurer.Measure(usageChars, renderOptions);
                     y += size.Height + LineSpace;
@@ -206,7 +206,7 @@ namespace ChineseDuck.Bot.Providers
             return needCut ? input.Substring(0, maxLength - postfixIfCut.Length) + postfixIfCut : input;
         }
 
-        private static string CutToMaxRow(string input, int maxLengthInRow, bool useSpace = false)
+        private static string CutToMaxRow(string input, int maxLengthInRow)
         {
             var sb = new StringBuilder();
             var stringCount = 0;
@@ -215,7 +215,7 @@ namespace ChineseDuck.Bot.Providers
             {
                 var curLetter = ch.ToString();
 
-                if (curLetter == " " && useSpace || curLetter != " " && curLetter != Environment.NewLine)
+                if (curLetter != Environment.NewLine)
                 {
                     stringCount++;
                     sb.Append(curLetter);
