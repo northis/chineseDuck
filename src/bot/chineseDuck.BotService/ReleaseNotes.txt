@@ -1,5 +1,9 @@
 Release notes:
 
+ver.0.6.1.0 (22 october 2019)
+=========================
+[+] pre-installed folders
+
 ver.0.5.0.0 (31 march 2019)
 =========================
 [*] beta is ready

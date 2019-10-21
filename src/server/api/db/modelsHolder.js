@@ -54,7 +54,7 @@ export class ModelsHolder {
 
       mh.idIncrement.findByIdAndUpdate(
         "userid",
-        { $inc: { seq: 1 } },
+        { $inc: { seq: 2 } },
         { upsert: true, new: true },
         function(err, counter) {
           if (err) {

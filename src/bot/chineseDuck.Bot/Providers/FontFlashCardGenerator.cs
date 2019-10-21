@@ -214,7 +214,8 @@ namespace ChineseDuck.Bot.Providers
             foreach (var ch in input)
             {
                 var curLetter = ch.ToString();
-                if (curLetter != " " && curLetter != Environment.NewLine)
+
+                if (curLetter != Environment.NewLine)
                 {
                     stringCount++;
                     sb.Append(curLetter);
