@@ -68,7 +68,7 @@ namespace chineseDuck.BotService.Commands
         public override AnswerItem Reply(MessageItem mItem)
         {
             var loadFileMessage =
-                $"Please give me a .csv file. Rows format are 'word{SeparatorChar}translation' or 'word{SeparatorChar}pinyin{SeparatorChar}translation'. Be accurate using pinyin, write a digit after every syllable. For example, use 'shi4' for 4th tone in 'shì' or 'le' for zero  tone in 'le'{Environment.NewLine}The word processing may take some time, please wait until the import will be completed. File couldn't be larger than {_maxImportFileSize} bytes";
+                $"Please give me a .csv file. Rows format are 'word{SeparatorChar}translation' or 'word{SeparatorChar}pinyin{SeparatorChar}translation{SeparatorChar}usage'. Be accurate using pinyin, write a digit after every syllable. For example, use 'shi4' for 4th tone in 'shì' or 'le' for zero tone in 'le'. Usage is an optional part.{Environment.NewLine}The word processing may take some time, please wait until the import will be completed. File couldn't be larger than {_maxImportFileSize} bytes";
             
             if (mItem.Stream == null)
             {

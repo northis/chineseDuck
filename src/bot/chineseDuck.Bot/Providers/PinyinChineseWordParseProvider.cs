@@ -104,11 +104,11 @@ namespace ChineseDuck.Bot.Providers
         }
 
         /// <summary>
-        ///     Строит верный слог для иероглифа и латинского представления слога
+        /// Builds correct syllable for the chinese character and its latin representation
         /// </summary>
-        /// <param name="chineseChar">Китайский иероглиф, например, 电</param>
-        /// <param name="pinyinWithNumber">Представление в латинском алфавите с тоном цифрой, например, dian4</param>
-        /// <returns>Верный слог, содержащий латинское представление с тоном сверху, например, diàn</returns>
+        /// <param name="chineseChar">Chinese character, ex. 电</param>
+        /// <param name="pinyinWithNumber">Pinyin with in number-style, ex. dian4</param>
+        /// <returns>Syllable with tone-style, ex. diàn</returns>
         public Syllable BuildSyllable(char chineseChar, string pinyinWithNumber)
         {
             var pinyinStringArray = _chinesePinyinConverter.Convert(chineseChar, EToneType.Number);
@@ -125,15 +125,14 @@ namespace ChineseDuck.Bot.Providers
         }
 
         /// <summary>
-        ///     Формат для импорта слов: Иероглиф[ImportSeparator]Пининь[ImportSeparator]Перевод, либо в случае usePinyin=false
-        ///     Иероглиф[ImportSeparator]Перевод.
-        ///     Например, 电;diàn;электричество (usePinyin=true, ImportSeparator=";")
-        ///     Например, 电;электричество (usePinyin=false, ImportSeparator=";")
-        ///     Например, 电;dian4;электричество (usePinyin=true, ImportSeparator=";")
+        /// Imports and parses the words.
+        /// Example: 电;diàn;electricity (usePinyin=true, ImportSeparator=";")
+        ///          电;electricity (usePinyin=false, ImportSeparator=";")
+        ///          电;dian4;electricity (usePinyin=true, ImportSeparator=";")
         /// </summary>
-        /// <param name="rawWords">Массив строк для импорта</param>
-        /// <param name="usePinyin">Флаг, использовать ли пининь из импортируемых строк</param>
-        /// <returns>Результат из распознанных и нераспознанных слов</returns>
+        /// <param name="rawWords">Array of words to parse</param>
+        /// <param name="usePinyin">True, if we should use a pinyin from the input strings.</param>
+        /// <returns>Parsed strings</returns>
         public ImportWordResult ImportWords(string[] rawWords, bool usePinyin)
         {
             var goodWords = new List<Word>();
@@ -153,6 +152,10 @@ namespace ChineseDuck.Bot.Providers
 
                 var translationIndex = usePinyin ? 2 : 1;
                 var translationNative = string.Join(ImportSeparator1.ToString(), arrayToParse.Skip(translationIndex));
+
+                var usage = string.Empty;
+                if (arrayToParse.Length > translationIndex + 1)
+                    usage = string.Join(ImportSeparator1, arrayToParse.Skip(translationIndex));
 
                 var syllables = GetOrderedSyllables(mainWord, EToneType.Mark);
 
@@ -174,7 +177,8 @@ namespace ChineseDuck.Bot.Providers
                             OriginalWord = mainWord,
                             Pronunciation = separatedSyllables,
                             Translation = translationNative,
-                            SyllablesCount = syllables.Length
+                            SyllablesCount = syllables.Length,
+                            Usage = usage
                         });
                     }
                     else if (syllables.Length > MaxSyllablesToParse)
@@ -245,6 +249,7 @@ namespace ChineseDuck.Bot.Providers
                         }
 
                         if (successFlag)
+                        {
                             goodWords.Add(new Word
                             {
                                 OriginalWord = mainWord,
@@ -252,10 +257,14 @@ namespace ChineseDuck.Bot.Providers
                                     _syllablesToStringConverter.Join(importedSyllables.Select(a => a.Pinyin)),
                                 Translation = translationNative.Replace(ImportSeparator1, ReplaceSeparator)
                                     .Replace(ImportSeparator2, ReplaceSeparator),
-                                SyllablesCount = importedSyllables.Count
+                                SyllablesCount = importedSyllables.Count,
+                                Usage = usage
                             });
+                        }
                         else
+                        {
                             badWords.Add(word + " (the pinyin is not quite suit for these chinese characters.)");
+                        }
                     }
                     continue;
                 }
@@ -265,7 +274,8 @@ namespace ChineseDuck.Bot.Providers
                     OriginalWord = mainWord,
                     Pronunciation = separatedSyllables,
                     Translation = translationNative,
-                    SyllablesCount = syllables.Length
+                    SyllablesCount = syllables.Length,
+                    Usage = usage
                 });
             }
 
