@@ -86,9 +86,8 @@ namespace chineseDuck.BotService.Commands
                 else
                 {
                     var editedText = new[] {mItem.TextOnly};
-                    var usePinYin = _importCommand.GetUsePinyin(editedText);
 
-                    if (usePinYin == null)
+                    if (!_importCommand.ValidateArray(editedText))
                     {
                         var wordToFind = _repository.GetWord(mItem.TextOnly, idUser);
 
@@ -102,7 +101,7 @@ namespace chineseDuck.BotService.Commands
                         return message;
                     }
 
-                    var word = _parseProvider.ImportWords(editedText, usePinYin.Value);
+                    var word = _parseProvider.ImportWords(editedText);
                     var parsedWord = word.SuccessfulWords.FirstOrDefault();
 
                     if (parsedWord == null)

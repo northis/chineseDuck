@@ -20,7 +20,7 @@ namespace chineseDuck.Bot.UnitTests
 
             var stringsToImport = new[] { "明!!白!;míngbai;понимать" };
 
-            var wordsResult = prov.ImportWords(stringsToImport, true);
+            var wordsResult = prov.ImportWords(stringsToImport);
 
             Assert.IsNotNull(wordsResult);
             Assert.IsTrue(wordsResult.FailedWords.Length == 0);
@@ -29,9 +29,9 @@ namespace chineseDuck.Bot.UnitTests
             Assert.IsTrue(wordsResult.SuccessfulWords[0].Pronunciation == "míng|bai");
             Assert.IsTrue(wordsResult.SuccessfulWords[0].Translation == "понимать");
 
-            stringsToImport = new[] { "你有病吗?你有药吗?;- ты больной? (шутл.) - а есть лекарство?" };
+            stringsToImport = new[] { "你有病吗?你有药吗?;;- ты больной? (шутл.) - а есть лекарство?;好吧" };
 
-            wordsResult = prov.ImportWords(stringsToImport, false);
+            wordsResult = prov.ImportWords(stringsToImport);
 
             Assert.IsNotNull(wordsResult);
             Assert.IsTrue(wordsResult.FailedWords.Length == 0);
@@ -39,7 +39,8 @@ namespace chineseDuck.Bot.UnitTests
             Assert.IsTrue(wordsResult.SuccessfulWords[0].OriginalWord == "你有病吗?你有药吗?");
             //Assert.IsTrue(wordsResult.SuccessfulWords[0].PinyinWord == "míng|bai");
             Assert.IsTrue(wordsResult.SuccessfulWords[0].Translation == "- ты больной? (шутл.) - а есть лекарство?");
-            
+            Assert.IsTrue(wordsResult.SuccessfulWords[0].Usage == "好吧");
+
             var result = prov.GetOrderedSyllables(wordsResult.SuccessfulWords[0]);
             Assert.AreEqual("yào", result[7].Pinyin);
         }

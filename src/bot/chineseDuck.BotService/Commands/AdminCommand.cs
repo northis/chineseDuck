@@ -72,7 +72,7 @@ namespace chineseDuck.BotService.Commands
                 var fileBody = File.ReadAllBytes(filePath);
 
                 var lines = BytesToLines(fileBody);
-                var result = _parseProvider.ImportWords(lines, false);
+                var result = _parseProvider.ImportWords(lines);
 
                 //OwnerId will be taken from cookies, so we may not to specify it here
                 var idFolder = _repository.AddFolder(new Folder { Name = fileName, OwnerId = _serverUserId });
