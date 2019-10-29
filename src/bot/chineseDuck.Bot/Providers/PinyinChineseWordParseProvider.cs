@@ -1,5 +1,4 @@
 using ChineseDuck.Bot.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -32,6 +31,7 @@ namespace ChineseDuck.Bot.Providers
         public const char ImportSeparator1 = ';';
         public const char ImportSeparator2 = '；';
         public const char ReplaceSeparator = ',';
+        public const char Er = '儿';
 
         public const string PinyinExcludeRegexPattern = "[^a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]";
         public const string PinyinNumIncludeRegexPattern = "^[a-z0-4]+$";
@@ -157,6 +157,12 @@ namespace ChineseDuck.Bot.Providers
                     usage = string.Join(ImportSeparator1, arrayToParse.Skip(usageIndex));
 
                 var syllables = GetOrderedSyllables(mainWord, EToneType.Mark);
+                if (syllables.Length > MaxSyllablesToParse)
+                {
+                    badWords.Add(word + $" (String is too long. Max syllables count is {MaxSyllablesToParse}.)");
+                    continue;
+                }
+
                 var separatedSyllables = _syllablesToStringConverter.Join(syllables.Select(a => a.Pinyin));
                 var solidSyllables = separatedSyllables.Replace(
                     _syllablesToStringConverter.GetSeparator(),
@@ -164,9 +170,19 @@ namespace ChineseDuck.Bot.Providers
 
                 if (usePinyin)
                 {
-                    ParsePinyin(new ImportWordLoopItem(arrayToParse, goodWords, syllables, solidSyllables, mainWord,
-                        word, translationNative, separatedSyllables, badWords, usage));
-                    continue;
+                    var loopItem = new ImportWordLoopItem(arrayToParse, goodWords, syllables, solidSyllables, mainWord,
+                        word, translationNative, separatedSyllables, badWords, usage);
+
+                    var wordPinyin = ParsePinyin(loopItem);
+                    if (wordPinyin == null)
+                    {
+                        badWords.Add(word + " (the pinyin is not quite suit for these chinese characters, pinyin will be generated automatically)");
+                    }
+                    else
+                    {
+                        goodWords.Add(wordPinyin);
+                        continue;
+                    }
                 }
 
                 goodWords.Add(new Word
@@ -182,28 +198,21 @@ namespace ChineseDuck.Bot.Providers
             return new ImportWordResult(goodWords.ToArray(), badWords.ToArray());
         }
 
-        private void ParsePinyin(ImportWordLoopItem item)
+        private Word ParsePinyin(ImportWordLoopItem item)
         {
             var pinyinStr = item.ArrayToParse[1].ToLower();
             var pinyin = Regex.Replace(pinyinStr, PinyinExcludeRegexPattern, string.Empty);
 
             if (pinyin.Contains(item.SolidSyllables))
             {
-                item.GoodWords.Add(new Word
+                return new Word
                 {
                     OriginalWord = item.MainWord,
                     Pronunciation = item.SeparatedSyllables,
                     Translation = item.TranslationNative,
                     SyllablesCount = item.Syllables.Length,
                     Usage = item.Usage
-                });
-                return;
-            }
-            if (item.Syllables.Length > MaxSyllablesToParse)
-            {
-                item.BadWords.Add(item.RawWord +
-                             $" (String is too long. Max syllables count is {MaxSyllablesToParse}.)");
-                return;
+                };
             }
 
             var useNum = IsNumbersInPinyinUsed(pinyinStr);
@@ -265,7 +274,7 @@ namespace ChineseDuck.Bot.Providers
 
             if (successFlag)
             {
-                item.GoodWords.Add(new Word
+                return new Word
                 {
                     OriginalWord = item.MainWord,
                     Pronunciation =
@@ -274,12 +283,10 @@ namespace ChineseDuck.Bot.Providers
                         .Replace(ImportSeparator2, ReplaceSeparator),
                     SyllablesCount = importedSyllables.Count,
                     Usage = item.Usage
-                });
+                };
             }
-            else
-            {
-                item.BadWords.Add(item.RawWord + " (the pinyin is not quite suit for these chinese characters.)");
-            }
+
+            return null;
         }
 
         private Syllable[] GetOrderedSyllables(string word, EToneType format)

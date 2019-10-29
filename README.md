@@ -16,6 +16,7 @@ Telegram bot @ChineseDuckBot to study Chinese language via memorizing flashcards
 - Bulk import words from .csv file
 - Webpart can work even if telegram addresses (https://t.me & so on) are blocked in your country.
 - Pre-installed cards for HSK1, HSK2,... to bulk import to a separate folder.
+  Now available HSK1-6 pre-installed folders: english & russain versions
 
 ## Roadmap
 
@@ -206,7 +207,9 @@ docker run --name=bot_netcore --restart=unless-stopped --net udd3rnet --ip 10.1.
 If you want to run import from the previous version of the Bot (https://github.com/northis/YellowDuck), go to `src\bot\chineseDuck.Import` folder and add a `appsettings.json` based on `appsettings.template.json`.
 
 ## Update production
+
 Update production server from the repository
+
 ```
 bash update_prod.sh
 ```

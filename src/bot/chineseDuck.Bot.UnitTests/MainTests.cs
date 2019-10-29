@@ -18,10 +18,27 @@ namespace chineseDuck.Bot.UnitTests
             var tostrConv = new ClassicSyllablesToStringConverter();
             var prov = new PinyinChineseWordParseProvider(colorProv, pinyinProv, tostrConv);
 
-            var stringsToImport = new[] { "明!!白!;míngbai;понимать" };
 
+            var stringsToImport = new[] { "哪儿;rrr;where? (Beijing accent)" };
             var wordsResult = prov.ImportWords(stringsToImport);
+            Assert.IsNotNull(wordsResult);
+            Assert.IsTrue(wordsResult.FailedWords.Length == 1);
+            Assert.IsTrue(wordsResult.SuccessfulWords.Length == 1);
+            Assert.IsTrue(wordsResult.SuccessfulWords[0].OriginalWord == "哪儿");
+            Assert.IsTrue(wordsResult.SuccessfulWords[0].Pronunciation == "nǎ|er");
+            Assert.IsTrue(wordsResult.SuccessfulWords[0].Translation == "where? (Beijing accent)");
 
+            stringsToImport = new[] { "哪儿;nǎr;where? (Beijing accent)" };
+            wordsResult = prov.ImportWords(stringsToImport);
+            Assert.IsNotNull(wordsResult);
+            Assert.IsTrue(wordsResult.FailedWords.Length == 1);
+            Assert.IsTrue(wordsResult.SuccessfulWords.Length == 1);
+            Assert.IsTrue(wordsResult.SuccessfulWords[0].OriginalWord == "哪儿");
+            Assert.IsTrue(wordsResult.SuccessfulWords[0].Pronunciation == "nǎ|er");
+            Assert.IsTrue(wordsResult.SuccessfulWords[0].Translation == "where? (Beijing accent)");
+
+            stringsToImport = new[] { "明!!白!;míngbai;понимать" };
+            wordsResult = prov.ImportWords(stringsToImport);
             Assert.IsNotNull(wordsResult);
             Assert.IsTrue(wordsResult.FailedWords.Length == 0);
             Assert.IsTrue(wordsResult.SuccessfulWords.Length == 1);
