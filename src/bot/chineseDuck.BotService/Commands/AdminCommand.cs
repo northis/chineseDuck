@@ -68,7 +68,7 @@ namespace chineseDuck.BotService.Commands
                 {
                     _repository.DeleteFolder(serviceFolder.Id);
                 }
-
+                
                 var fileBody = File.ReadAllBytes(filePath);
 
                 var lines = BytesToLines(fileBody);

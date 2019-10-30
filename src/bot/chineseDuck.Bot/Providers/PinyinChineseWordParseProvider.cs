@@ -34,7 +34,7 @@ namespace ChineseDuck.Bot.Providers
         public const char Er = '儿';
 
         public const string PinyinExcludeRegexPattern = "[^a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]";
-        public const string PinyinNumIncludeRegexPattern = "^[a-z0-4]+$";
+        public const string PinyinNumIncludeRegexPattern = "^[a-z0-4]+[0-4]+$";
 
         private readonly ISyllableColorProvider _syllableColorProvider;
         private readonly IChinesePinyinConverter _chinesePinyinConverter;

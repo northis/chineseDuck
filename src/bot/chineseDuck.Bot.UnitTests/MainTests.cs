@@ -1,4 +1,9 @@
+using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces;
 using ChineseDuck.Bot.Providers;
@@ -17,8 +22,7 @@ namespace chineseDuck.Bot.UnitTests
             var pinyinProv = new Pinyin4NetConverter();
             var tostrConv = new ClassicSyllablesToStringConverter();
             var prov = new PinyinChineseWordParseProvider(colorProv, pinyinProv, tostrConv);
-
-
+            
             var stringsToImport = new[] { "哪儿;rrr;where? (Beijing accent)" };
             var wordsResult = prov.ImportWords(stringsToImport);
             Assert.IsNotNull(wordsResult);
@@ -60,6 +64,32 @@ namespace chineseDuck.Bot.UnitTests
 
             var result = prov.GetOrderedSyllables(wordsResult.SuccessfulWords[0]);
             Assert.AreEqual("yào", result[7].Pinyin);
+        }
+
+        [Test]
+        public void BulkImportFromCsv()
+        {
+            var colorProv = new ClassicSyllableColorProvider();
+            var pinyinProv = new Pinyin4NetConverter();
+            var toStrConv = new ClassicSyllablesToStringConverter();
+            var wordParseProvider = new PinyinChineseWordParseProvider(colorProv, pinyinProv, toStrConv);
+
+            var currentFolder = Directory.GetCurrentDirectory();
+            var csvFolder = Path.Combine(currentFolder, "csv");
+            var files = Directory.GetFiles(csvFolder).Where(a => a.EndsWith(".csv"));
+
+            foreach (var file in files)
+            {
+                var lines = File.ReadAllLines(file);
+                var wordsResult = wordParseProvider.ImportWords(lines);
+                Assert.IsNotNull(wordsResult);
+
+                Console.WriteLine(wordsResult.SuccessfulWords.Length + " " + Path.GetFileName(file));
+
+                var lastIndex = lines.Length - 1;
+                Assert.AreEqual(string.IsNullOrEmpty(lines[lastIndex]) ? lastIndex : lines.Length,
+                    wordsResult.SuccessfulWords.Length);
+            }
         }
 
         [Test]

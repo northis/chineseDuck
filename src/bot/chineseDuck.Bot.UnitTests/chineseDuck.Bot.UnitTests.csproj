@@ -16,4 +16,50 @@
     <ProjectReference Include="..\chineseDuck.Bot\chineseDuck.Bot.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="csv\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\shared\hsk\en_HSK_1.csv" Link="csv\en_HSK_1.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\en_HSK_2.csv" Link="csv\en_HSK_2.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\en_HSK_3.csv" Link="csv\en_HSK_3.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\en_HSK_4.csv" Link="csv\en_HSK_4.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\en_HSK_5.csv" Link="csv\en_HSK_5.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\en_HSK_6.csv" Link="csv\en_HSK_6.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\ru_Extra.csv" Link="csv\ru_Extra.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\ru_HSK_1.csv" Link="csv\ru_HSK_1.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\ru_HSK_2.csv" Link="csv\ru_HSK_2.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\ru_HSK_3.csv" Link="csv\ru_HSK_3.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\ru_HSK_4.csv" Link="csv\ru_HSK_4.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\ru_HSK_5.csv" Link="csv\ru_HSK_5.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\ru_HSK_6.csv" Link="csv\ru_HSK_6.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
