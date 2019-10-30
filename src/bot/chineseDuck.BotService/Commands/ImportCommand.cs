@@ -103,6 +103,7 @@ namespace chineseDuck.BotService.Commands
 
         internal void UploadFiles(IWord word)
         {
+            Console.WriteLine("Generate flashcard for " + word.OriginalWord);
             var imageResult = _flashCardGenerator.Generate(word, ELearnMode.FullView);
             var fileId = _repository.AddFile(imageResult.ImageBody);
             word.CardAll = imageResult.ToWordFile(fileId);

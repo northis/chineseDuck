@@ -51,12 +51,6 @@ namespace ChineseDuck.Bot.Providers
                     _chinesePinyinConverter.ToSyllableNumberTone(pinyinWithMark)));
         }
 
-        private Syllable GetSyllableNumber(char charWord, string pinyinWithNum)
-        {
-            return new Syllable(charWord, pinyinWithNum,
-                _syllableColorProvider.GetSyllableColor(charWord, pinyinWithNum));
-        }
-
         public Syllable[] GetOrderedSyllables(string word)
         {
             return GetOrderedSyllables(word, EToneType.Mark);
@@ -331,13 +325,13 @@ namespace ChineseDuck.Bot.Providers
             public string[] ArrayToParse { get; }
             public string SolidSyllables { get; }
             public string MainWord { get; }
-            public string RawWord { get; }
+            private string RawWord { get; }
             public string TranslationNative { get; }
             public string SeparatedSyllables { get; }
             public Syllable[] Syllables { get; }
             public string Usage { get; }
-            public List<Word> GoodWords { get; }
-            public List<string> BadWords { get; }
+            private List<Word> GoodWords { get; }
+            private List<string> BadWords { get; }
         }
     }
 }
