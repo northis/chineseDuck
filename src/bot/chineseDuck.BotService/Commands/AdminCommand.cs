@@ -52,7 +52,7 @@ namespace chineseDuck.BotService.Commands
                 return new AnswerItem { Message = "Access denied." };
             }
 
-            var fileName = mItem.Text;
+            var fileName = mItem.TextOnly;
             if (string.IsNullOrEmpty(fileName))
                 return new AnswerItem { Message = "Give me a file name to update." };
 
