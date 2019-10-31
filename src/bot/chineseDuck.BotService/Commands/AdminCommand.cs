@@ -52,37 +52,41 @@ namespace chineseDuck.BotService.Commands
                 return new AnswerItem { Message = "Access denied." };
             }
 
-            var serviceFolders = _repository.GetUserFolders(_serverUserId);
+            var fileName = mItem.Text;
+            if (string.IsNullOrEmpty(fileName))
+                return new AnswerItem { Message = "Give me a file name to update." };
 
-            var filePaths = Directory.GetFiles(_preInstalledFolderPath);
+            var filePath = Path.Combine(_preInstalledFolderPath, fileName);
+
+            if (!fileName.EndsWith(Extension))
+                return new AnswerItem { Message = "It is not a csv file." };
+            if (!File.Exists(filePath))
+                return new AnswerItem { Message = "No such file." };
+
+            var serviceFolders = _repository.GetUserFolders(_serverUserId);
             var resultString = new StringBuilder();
 
-            foreach (var filePath in filePaths.OrderBy(a => a))
+            fileName = Path.GetFileNameWithoutExtension(filePath);
+            var serviceFolder = serviceFolders.FirstOrDefault(a => a.Name == fileName);
+            if (serviceFolder != null)
             {
-                if (!filePath.EndsWith(Extension) || !File.Exists(filePath))
-                    continue;
-
-                var fileName = Path.GetFileNameWithoutExtension(filePath);
-                var serviceFolder = serviceFolders.FirstOrDefault(a => a.Name == fileName);
-                if (serviceFolder != null)
-                {
-                    _repository.DeleteFolder(serviceFolder.Id);
-                }
-                
-                var fileBody = File.ReadAllBytes(filePath);
-
-                var lines = BytesToLines(fileBody);
-                var result = _parseProvider.ImportWords(lines);
-
-                //OwnerId will be taken from cookies, so we may not to specify it here
-                var idFolder = _repository.AddFolder(new Folder { Name = fileName, OwnerId = _serverUserId });
-                _repository.SetCurrentFolder(_serverUserId, idFolder);
-                var uploadWords = UploadWords(result, _serverUserId);
-
-                resultString.AppendLine(uploadWords.SuccessfulWords.Any()
-                    ? $"Words from folder {fileName} have been added."
-                    : $"Can't add words to {fileName} folder.");
+                _repository.DeleteFolder(serviceFolder.Id);
+                resultString.AppendLine("Old folder was removed.");
             }
+
+            var fileBody = File.ReadAllBytes(filePath);
+
+            var lines = BytesToLines(fileBody);
+            var result = _parseProvider.ImportWords(lines);
+
+            //OwnerId will be taken from cookies, so we may not to specify it here
+            var idFolder = _repository.AddFolder(new Folder { Name = fileName, OwnerId = _serverUserId });
+            _repository.SetCurrentFolder(_serverUserId, idFolder);
+            var uploadWords = UploadWords(result, _serverUserId);
+
+            resultString.AppendLine(uploadWords.SuccessfulWords.Any()
+                ? $"Words from folder {fileName} have been added."
+                : $"Can't add words to {fileName} folder.");
 
             return new AnswerItem {Message = resultString.ToString()};
         }
