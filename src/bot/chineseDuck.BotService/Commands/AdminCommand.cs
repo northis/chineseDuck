@@ -1,6 +1,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using chineseDuck.BotService.Commands.Common;
 using chineseDuck.BotService.Commands.Enums;
 using ChineseDuck.Bot.Interfaces;
@@ -64,31 +65,31 @@ namespace chineseDuck.BotService.Commands
                 return new AnswerItem { Message = "No such file." };
 
             var serviceFolders = _repository.GetUserFolders(_serverUserId);
-            var resultString = new StringBuilder();
 
-            fileName = Path.GetFileNameWithoutExtension(filePath);
-            var serviceFolder = serviceFolders.FirstOrDefault(a => a.Name == fileName);
-            if (serviceFolder != null)
+            ThreadPool.QueueUserWorkItem(cb =>
             {
-                _repository.DeleteFolder(serviceFolder.Id);
-                resultString.AppendLine("Old folder was removed.");
-            }
+                var resultString = new StringBuilder();
 
-            var fileBody = File.ReadAllBytes(filePath);
+                fileName = Path.GetFileNameWithoutExtension(filePath);
+                var serviceFolder = serviceFolders.FirstOrDefault(a => a.Name == fileName);
+                if (serviceFolder != null)
+                {
+                    _repository.DeleteFolder(serviceFolder.Id);
+                    resultString.AppendLine("Old folder was removed.");
+                }
 
-            var lines = BytesToLines(fileBody);
-            var result = _parseProvider.ImportWords(lines);
+                var fileBody = File.ReadAllBytes(filePath);
 
-            //OwnerId will be taken from cookies, so we may not to specify it here
-            var idFolder = _repository.AddFolder(new Folder { Name = fileName, OwnerId = _serverUserId });
-            _repository.SetCurrentFolder(_serverUserId, idFolder);
-            var uploadWords = UploadWords(result, _serverUserId);
+                var lines = BytesToLines(fileBody);
+                var result = _parseProvider.ImportWords(lines);
 
-            resultString.AppendLine(uploadWords.SuccessfulWords.Any()
-                ? $"Words from folder {fileName} have been added."
-                : $"Can't add words to {fileName} folder.");
+                //OwnerId will be taken from cookies, so we may not to specify it here
+                var idFolder = _repository.AddFolder(new Folder {Name = fileName, OwnerId = _serverUserId});
+                _repository.SetCurrentFolder(_serverUserId, idFolder);
+                UploadWords(result, _serverUserId);
+            });
 
-            return new AnswerItem {Message = resultString.ToString()};
+            return new AnswerItem {Message ="Import is running..."};
         }
     }
 }
