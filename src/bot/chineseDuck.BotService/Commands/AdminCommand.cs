@@ -7,6 +7,9 @@ using chineseDuck.BotService.Commands.Enums;
 using ChineseDuck.Bot.Interfaces;
 using ChineseDuck.Bot.Rest.Model;
 using ChineseDuck.BotService.MainExecution;
+using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace chineseDuck.BotService.Commands
 {
@@ -17,17 +20,19 @@ namespace chineseDuck.BotService.Commands
         private readonly string _preInstalledFolderPath;
         private readonly long _serverUserId;
         private readonly long _adminUser;
+        private readonly TelegramBotClient _tClient;
         private const string Extension = ".csv";
 
         public AdminCommand(IChineseWordParseProvider parseProvider, IWordRepository repository,
             IFlashCardGenerator flashCardGenerator, uint maxImportFileSize, string preInstalledFolderPath,
-            long serverUserId, long adminUser) : base(
+            long serverUserId, long adminUser, TelegramBotClient tClient) : base(
             parseProvider, repository, flashCardGenerator, maxImportFileSize)
         {
             _repository = repository;
             _preInstalledFolderPath = preInstalledFolderPath;
             _serverUserId = serverUserId;
             _adminUser = adminUser;
+            _tClient = tClient;
             _parseProvider = parseProvider;
         }
 
@@ -86,7 +91,14 @@ namespace chineseDuck.BotService.Commands
                 //OwnerId will be taken from cookies, so we may not to specify it here
                 var idFolder = _repository.AddFolder(new Folder {Name = fileName, OwnerId = _serverUserId});
                 _repository.SetCurrentFolder(_serverUserId, idFolder);
-                UploadWords(result, _serverUserId);
+                var uploadWords = UploadWords(result, _serverUserId);
+
+                resultString.AppendLine(uploadWords.SuccessfulWords.Any()
+                    ? $"Words from folder {fileName} have been added."
+                    : $"Can't add words to {fileName} folder.");
+
+                _tClient.SendTextMessageAsync(mItem.ChatId, resultString.ToString(), ParseMode.Default, true, false, 0,
+                    new ReplyKeyboardRemove());
             });
 
             return new AnswerItem {Message ="Import is running..."};
