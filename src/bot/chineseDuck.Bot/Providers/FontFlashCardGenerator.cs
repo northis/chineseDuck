@@ -150,20 +150,6 @@ namespace ChineseDuck.Bot.Providers
                     img.Mutate(a => a.Fill(MainColor, new PathCollection(paths)));
                 }
 
-                if (learnMode == ELearnMode.FullView && !string.IsNullOrEmpty(word.Usage))
-                {
-                    var usageChars = CutToMaxRow(CutToMaxLength(word.Usage, MainMaxCharsCount), MainMaxLineCharsCount);
-                    var renderOptions = GetRenderOptions(KaitiMainFont, y);
-                    var size = TextMeasurer.Measure(usageChars, renderOptions);
-                    y += size.Height + LineSpace;
-
-                    if (size.Width > maxWidth)
-                        maxWidth = size.Width;
-
-                    var paths = RenderText(builder, renderer, renderOptions, usageChars);
-                    img.Mutate(a => a.Fill(UsageColor, new PathCollection(paths)));
-                }
-
                 var finalWidth = (int) (maxWidth + 2*Padding);
                 img.Mutate(a => a.Crop(new Rectangle((MaxWidth - finalWidth) / 2, 0, finalWidth, (int) y)));
 
@@ -223,7 +209,6 @@ namespace ChineseDuck.Bot.Providers
 
                 if (stringCount == maxLengthInRow)
                 {
-                    sb.Append(" ");
                     stringCount = 0;
                 }
             }
