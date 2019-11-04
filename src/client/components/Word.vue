@@ -151,7 +151,8 @@ export default class Word extends Vue {
     super();
     this.search = new JsSearch.Search("_id");
     this.search.indexStrategy = new JsSearch.AllSubstringsIndexStrategy();
-    this.search.addIndex("name");
+    this.search.addIndex("originalWord");
+    this.search.addIndex("translation");
   }
   @State word: I.IWordState;
   @State folder: I.IFolderState;
