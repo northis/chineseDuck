@@ -93,6 +93,10 @@ export class ModelsHolder {
     );
     wordSchemaObj.index({ lastModified: -1 });
     wordSchemaObj.index({ folder_id: 1 });
+    wordSchemaObj.index({ "full.id": 1 });
+    wordSchemaObj.index({ "trans.id": 1 });
+    wordSchemaObj.index({ "pron.id": 1 });
+    wordSchemaObj.index({ "orig.id": 1 });
 
     this.user = mongoose.model(
       ModelsEnum.user,

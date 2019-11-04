@@ -108,6 +108,7 @@
                     </label>
                   </div>
                   <div class="p-2">{{scoreToString(word.score)}}</div>
+                  <div class="p-2">{{word.usage}}</div>
                 </div>
                 <div class="col">
                   <img :src="getFileIdPath(word.full.id)"
