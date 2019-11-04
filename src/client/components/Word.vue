@@ -6,6 +6,7 @@
           <div class="input-group">
             <input type="text"
                    class="form-control"
+                   v-model="SearchText"
                    placeholder="Find words...">
           </div>
         </div>
@@ -88,7 +89,7 @@
                                class="list-group marginagble">
 
           <div class="list-group-item flex-column align-items-start d-flex w-100 justify-content-between"
-               v-for="word in words"
+               v-for="word in filteredWords"
                :key="word._id">
             <div class="container nopadding"
                  :width="word.full.width"
@@ -130,9 +131,10 @@ import * as I from "../types/interfaces";
 import { State } from "vuex-class";
 import * as ST from "../store/types";
 import Component from "vue-class-component";
-import { Emit } from "vue-property-decorator";
+import { Provide, Emit } from "vue-property-decorator";
 import { getStoreAccessors } from "vuex-typescript";
 import word from "../store/word";
+import * as JsSearch from "js-search";
 import VirtualScrollList from "./framework/VirtualScrollList.vue";
 import { isNullOrUndefined } from "util";
 import { route, routes } from "../services/routeService";
@@ -145,8 +147,16 @@ import folder from "../store/folder";
   }
 })
 export default class Word extends Vue {
+  constructor() {
+    super();
+    this.search = new JsSearch.Search("_id");
+    this.search.indexStrategy = new JsSearch.AllSubstringsIndexStrategy();
+    this.search.addIndex("name");
+  }
   @State word: I.IWordState;
   @State folder: I.IFolderState;
+  search: JsSearch.Search;
+  @Provide() SearchText = "";
 
   counter = 0;
 
@@ -207,6 +217,11 @@ export default class Word extends Vue {
   }
   get folders() {
     return this.folderStore.read(folder.getters.getFolders)(this.$store);
+  }
+  get filteredWords() {
+    return this.SearchText == ""
+      ? this.words
+      : this.search.search(this.SearchText);
   }
   get currentFolderId() {
     return +this.$route.params.id;
