@@ -111,6 +111,19 @@ export const id = {
    */
   delete: async function deleteFolder(req, res, next) {
     const folderId = req.params.folderId;
+
+    const folder = await mh.folder.findOne({ _id: folderId });
+    if (!isNullOrUndefined(folder)) {
+      const user = await mh.user.findOne({ _id: folder.owner_id });
+
+      if (!isNullOrUndefined(user) && user.currentFolder_id === folderId) {
+        await mh.user.findByIdAndUpdate(
+          { _id: user._id },
+          { currentFolder_id: 0 }
+        );
+      }
+    }
+
     const result = await mh.folder.deleteOne({ _id: folderId });
 
     if (result.n < 1) return errors.e404(res, "Folder is not found.");
