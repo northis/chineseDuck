@@ -181,7 +181,11 @@ export default class Word extends Vue {
     const idFolder = this.currentFolderId;
     this.store.commit(word.mutations.setFolder)(this.$store, idFolder);
     this.folderStore.dispatch(folder.actions.fetchFolders)(this.$store);
-    this.store.dispatch(word.actions.fetchWords)(this.$store, idFolder);
+    this.store
+      .dispatch(word.actions.fetchWords)(this.$store, idFolder)
+      .then(a => {
+        this.search.addDocuments(this.words);
+      });
   }
   destroyed() {
     window.removeEventListener("resize", this.resize);
