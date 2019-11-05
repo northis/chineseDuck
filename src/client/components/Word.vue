@@ -140,6 +140,7 @@ import { isNullOrUndefined } from "util";
 import { route, routes } from "../services/routeService";
 import { scoreToString } from "../services/convertService";
 import folder from "../store/folder";
+import { Tokenizer } from "../services/Tokenizer";
 
 @Component({
   components: {
@@ -151,6 +152,7 @@ export default class Word extends Vue {
     super();
     this.search = new JsSearch.Search("_id");
     this.search.indexStrategy = new JsSearch.AllSubstringsIndexStrategy();
+    this.search.tokenizer = new Tokenizer();
     this.search.addIndex("pronunciation");
     this.search.addIndex("translation");
     this.search.addIndex("originalWord");
