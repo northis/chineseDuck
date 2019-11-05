@@ -187,9 +187,8 @@ namespace ChineseDuck.BotService.Root
 
             services.AddTransient(a => new PreInstallCommand(ServiceProvider.GetService<IWordRepository>()));
 
-            services.AddTransient(a => new AdminCommand(ServiceProvider.GetService<IChineseWordParseProvider>(),
-                ServiceProvider.GetService<IWordRepository>(), ServiceProvider.GetService<IFlashCardGenerator>(),
-                MaxUploadFileSize, PreInstalledFolder, botSettings.ServerUserId, botSettings.AdminUserId));
+            services.AddTransient(a => new AdminCommand(ServiceProvider.GetService<IChineseWordParseProvider>(),ServiceProvider.GetService<IWordRepository>(), ServiceProvider.GetService<IFlashCardGenerator>(),
+                MaxUploadFileSize, PreInstalledFolder, botSettings.ServerUserId, botSettings.AdminUserId, tClient));
             services.AddTransient(a => new WebCommand(signer, botSettings.ApiPublicUrl));
 
             services.AddSingleton(a => new AntiDdosChecker(GetDateTime));

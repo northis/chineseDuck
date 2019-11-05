@@ -20,3 +20,4 @@ logs/
 apiKeys.js
 keys.js
 appsettings.json
+.vscode/launch.json

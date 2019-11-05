@@ -9,6 +9,6 @@ namespace ChineseDuck.Bot.Interfaces
         Syllable[] GetOrderedSyllables(string word);
         Syllable[] GetOrderedSyllables(IWord word);
 
-        ImportWordResult ImportWords(string[] rawWords, bool usePinyin);
+        ImportWordResult ImportWords(string[] rawWords);
     }
 }

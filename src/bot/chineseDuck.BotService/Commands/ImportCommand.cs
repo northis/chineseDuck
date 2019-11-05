@@ -19,7 +19,6 @@ namespace chineseDuck.BotService.Commands
         public const uint MaxImportRowLength = 200;
         public const char SeparatorChar = ';';
         public const char SeparatorChar1 = '；';
-        public const uint UsePinyinModeColumnsCount = 3;
         public const uint DefaultModeColumnsCount = 2;
         private readonly IFlashCardGenerator _flashCardGenerator;
         private readonly uint _maxImportFileSize;
@@ -33,6 +32,16 @@ namespace chineseDuck.BotService.Commands
             _repository = repository;
             _flashCardGenerator = flashCardGenerator;
             _maxImportFileSize = maxImportFileSize;
+        }
+
+        public bool ValidateArray(string[] wordStrings)
+        {
+            var firstWord = wordStrings.FirstOrDefault();
+            if (firstWord == null)
+                return false;
+
+            var columnsCount = firstWord.Split(SeparatorChar, SeparatorChar1).Length;
+            return columnsCount >= DefaultModeColumnsCount;
         }
 
         public override string GetCommandIconUnicode()
@@ -50,25 +59,10 @@ namespace chineseDuck.BotService.Commands
             return ECommands.Import;
         }
 
-        public bool? GetUsePinyin(string[] wordStrings)
-        {
-            var firstWord = wordStrings.FirstOrDefault();
-
-            if (firstWord == null)
-                return null;
-
-            var columnsCount = firstWord.Split(SeparatorChar, SeparatorChar1).Length;
-
-            if (columnsCount != UsePinyinModeColumnsCount && columnsCount != DefaultModeColumnsCount)
-                return null;
-
-            return columnsCount == UsePinyinModeColumnsCount;
-        }
-
         public override AnswerItem Reply(MessageItem mItem)
         {
             var loadFileMessage =
-                $"Please give me a .csv file. Rows format are 'word{SeparatorChar}translation' or 'word{SeparatorChar}pinyin{SeparatorChar}translation'. Be accurate using pinyin, write a digit after every syllable. For example, use 'shi4' for 4th tone in 'shì' or 'le' for zero  tone in 'le'{Environment.NewLine}The word processing may take some time, please wait until the import will be completed. File couldn't be larger than {_maxImportFileSize} bytes";
+                $"Please give me a .csv file. Rows format is 'word{SeparatorChar}translation{SeparatorChar}usage'. Usage is an optional part.{Environment.NewLine}Examples:{Environment.NewLine}什么{SeparatorChar1}What?{SeparatorChar1}这是什么？{Environment.NewLine}电脑{SeparatorChar1}computer{Environment.NewLine}The word processing may take some time, please wait until the import will be completed. File couldn't be larger than {_maxImportFileSize} bytes";
             
             if (mItem.Stream == null)
             {
@@ -109,6 +103,7 @@ namespace chineseDuck.BotService.Commands
 
         internal void UploadFiles(IWord word)
         {
+            Console.WriteLine("Generate flashcard for " + word.OriginalWord);
             var imageResult = _flashCardGenerator.Generate(word, ELearnMode.FullView);
             var fileId = _repository.AddFile(imageResult.ImageBody);
             word.CardAll = imageResult.ToWordFile(fileId);
@@ -153,13 +148,12 @@ namespace chineseDuck.BotService.Commands
 
         protected AnswerItem SaveAnswerItem(string[] wordStrings, long userId)
         {
-            var usePinyin = GetUsePinyin(wordStrings);
             var answer = new AnswerItem
             {
                 Message = GetCommandIconUnicode()
             };
 
-            if (usePinyin == null)
+            if (!ValidateArray(wordStrings))
                 return answer;
 
             var maxStringLength = wordStrings.Select(a => a.Length).Max();
@@ -170,7 +164,7 @@ namespace chineseDuck.BotService.Commands
                 return answer;
             }
 
-            var result = _parseProvider.ImportWords(wordStrings, usePinyin.Value);
+            var result = _parseProvider.ImportWords(wordStrings);
 
             if (result == null)
                 return answer;

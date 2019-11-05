@@ -30,7 +30,7 @@ namespace ChineseDuck.Bot.Providers
         private const int HanMaxLineCharsCount = 7;
         private const int HanMaxLinesCount = 3;
         private const int HanMaxCharsCount = HanMaxLineCharsCount * HanMaxLinesCount;
-        private const int MainMaxLineCharsCount = 20;
+        private const int MainMaxLineCharsCount = 30;
         private const int MainMaxLinesCount = 3;
         private const int MainMaxCharsCount = MainMaxLineCharsCount * MainMaxLinesCount;
         private const int ViewPortWidth = MaxWidth - 2* Padding;
@@ -92,7 +92,7 @@ namespace ChineseDuck.Bot.Providers
                 
                 if (learnMode == ELearnMode.FullView || learnMode != ELearnMode.OriginalWord)
                 {
-                    var text = CutToMaxRow(originalChars, HanMaxLineCharsCount);
+                    var text = CutToMaxRow(originalChars, HanMaxLineCharsCount, true);
                     var renderOptions = GetRenderOptions(KaitiHanFont, y);
                     var size = TextMeasurer.Measure(text, renderOptions);
                     y += size.Height + LineSpace;
@@ -150,20 +150,6 @@ namespace ChineseDuck.Bot.Providers
                     img.Mutate(a => a.Fill(MainColor, new PathCollection(paths)));
                 }
 
-                if (learnMode == ELearnMode.FullView && !string.IsNullOrEmpty(word.Usage))
-                {
-                    var usageChars = CutToMaxRow(CutToMaxLength(word.Usage, MainMaxCharsCount), MainMaxLineCharsCount);
-                    var renderOptions = GetRenderOptions(KaitiMainFont, y);
-                    var size = TextMeasurer.Measure(usageChars, renderOptions);
-                    y += size.Height + LineSpace;
-
-                    if (size.Width > maxWidth)
-                        maxWidth = size.Width;
-
-                    var paths = RenderText(builder, renderer, renderOptions, usageChars);
-                    img.Mutate(a => a.Fill(UsageColor, new PathCollection(paths)));
-                }
-
                 var finalWidth = (int) (maxWidth + 2*Padding);
                 img.Mutate(a => a.Crop(new Rectangle((MaxWidth - finalWidth) / 2, 0, finalWidth, (int) y)));
 
@@ -206,7 +192,7 @@ namespace ChineseDuck.Bot.Providers
             return needCut ? input.Substring(0, maxLength - postfixIfCut.Length) + postfixIfCut : input;
         }
 
-        private static string CutToMaxRow(string input, int maxLengthInRow)
+        private static string CutToMaxRow(string input, int maxLengthInRow, bool useWrap = false)
         {
             var sb = new StringBuilder();
             var stringCount = 0;
@@ -223,7 +209,8 @@ namespace ChineseDuck.Bot.Providers
 
                 if (stringCount == maxLengthInRow)
                 {
-                    sb.Append(" ");
+                    if (useWrap)
+                        sb.Append(" ");
                     stringCount = 0;
                 }
             }

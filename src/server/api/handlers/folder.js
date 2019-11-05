@@ -3,6 +3,7 @@ import { mh, defaultFolderId } from "../../../server/api/db";
 import * as folderVal from "../../../shared/validation";
 import * as errors from "../../errors";
 import { Settings } from "../../../../config/common";
+import { deleteFiles } from "./word";
 import { isNullOrUndefined, isArray, isNumber } from "util";
 
 const catchUniqueName = (res, error) => {
@@ -110,12 +111,42 @@ export const id = {
    */
   delete: async function deleteFolder(req, res, next) {
     const folderId = req.params.folderId;
+
+    const folder = await mh.folder.findOne({ _id: folderId });
+    if (!isNullOrUndefined(folder)) {
+      const idUser = folder.owner_id;
+      const user = await mh.user.findOne({ _id: idUser });
+
+      if (!isNullOrUndefined(user) && user.currentFolder_id == folderId) {
+        await mh.user.findByIdAndUpdate(
+          { _id: idUser },
+          { currentFolder_id: 0 }
+        );
+      }
+    }
+
     const result = await mh.folder.deleteOne({ _id: folderId });
 
     if (result.n < 1) return errors.e404(res, "Folder is not found.");
 
-    // TODO Yes, it should be wrapped by a transaction, but i am not sure it is really need to be here these days. May be i will add it in the future.
+    const toDeletefileIds = [];
+
+    toDeletefileIds.concat(
+      await mh.word.find({ folder_id: folderId }).select({ "full.id": 1 })
+    );
+    toDeletefileIds.concat(
+      await mh.word.find({ folder_id: folderId }).select({ "trans.id": 1 })
+    );
+    toDeletefileIds.concat(
+      await mh.word.find({ folder_id: folderId }).select({ "pron.id": 1 })
+    );
+    toDeletefileIds.concat(
+      await mh.word.find({ folder_id: folderId }).select({ "orig.id": 1 })
+    );
+
     await mh.word.deleteMany({ folder_id: folderId });
+
+    deleteFiles(toDeletefileIds);
     res.status(200).send("Deleted");
   },
   /**

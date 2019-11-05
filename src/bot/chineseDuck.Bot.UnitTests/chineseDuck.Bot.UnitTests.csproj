@@ -16,4 +16,17 @@
     <ProjectReference Include="..\chineseDuck.Bot\chineseDuck.Bot.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="csv\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\shared\hsk\en_HSK_1.csv" Link="csv\en_HSK_1.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\ru_HSK_1.csv" Link="csv\ru_HSK_1.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

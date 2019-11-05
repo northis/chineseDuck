@@ -144,12 +144,12 @@ namespace ChineseDuck.Bot.Providers
 
         public string[] ToSyllablesNumberAllTones(string syllableNumberTone)
         {
-            var cleanSyll = Regex.Replace(syllableNumberTone, ReplaceExludeRegexPattern, string.Empty);
+            var cleanSyllable = Regex.Replace(syllableNumberTone, ReplaceExcludeRegexPattern, string.Empty);
 
-            return new[] {cleanSyll + "0", cleanSyll + "1", cleanSyll + "2", cleanSyll + "3", cleanSyll + "4"};
+            return new[] {cleanSyllable + "0", cleanSyllable + "1", cleanSyllable + "2", cleanSyllable + "3", cleanSyllable + "4"};
         }
 
-        public const string ReplaceExludeRegexPattern = "[^a-z]";
+        public const string ReplaceExcludeRegexPattern = "[^a-z]";
 
         #endregion
     }
