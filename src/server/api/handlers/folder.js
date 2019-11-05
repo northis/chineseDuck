@@ -114,11 +114,12 @@ export const id = {
 
     const folder = await mh.folder.findOne({ _id: folderId });
     if (!isNullOrUndefined(folder)) {
-      const user = await mh.user.findOne({ _id: folder.owner_id });
+      const idUser = folder.owner_id;
+      const user = await mh.user.findOne({ _id: idUser });
 
-      if (!isNullOrUndefined(user) && user.currentFolder_id === folderId) {
+      if (!isNullOrUndefined(user) && user.currentFolder_id == folderId) {
         await mh.user.findByIdAndUpdate(
-          { _id: user._id },
+          { _id: idUser },
           { currentFolder_id: 0 }
         );
       }
