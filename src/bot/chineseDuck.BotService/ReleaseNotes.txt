@@ -2,6 +2,7 @@ Release notes:
 ver.0.7.0 (29 october 2019)
 =========================
 [+] HSK 1-6 pre-installed folder for English and Russian languages
+[+] Usage property support
 
 ver.0.6.1.0 (22 october 2019)
 =========================
