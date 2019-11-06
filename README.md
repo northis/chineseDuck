@@ -18,6 +18,10 @@ Telegram bot @ChineseDuckBot to study Chinese language via memorizing flashcards
 - Pre-installed cards for HSK1, HSK2,... to bulk import to a separate folder.
   Now available HSK1-6 pre-installed folders: english & russain versions
 
+## Screenshots
+
+![Commands in bot](/images/commands.png)
+
 ## Roadmap
 
 - Using webpart to manipulating the words
