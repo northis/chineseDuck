@@ -43,6 +43,11 @@ Telegram bot @ChineseDuckBot to study Chinese language via memorizing flashcards
 ## Roadmap
 
 - Using webpart to manipulating the words
+- Wiki-part
+- Change domain
+- More languages in csv templates
+- Fix bugs & implement features
+- Improve deploy & changelog
 
 ## API
 
