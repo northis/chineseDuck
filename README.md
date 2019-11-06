@@ -20,7 +20,9 @@ Telegram bot @ChineseDuckBot to study Chinese language via memorizing flashcards
 
 ## Screenshots
 
-![Commands in bot](/images/commands.png =250x250)
+<img src="images/words.png" alt="Words on site" width="728.38" />
+<img src="images/commands.png" alt="Commands in bot" width="354.3"/>
+<img src="images/learning.png" alt="Leadning in bot" height="400" />
 
 ## Roadmap
 
