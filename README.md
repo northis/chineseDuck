@@ -20,7 +20,7 @@ Telegram bot @ChineseDuckBot to study Chinese language via memorizing flashcards
 
 ## Screenshots
 
-![Commands in bot](/images/commands.png)
+![Commands in bot](/images/commands.png =250x250)
 
 ## Roadmap
 
