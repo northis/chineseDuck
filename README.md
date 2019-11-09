@@ -55,7 +55,7 @@ You can find the description of Chinese Duck Bot Api on [our Swagger page](https
 
 ## Build
 
-1. Create a `keys.js` file in the root of the project folder based on `keys.template.js` file.
+1. Create a `config/keys.js` file in the root of the project folder based on `keys.template.js` file.
 2. In `src/bot/chineseDuck.BotService/` folder, create an `appsettings.json` file based on `appsettings.template.json` file.
 3. Configure these files according your data - logins, passwords, machine names, etc.
 4. Be sure you have installed NodeJS 10+ & dotnet core 2.1+ on your machine.

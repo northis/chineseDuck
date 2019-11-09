@@ -13,6 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="..\..\..\config\appsettings.json" Link="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\..\package.json" Link="package.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

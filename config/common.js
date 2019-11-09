@@ -23,7 +23,7 @@ let keys = {
 
 if (getMode() !== ModeEnum.Test) {
   try {
-    keys = require("../keys.js").Keys;
+    keys = require("./keys.js").Keys;
   } catch (error) {
     console.error(error);
   }
