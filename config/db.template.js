@@ -1,16 +1,8 @@
-use admin
-db.createUser(
-  {
-    user: "admin",
-    pwd: "supassword",
-    roles: [{ role: "root", db: "admin" }]
-  }
-);
-use chineseDuck
+db.auth('adminUser', 'adminPassword');
 db.createUser(
   {
     user: "apiUser",
-    pwd: "qipassword",
+    pwd: "apiPassword",
     roles: [{ role: "readWrite", db: "chineseDuck" }]
   }
 );
