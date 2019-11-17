@@ -41,6 +41,6 @@ cd ../../..
 echo "Running containers..."
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d # --force-recreate
 echo "Reloading proxy nginx server..."
-docker exec websrv nginx -s reload
+docker exec duck_web nginx -s reload
 exit
 

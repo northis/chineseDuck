@@ -5,31 +5,28 @@ services:
     hostname: duck_mongo
     restart: unless-stopped
     container_name: duck_mongo
-
     environment:
       - MONGO_INITDB_DATABASE=admin
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=pwd
-
     volumes:
       - ./config/db.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - ./data:/data/db
     networks:
       udd3r_net:
           ipv4_address: 10.1.1.4
+
   duck_web:
     image: umputun/nginx-le:latest
     hostname: duck_web
     restart: unless-stopped
     container_name: duck_web
-
     volumes:
       - ./config/websrv.conf:/etc/nginx/service.conf
       - ./ssl:/etc/nginx/ssl
     ports:
       - "80:80"
       - "443:443"
-
     environment:
         - TZ=Europe
         - LETSENCRYPT=true
@@ -37,13 +34,11 @@ services:
         - LE_FQDN=PUBLIC_URL
         - SSL_CERT=le-crt.pem
         - SSL_KEY=le-key.pem
-        - SSL_CHAIN_CERT=le-chain-crt.pem
-        #- NGINX_VERSION=1.15.7-1~stretch
-        #- NJS_VERSION=1.15.7.0.2.6-1~stretch
-    
+        - SSL_CHAIN_CERT=le-chain-crt.pem    
     networks:
       udd3r_net:
         ipv4_address: 10.1.1.5
+
   duck_api:
     image: node:10
     hostname: duck_api
@@ -60,6 +55,7 @@ services:
       - ./build/public:/app/public
     ports:
       - "3000:3000"
+
   duck_bot:
     image: mcr.microsoft.com/dotnet/core/sdk:2.1
     working_dir: /app
@@ -74,7 +70,7 @@ services:
     networks:
       udd3r_net:
           ipv4_address: 10.1.1.7
-
+          
 networks:
   udd3r_net:
     name: udd3r
