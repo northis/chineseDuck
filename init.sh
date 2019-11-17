@@ -1,24 +1,9 @@
 #!/bin/bash
-#root db admin in mongo
-MONGO_ADMIN_PASSWORD="mopassword"
 
-#main user in db for API
-MONGO_API_USER="apiUser"
-MONGO_API_PASSWORD="qipassword"
-
-#telegram bot token
-TELEGRAM_BOT_KEY="100000001:BAAAAAAAAAAAAA_AAAAAAAAAAAAAAAAAAAB"
-
-#address for Webhooks in bot, API and web-UI.
-PUBLIC_URL="new-site.com"
-#secret bot command for administrative purposes
-CERT_EMAIL="north@live.ru"
-
-#secret bot command for administrative purposes
-SERVICE_COMMAND="pepyaka"
-
-#secret bot command for administrative purposes
-SESSION_PASSWORD="toporno"
+# Load up .env
+set -o allexport
+[[ -f .env ]] && source .env
+set +o allexport
 
 cd config
 
@@ -45,8 +30,7 @@ sed -e "s/CERT_EMAIL/$CERT_EMAIL/; s/MONGO_INITDB_ROOT_PASSWORD=pwd/\
  MONGO_INITDB_ROOT_PASSWORD=$MONGO_ADMIN_PASSWORD/; \
  s/PUBLIC_URL/$PUBLIC_URL/" docker-compose.yml > docker-compose.prod.yml
 
-# we don't want to publish changes in this file
-git update-index --assume-unchanged init.sh
+echo "Building node api & bot..."
 npm install
 npm run build
 cd src/bot/chineseDuck.BotService
@@ -54,7 +38,9 @@ dotnet build -c release
 dotnet publish -c release
 cd ../../..
 
+echo "Running containers..."
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d # --force-recreate
+echo "Reloading proxy nginx server..."
 docker exec websrv nginx -s reload
 exit
 

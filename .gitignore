@@ -25,3 +25,4 @@ appsettings.json
 db.js
 docker-compose.prod.yml
 websrv.conf
+.env
