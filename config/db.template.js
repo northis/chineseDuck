@@ -1,4 +1,4 @@
-db.auth('adminUser', 'adminPassword');
+db.auth('admin', 'adminPassword');
 db.createUser(
   {
     user: "apiUser",
