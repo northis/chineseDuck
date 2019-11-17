@@ -11,6 +11,6 @@ dotnet build -c release
 dotnet publish -c release
 cd ../../..
 echo "Running containers..."
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d --force-recreate --build duck_api
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d --force-recreate --build duck_bot
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --force-recreate --build duck_api
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --force-recreate --build duck_bot
 exit
