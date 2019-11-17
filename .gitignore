@@ -11,6 +11,7 @@ bin/
 obj/
 logs/
 data/
+ssl/
 
 # Editor directories and files
 .idea

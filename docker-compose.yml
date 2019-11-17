@@ -1,10 +1,10 @@
 version: '3.5'
 services:
-  mongoDb:
+  duck_mongo:
     image: mongo:latest
-    hostname: mongoDb
+    hostname: duck_mongo
     restart: unless-stopped
-    container_name: mongoDb
+    container_name: duck_mongo
 
     environment:
       - MONGO_INITDB_DATABASE=admin
@@ -17,15 +17,15 @@ services:
     networks:
       udd3r_net:
           ipv4_address: 10.1.1.4
-  websrv:
+  duck_web:
     image: umputun/nginx-le:latest
-    hostname: websrv
+    hostname: duck_web
     restart: unless-stopped
-    container_name: websrv
+    container_name: duck_web
 
     volumes:
       - ./config/websrv.conf:/etc/nginx/service.conf
-      #- ./etc/ssl:/etc/nginx/ssl
+      - ./ssl:/etc/nginx/ssl
     ports:
       - "80:80"
       - "443:443"
@@ -35,21 +35,21 @@ services:
         - LETSENCRYPT=true
         - LE_EMAIL=CERT_EMAIL
         - LE_FQDN=PUBLIC_URL
-        #- SSL_CERT=le-crt.pem
-        #- SSL_KEY=le-key.pem
-        #- SSL_CHAIN_CERT=le-chain-crt.pem
+        - SSL_CERT=le-crt.pem
+        - SSL_KEY=le-key.pem
+        - SSL_CHAIN_CERT=le-chain-crt.pem
         #- NGINX_VERSION=1.15.7-1~stretch
         #- NJS_VERSION=1.15.7.0.2.6-1~stretch
     
     networks:
       udd3r_net:
         ipv4_address: 10.1.1.5
-  webApi:
+  duck_api:
     image: node:10
-    hostname: webApi
+    hostname: duck_api
     working_dir: /app
     restart: unless-stopped
-    container_name: webApi
+    container_name: duck_api
     command: bash -c "npm install && node /app/server.js"
     networks:
       udd3r_net:
@@ -60,12 +60,12 @@ services:
       - ./build/public:/app/public
     ports:
       - "3000:3000"
-  bot:
+  duck_bot:
     image: mcr.microsoft.com/dotnet/core/sdk:2.1
     working_dir: /app
-    hostname: bot
+    hostname: duck_bot
     restart: unless-stopped
-    container_name: bot
+    container_name: duck_bot
     command: bash -c "dotnet /app/chineseDuck.BotService.dll"
     volumes:
       - ./src/bot/chineseDuck.BotService/bin/release/netcoreapp2.1/publish:/app

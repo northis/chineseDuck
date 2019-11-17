@@ -46,11 +46,15 @@ sed -e "s/CERT_EMAIL/$CERT_EMAIL/; s/MONGO_INITDB_ROOT_PASSWORD=pwd/\
  s/PUBLIC_URL/$PUBLIC_URL/" docker-compose.yml > docker-compose.prod.yml
 
 # we don't want to publish changes in this file
-#git update-index --assume-unchanged init.sh
-#npm install
+git update-index --assume-unchanged init.sh
+npm install
 npm run build
 cd src/bot/chineseDuck.BotService
 dotnet build -c release
 dotnet publish -c release
+cd ../../..
+
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d # --force-recreate
+docker exec websrv nginx -s reload
 exit
 
