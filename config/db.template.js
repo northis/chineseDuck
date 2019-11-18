@@ -1,4 +1,6 @@
+use admin;
 db.auth('admin', 'adminPassword');
+use chineseDuck;
 db.createUser(
   {
     user: "apiUser",
