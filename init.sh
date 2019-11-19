@@ -14,8 +14,8 @@ keys.template.js > keys.js
 
 #replace appsettings.json
 sed -r -e "s/webpartsite.com/$PUBLIC_URL/; s/TELEGRAM_BOT_KEY/$TELEGRAM_BOT_KEY/; \
-s/PWD/$SERVICE_COMMAND/; s/(\"AdminUserId\":\s)(\d+)/\1$ADMIN_USER_ID/; \
-s/(\"ServerUserId\":\s)(\d+)/\1$SERVER_USER_ID/; s/(\"UserId\":\s)(\d+)/\1$USER_ID/" appsettings.template.json > appsettings.json
+s/PWD/$SERVICE_COMMAND/; s/(\"AdminUserId\":\s)([0-9]+)/\1$ADMIN_USER_ID/g; \
+s/(\"ServerUserId\":\s)([0-9]+)/\1$SERVER_USER_ID/g; s/(\"UserId\":\s)([0-9]+)/\1$USER_ID/g" appsettings.template.json > appsettings.json
 
 #replace db.js
 sed -e "s/adminPassword/$MONGO_ADMIN_PASSWORD/;\
