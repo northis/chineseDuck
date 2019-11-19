@@ -1,4 +1,9 @@
 Release notes:
+ver.0.7.1 (24 november 2019)
+=========================
+[+] New domain
+[+] New deploy schema
+
 ver.0.7.0 (29 october 2019)
 =========================
 [+] HSK 1-6 pre-installed folder for English and Russian languages

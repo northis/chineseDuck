@@ -12,6 +12,7 @@ obj/
 logs/
 data/
 ssl/
+backup/
 
 # Editor directories and files
 .idea
