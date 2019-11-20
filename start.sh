@@ -1,4 +1,13 @@
 #!/bin/bash
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 
+   exit 1
+fi
+
+if ! [ -x "$(command -v docker-compose)" ]; then
+    echo "Please, install docker compose"
+   exit 1
+fi
 
 # Load up .env
 echo "Loading from your .env file..."
