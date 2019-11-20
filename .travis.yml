@@ -8,8 +8,6 @@ before_install:
 install:
   - npm install
 script:
-  - dotnet restore
-  - dotnet build
   - dotnet test ./src/bot/chineseDuck.Bot.UnitTests/chineseDuck.Bot.UnitTests.csproj -c Release -f netcoreapp2.1
   - npm run test
   - npm run test-client

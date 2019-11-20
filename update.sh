@@ -7,7 +7,6 @@ echo "Building node api & bot..."
 npm install
 npm run build
 cd src/bot/chineseDuck.BotService
-dotnet build -c release
 dotnet publish -c release
 cd ../../..
 echo "Running containers..."
