@@ -1,11 +1,13 @@
 #!/bin/bash
 
 # Load up .env
+echo "Loading from your .env file..."
 set -o allexport
 [[ -f .env ]] && source .env
 set +o allexport
 
 cd config
+echo "Applying the settings..."
 
 #replace keys.js
 sed -e "s/USER:PASSWORD/$MONGO_API_USER:$MONGO_API_PASSWORD/;\
@@ -35,13 +37,14 @@ echo "Building node api & bot..."
 npm install
 npm run build
 cd src/bot/chineseDuck.BotService
-dotnet build -c release
-dotnet publish -c release /p:NoBuild=false
+dotnet publish -c release
 cd ../../..
 
 echo "Running containers..."
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d --force-recreate
+
 echo "Reloading proxy nginx server..."
+sleep .5
 docker exec duck_web nginx -s reload
 exit
 
