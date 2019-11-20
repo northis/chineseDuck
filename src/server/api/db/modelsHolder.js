@@ -86,17 +86,17 @@ export class ModelsHolder {
       );
     });
 
-    folderSchemaObj.index({ owner_id: 1, name: "text" }, { unique: true });
+    folderSchemaObj.index({ owner_id: 1, name: "text" }, { unique: true, name: "owner_id_1_name_text" });
     wordSchemaObj.index(
       { originalWord: "text", owner_id: 1, folder_id: 1 },
-      { unique: true }
+      { unique: true,name: "originalWord_text_owner_id_1_folder_id_1" }
     );
-    wordSchemaObj.index({ lastModified: -1 });
-    wordSchemaObj.index({ folder_id: 1 });
-    wordSchemaObj.index({ "full.id": 1 });
-    wordSchemaObj.index({ "trans.id": 1 });
-    wordSchemaObj.index({ "pron.id": 1 });
-    wordSchemaObj.index({ "orig.id": 1 });
+    wordSchemaObj.index({ lastModified: -1 }, {name: "lastModified_-1"});
+    wordSchemaObj.index({ folder_id: 1 }, {name: "folder_id_1"});
+    wordSchemaObj.index({ "full.id": 1 }, {name: "full_id"});
+    wordSchemaObj.index({ "trans.id": 1 }, {name: "trans_id"});
+    wordSchemaObj.index({ "pron.id": 1 }, {name: "pron_id"});
+    wordSchemaObj.index({ "orig.id": 1 }, {name: "orig_id"});
 
     this.user = mongoose.model(
       ModelsEnum.user,
