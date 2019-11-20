@@ -51,21 +51,24 @@ Telegram bot @ChineseDuckBot to study Chinese language via memorizing flashcards
 
 ## API
 
-You can find the description of Chinese Duck Bot Api on [our Swagger page](https://app.swaggerhub.com/apis/northis/chineseDuckApi/1.3).
+You can find the description of Chinese Duck Bot Api on [Swagger page](https://app.swaggerhub.com/apis/northis/chineseDuckApi/1.3).
 
 ## Deploying
 ### Requirements
 - nodeJS 10+
 - dotnetcore 2.1+
 - docker compose 1.24+
+
 ### First run or force udpate
+You can examine `docker-compose.yml` before.
 
 Create a `.env` file in the root of the project folder based on `.env.template.js` file, fill it with your own values and run
 ```sh
 sudo start.sh
 ```
 
-This script builds & deploys this system to docker containers. There will be 4 containers: mongo db server, front nginx web-server, back nodeJs api/website server, dotnetcore bot server.
+This script builds & deploys this system to docker containers. There will be 4 containers: mongo db server, front nginx web-server, back nodeJs api/website server, dotnetcore bot server. 
+Web-server is configured to get & renew SSL Let's encrypt certificate automatically, so there is no need to install it manually (but you can=).
 
 ### Common usage
 
