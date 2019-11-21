@@ -36,9 +36,5 @@ namespace ChineseDuck.Bot.Rest.Client
                     _tempFolderPath = value  + Path.DirectorySeparatorChar;
             }
         }
-
-        private const string Iso8601DatetimeFormat = "o";
-
-        private static string _dateTimeFormat = Iso8601DatetimeFormat;
     }
 }
