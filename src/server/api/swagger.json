@@ -2,14 +2,13 @@
   "openapi": "3.0.0",
   "servers": [
     {
-      "url": "https://chineseduck.online/api/v1/"
+      "url": "https://chineseduck.me/api/v1/"
     }
   ],
   "info": {
     "description": "Chinese Duck Bot Api",
     "version": "1.3",
     "title": "Chinese Duck Bot Api",
-    "termsOfService": "https://chineseduck.online/terms/",
     "contact": {
       "email": "north@live.ru"
     },
@@ -784,7 +783,7 @@
     "/folder/template": {
       "get": {
         "tags": ["folder", "template"],
-        "summary": "Get pre-insalled folders",
+        "summary": "Get pre-intsalled folders",
         "operationId": "getTemplateFolders",
         "responses": {
           "default": {

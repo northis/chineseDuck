@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces.Data;
 using ChineseDuck.Bot.Rest.Client;
