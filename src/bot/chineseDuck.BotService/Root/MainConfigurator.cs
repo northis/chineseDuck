@@ -89,7 +89,7 @@ namespace ChineseDuck.BotService.Root
                     sb.AppendLine($"{json.description} ver. {json.version}");
                     sb.AppendLine($"Author: {json.author}");
                     sb.AppendLine("Contact me: @DeathWhinny");
-                    sb.AppendLine($"Web-part: {BotSettings.WebhookUrl}");
+                    sb.AppendLine($"Web-part: {BotSettings.WebhookPublicUrl}");
                     sb.AppendLine($"Github: {json.homepage}");
 
                     _aboutInfo = sb.ToString();
