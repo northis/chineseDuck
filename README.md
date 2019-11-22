@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/northis/chineseDuck.svg?branch=master)](https://travis-ci.org/northis/chineseDuck)
 
-Telegram bot @ChineseDuckBot to study Chinese language via memorizing flashcards.
+Telegram bot [@ChineseDuckBot](https://t.me/ChineseDuckBot) to study Chinese language via memorizing flashcards.
 
 Web-part: https://chineseduck.me
 
@@ -11,7 +11,7 @@ Web-part: https://chineseduck.me
 - Generating flashcards based on users' vocabulary
 - Tone highlighting with colors
 - Auto-split word and phrases to syllables
-- Web-part to view user's words
+- Web-part to view user's words. Authorization can work even if Telegram is blocked.
 - Folders to group user's words
 - Several modes how to learn the words - by viewing or by multipal-chioce tests
 - Collection personal score
