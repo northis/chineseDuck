@@ -235,7 +235,7 @@ const clientConfig = {
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
     alias: {
-      vue: "vue/dist/vue.js"
+      vue: isDebug ? "vue/dist/vue.js" : "vue/dist/vue.min.js"
     }
   },
 
