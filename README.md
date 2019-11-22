@@ -4,6 +4,8 @@
 
 Telegram bot @ChineseDuckBot to study Chinese language via memorizing flashcards.
 
+Web-part: https://chineseduck.me
+
 ## Key features
 
 - Generating flashcards based on users' vocabulary
@@ -42,9 +44,8 @@ Telegram bot @ChineseDuckBot to study Chinese language via memorizing flashcards
 
 ## Roadmap
 
-- Using webpart to manipulating the words
+- Manipulating the words using web-part
 - Wiki-part
-- Change domain
 - More languages in csv templates
 - Fix bugs & implement features
 - Improve deploy & changelog
@@ -105,4 +106,5 @@ dotnet src/bot/chineseDuck.BotService/bin/Debug/netcoreapp2.1/ChineseDuck.BotSer
 npm run test
 npm run test-client
 ```
-The tests use in-memory db, you don't need to configure them at all. If the tests exits immediately after the start, may be it is because you have not `libcurl3`. Install it and try again. For testing you can use Travis CI configuration file `.travis.yml` too.
+The tests use in-memory db, so you don't need to configure them at all. If the tests exit immediately after the start, try to install  `libcurl3`. 
+Examine Travis CI configuration file `.travis.yml` for details.
