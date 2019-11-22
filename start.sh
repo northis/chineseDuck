@@ -46,14 +46,14 @@ echo "Building node api & bot..."
 npm install
 npm run build
 cd src/bot/chineseDuck.BotService
-dotnet publish -c release
+dotnet publish -c release /p:NoBuild=false
 cd ../../..
 
 echo "Running containers..."
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d --force-recreate
 
 echo "Reloading proxy nginx server..."
-sleep .5
+sleep .10
 docker exec duck_web nginx -s reload
 exit
 

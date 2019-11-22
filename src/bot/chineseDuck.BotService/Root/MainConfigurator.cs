@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
+using System.Text;
 using chineseDuck.Bot.Security;
 using chineseDuck.BotService.Commands;
 using chineseDuck.BotService.Commands.Common;
@@ -35,6 +35,18 @@ namespace ChineseDuck.BotService.Root
         private string _releaseNotesInfo;
         private string _aboutInfo;
         private string _preInstalledFolder;
+        private BotSettingHolder _botSettings;
+
+        public BotSettingHolder BotSettings
+        {
+            get
+            {
+                if (_botSettings != null) return _botSettings;
+
+                _botSettings = new BotSettingHolder(Configuration);
+                return _botSettings;
+            }
+        }
 
         public string ReleaseNotesInfo
         {
@@ -63,13 +75,24 @@ namespace ChineseDuck.BotService.Root
         {
             get
             {
-                if (_aboutInfo != null) return _aboutInfo;
+                if (_aboutInfo != null)
+                {
+                    return _aboutInfo;
+                }
 
                 var path = Path.Combine(CurrentDir, "package.json");
                 if (File.Exists(path))
                 {
                     dynamic json = JObject.Parse(File.ReadAllText(path));
-                    _aboutInfo = $"{json.description} ver. {json.version}{Environment.NewLine}Author: {json.author}{Environment.NewLine}Contact me: @DeathWhinny{Environment.NewLine}Web-part: {json.url}{Environment.NewLine}Github: {json.homepage} {Environment.NewLine}";
+
+                    var sb = new StringBuilder();
+                    sb.AppendLine($"{json.description} ver. {json.version}");
+                    sb.AppendLine($"Author: {json.author}");
+                    sb.AppendLine("Contact me: @DeathWhinny");
+                    sb.AppendLine($"Web-part: {BotSettings.WebhookPublicUrl}");
+                    sb.AppendLine($"Github: {json.homepage}");
+
+                    _aboutInfo = sb.ToString();
                 }
                 else
                 {
@@ -120,7 +143,7 @@ namespace ChineseDuck.BotService.Root
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var botSettings = new BotSettingHolder(Configuration);
+            var botSettings = BotSettings;
             var tClient = new TelegramBotClient(botSettings.TelegramBotKey)
                 { Timeout = botSettings.PollingTimeout };
 
