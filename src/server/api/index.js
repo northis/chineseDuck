@@ -17,11 +17,8 @@ var router = Router();
 router.route(routes._user_login.value).get(user.login.get);
 router.route(routes._user_logout.express).get(user.logout.get);
 router.route(routes._service_datetime.express).get(service.main.get);
-
-router
-  .route(routes._word_file__fileId_.express)
-  // .all(accessControl(routes._word_file__fileId_))
-  .get(word.file.get);
+router.route(routes._word_file__fileId_.express).get(word.file.get);
+router.route(routes._folder_template.express).get(folder.template.get);
 
 router.use(privateRoutesFilter, (req, res, next) => {
   if (!req.isAuthenticated()) {
@@ -257,5 +254,11 @@ router
   .all(accessControl(routes._word_user__userId__currentWord))
   .all(userControl)
   .get(word.studyCurrent.get);
+
+router
+  .route(routes._folder_template_user__userId_.express)
+  .all(accessControl(routes._folder_template_user__userId_))
+  .all(userControl)
+  .post(folder.template.post);
 
 export default router;

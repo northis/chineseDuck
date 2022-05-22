@@ -57,6 +57,17 @@ namespace ChineseDuck.Bot.Rest.Api
         /// <param name="folderId">The folder id that needs to be deleted.</param>
         /// <param name="folder">folder with new name</param>
         void UpdateFolder (long folderId, IFolder folder);
+
+        /// <summary>
+        /// Get pre-installed folders
+        /// </summary>
+        /// <returns>Template folders</returns>
+        IFolder[] GetTemplateFolders();
+
+        /// <summary>
+        /// Adds specified template folders to user's.
+        /// </summary>
+        void AddTemplateFolders(long userId, long[] folderIds);
     }
 
     /// <summary>
@@ -98,7 +109,7 @@ namespace ChineseDuck.Bot.Rest.Api
             ApiClient.CheckResponse(response);
         }
            
-        public IFolder[] GetFoldersForCurrentUser ()
+        public IFolder[] GetFoldersForCurrentUser()
         {
             var path = "/folder";
             var response = ApiClient.CallApi(path, Method.GET);
@@ -136,6 +147,24 @@ namespace ChineseDuck.Bot.Rest.Api
             var postBody = ApiClient.Serialize(folder);
     
             var response = ApiClient.CallApi(path, Method.PUT, postBody);
+            ApiClient.CheckResponse(response);
+        }
+
+        public IFolder[] GetTemplateFolders()
+        {
+            var path = "/folder/template";
+            var response = ApiClient.CallApi(path, Method.GET);
+
+            ApiClient.CheckResponse(response);
+            return ApiClient.Deserialize<List<Folder>>(response).Cast<IFolder>().ToArray();
+        }
+
+        public void AddTemplateFolders(long userId, long[] folderIds)
+        {
+            var path = $"/folder/template/user/{userId}";
+            var postBody = ApiClient.Serialize(folderIds);
+            var response = ApiClient.CallApi(path, Method.POST, postBody);
+
             ApiClient.CheckResponse(response);
         }
     }

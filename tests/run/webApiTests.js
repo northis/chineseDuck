@@ -26,6 +26,7 @@ export default () => {
   testWord();
   testService();
   testStudy();
+  tesPreInstalled();
 };
 function testUser() {
   it(`${routes._user_login.value} - get`, async () => {
@@ -603,9 +604,7 @@ function testWord() {
     assert.ok(response.status === 401);
   });
 
-  it(`${
-    routes._word_folder__folderId__count__count_.value
-  } - get`, async () => {
+  it(`${routes._word_folder__folderId__count__count_.value} - get`, async () => {
     let folderDb = await mh.folder.findOne({ owner_id: DebugKeys.user_id });
     let words = await mh.word
       .find({ owner_id: DebugKeys.user_id })
@@ -991,9 +990,7 @@ function testWord() {
     assert.ok(response.status === 401);
   });
 
-  it(`${
-    routes._word_user__userId__search__wordEntry_.value
-  } - get`, async () => {
+  it(`${routes._word_user__userId__search__wordEntry_.value} - get`, async () => {
     let wordDb = await mh.word.findOne({
       owner_id: DebugKeys.user_id,
       originalWord: testEntities.wordDinner.originalWord
@@ -1058,5 +1055,51 @@ function testService() {
       .asSeconds();
 
     assert.ok(sinceLastSec < 60);
+  });
+}
+
+function tesPreInstalled() {
+  it(`${routes._folder_template.value} - get`, async () => {
+    const url = urlJoin(Settings.apiPrefix, routes._folder_template.value);
+    let response = await request(srv.default.app)
+      .get(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookie]);
+
+    assert.ok(response.status === 200);
+    assert.ok(response.body.length >= 1);
+  });
+
+  it(`${routes._folder_template_user__userId_.value} - post`, async () => {
+    debugger;
+    const url = urlJoin(
+      Settings.apiPrefix,
+      routes._folder_template_user__userId_.value.replace(
+        PathWildcardEnum.userId,
+        DebugKeys.user_id
+      )
+    );
+    const templateFolder = await mh.folder.findOne({
+      owner_id: Settings.serverUserId
+    });
+
+    let userFolders = await mh.folder.find({
+      owner_id: DebugKeys.user_id,
+      name: templateFolder.name
+    });
+    assert.ok(userFolders.length == 0);
+
+    let response = await request(srv.default.app)
+      .post(url)
+      .set("Content-Type", "application/json")
+      .set("Cookie", [cookieAdmin])
+      .send([templateFolder._id]);
+    assert.ok(response.status === 200);
+
+    userFolders = await mh.folder.find({
+      owner_id: DebugKeys.user_id,
+      name: templateFolder.name
+    });
+    assert.ok(userFolders.length == 1);
   });
 }

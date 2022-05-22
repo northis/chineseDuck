@@ -97,9 +97,6 @@ namespace chineseDuck.pinyin4net.Format
             {
                 var toneNumber = int.Parse(result.Last().ToString());
                 result = Regex.Replace(result, "[1-5]", "");
-#if DEBUG
-                Console.WriteLine("The tone number of " + pinyinWithToneNumber + "is: " + toneNumber);
-#endif
                 try
                 {
                     foreach (var t in rules)

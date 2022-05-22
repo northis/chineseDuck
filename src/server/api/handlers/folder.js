@@ -2,12 +2,15 @@ import { mh, defaultFolderId } from "../../../server/api/db";
 // import JSONStream from "JSONStream";
 import * as folderVal from "../../../shared/validation";
 import * as errors from "../../errors";
+import { Settings } from "../../../../config/common";
+import { deleteFiles } from "./word";
+import { isNullOrUndefined, isArray, isNumber } from "util";
 
 const catchUniqueName = (res, error) => {
   if (error.code == 11000)
     errors.e409(
       res,
-      "A folder with that name already exists. Release you imagination and try again."
+      "A folder of word with that name already exists. Release you imagination and try again."
     );
   else errors.e500(res, error.message);
 };
@@ -108,12 +111,42 @@ export const id = {
    */
   delete: async function deleteFolder(req, res, next) {
     const folderId = req.params.folderId;
+
+    const folder = await mh.folder.findOne({ _id: folderId });
+    if (!isNullOrUndefined(folder)) {
+      const idUser = folder.owner_id;
+      const user = await mh.user.findOne({ _id: idUser });
+
+      if (!isNullOrUndefined(user) && user.currentFolder_id == folderId) {
+        await mh.user.findByIdAndUpdate(
+          { _id: idUser },
+          { currentFolder_id: 0 }
+        );
+      }
+    }
+
     const result = await mh.folder.deleteOne({ _id: folderId });
 
     if (result.n < 1) return errors.e404(res, "Folder is not found.");
 
-    // TODO Yes, it should be wrapped by a transaction, but i am not sure it is really need to be here these days. May be i will add it in the future.
+    const toDeletefileIds = [];
+
+    toDeletefileIds.concat(
+      await mh.word.find({ folder_id: folderId }).select({ "full.id": 1 })
+    );
+    toDeletefileIds.concat(
+      await mh.word.find({ folder_id: folderId }).select({ "trans.id": 1 })
+    );
+    toDeletefileIds.concat(
+      await mh.word.find({ folder_id: folderId }).select({ "pron.id": 1 })
+    );
+    toDeletefileIds.concat(
+      await mh.word.find({ folder_id: folderId }).select({ "orig.id": 1 })
+    );
+
     await mh.word.deleteMany({ folder_id: folderId });
+
+    deleteFiles(toDeletefileIds);
     res.status(200).send("Deleted");
   },
   /**
@@ -164,5 +197,67 @@ export const user = {
   get: async function getFoldersForCurrentUser(req, res) {
     const idUser = req.params.userId;
     await getFoldersByUser(req, res, idUser);
+  }
+};
+
+/**
+ * Operations on /folder/template & /folder/template/user/{userId}
+ */
+export const template = {
+  get: async function getTemplateFolders(req, res) {
+    const folders = await mh.folder
+      .find({ owner_id: Settings.serverUserId }, { owner_id: false })
+      .sort({ name: 1 });
+    res.json(folders);
+  },
+  post: async function addTemplateFolders(req, res, next) {
+    const idUser = req.params.userId;
+    const folderIds = req.body;
+
+    if (
+      isNullOrUndefined(folderIds) ||
+      !isArray(folderIds) ||
+      !folderIds.every(a => isNumber(a))
+    ) {
+      errors.e400(res);
+      return;
+    }
+
+    const folders = [];
+    for (const folderId of folderIds) {
+      try {
+        const folderTemplate = await mh.folder.findOne({ _id: folderId });
+
+        if (isNullOrUndefined(folderTemplate)) {
+          continue;
+        }
+
+        const folderDb = await mh.folder.create({
+          name: folderTemplate.name,
+          owner_id: idUser,
+          activityDate: new Date(),
+          wordsCount: folderTemplate.wordsCount
+        });
+        const folderDbId = folderDb._id;
+
+        const words = await mh.word
+          .find({ owner_id: Settings.serverUserId, folder_id: folderId })
+          .select("-_id -__v")
+          .sort({ name: 1 });
+
+        for (const word of words) {
+          word.folder_id = folderDbId;
+          word.lastModified = Date.now();
+          word.owner_id = idUser;
+          word.isNew = true;
+          await mh.word.create(word);
+        }
+        folders.push(folderDb);
+      } catch (e) {
+        catchUniqueName(res, e);
+        return;
+      }
+      res.status(200).send(folders);
+    }
   }
 };

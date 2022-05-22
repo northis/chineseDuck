@@ -1,5 +1,5 @@
 import * as models from "../../src/server/api/db/models";
-import { DebugKeys } from "../../config/common";
+import { DebugKeys, Settings } from "../../config/common";
 import { testWordImg } from "../db/fileB64";
 
 export const userWrite = {
@@ -16,6 +16,17 @@ export const userWrite = {
 export const userAdmin = {
   _id: DebugKeys.admin_id,
   username: "userAdmin",
+  lastCommand: "/view",
+  joinDate: new Date("2018-06-01T01:02:03"),
+  who: models.RightEnum.admin,
+  mode: models.StrategyEnum.random,
+  currentFolder_id: 0,
+  currentWord_id: 0
+};
+
+export const userServer = {
+  _id: Settings.serverUserId,
+  username: "userServer",
   lastCommand: "/view",
   joinDate: new Date("2018-06-01T01:02:03"),
   who: models.RightEnum.admin,
@@ -165,6 +176,13 @@ export const folderTemplate = {
   owner_id: 0,
   wordsCount: 0,
   activityDate: new Date("2018-07-01T05:01:01")
+};
+
+export const folderRealTemplate = {
+  name: "Real template",
+  owner_id: Settings.serverUserId,
+  wordsCount: 0,
+  activityDate: new Date("2019-12-15T09:22:16")
 };
 
 export const wordFileInfoTemplate = {

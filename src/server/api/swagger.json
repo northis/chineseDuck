@@ -7,9 +7,8 @@
   ],
   "info": {
     "description": "Chinese Duck Bot Api",
-    "version": "1.2",
+    "version": "1.3",
     "title": "Chinese Duck Bot Api",
-    "termsOfService": "https://chineseduck.site/terms/",
     "contact": {
       "email": "north@live.ru"
     },
@@ -779,6 +778,84 @@
             "cookieAuth": ["write"]
           }
         ]
+      }
+    },
+    "/folder/template": {
+      "get": {
+        "tags": ["folder", "template"],
+        "summary": "Get pre-intsalled folders",
+        "operationId": "getTemplateFolders",
+        "responses": {
+          "default": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Folder"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["write"]
+          }
+        ]
+      }
+    },
+    "/folder/template/user/{userId}": {
+      "post": {
+        "tags": ["folder", "user", "template"],
+        "summary": "Adds specified template folders to user's.",
+        "description": "Adds specified template folders to user's.",
+        "operationId": "addTemplateFolders",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User entry to match",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid user supplied"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "409": {
+            "description": "Folder already exists"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": ["admin"]
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          },
+          "description": "Folder ids",
+          "required": true
+        }
       }
     },
     "/folder/user/{userId}": {

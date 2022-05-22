@@ -59,7 +59,9 @@ namespace chineseDuck.BotService.Commands
 
                     var file = _repository.GetWordFlashCard(word.CardAll.Id);
 
-                    answer.Message = word.ToScoreString();
+                    answer.Message = string.IsNullOrEmpty(word.Usage)
+                        ? word.ToScoreString()
+                        : word.ToScoreString() + Environment.NewLine + word.Usage;
 
                     answer.Picture = new GenerateImageResult
                         {Height = word.CardAll.Height, Width = word.CardAll.Width, ImageBody = file};

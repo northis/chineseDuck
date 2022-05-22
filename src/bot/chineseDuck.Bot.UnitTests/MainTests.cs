@@ -1,4 +1,7 @@
+using System;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces;
 using ChineseDuck.Bot.Providers;
@@ -17,11 +20,27 @@ namespace chineseDuck.Bot.UnitTests
             var pinyinProv = new Pinyin4NetConverter();
             var tostrConv = new ClassicSyllablesToStringConverter();
             var prov = new PinyinChineseWordParseProvider(colorProv, pinyinProv, tostrConv);
+            
+            var stringsToImport = new[] { "哪儿;rrr;where? (Beijing accent)" };
+            var wordsResult = prov.ImportWords(stringsToImport);
+            Assert.IsNotNull(wordsResult);
+            Assert.IsTrue(wordsResult.FailedWords.Length == 1);
+            Assert.IsTrue(wordsResult.SuccessfulWords.Length == 1);
+            Assert.IsTrue(wordsResult.SuccessfulWords[0].OriginalWord == "哪儿");
+            Assert.IsTrue(wordsResult.SuccessfulWords[0].Pronunciation == "nǎ|er");
+            Assert.IsTrue(wordsResult.SuccessfulWords[0].Translation == "where? (Beijing accent)");
 
-            var stringsToImport = new[] { "明!!白!;míngbai;понимать" };
+            stringsToImport = new[] { "哪儿;nǎr;where? (Beijing accent)" };
+            wordsResult = prov.ImportWords(stringsToImport);
+            Assert.IsNotNull(wordsResult);
+            Assert.IsTrue(wordsResult.FailedWords.Length == 1);
+            Assert.IsTrue(wordsResult.SuccessfulWords.Length == 1);
+            Assert.IsTrue(wordsResult.SuccessfulWords[0].OriginalWord == "哪儿");
+            Assert.IsTrue(wordsResult.SuccessfulWords[0].Pronunciation == "nǎ|er");
+            Assert.IsTrue(wordsResult.SuccessfulWords[0].Translation == "where? (Beijing accent)");
 
-            var wordsResult = prov.ImportWords(stringsToImport, true);
-
+            stringsToImport = new[] { "明!!白!;míngbai;понимать" };
+            wordsResult = prov.ImportWords(stringsToImport);
             Assert.IsNotNull(wordsResult);
             Assert.IsTrue(wordsResult.FailedWords.Length == 0);
             Assert.IsTrue(wordsResult.SuccessfulWords.Length == 1);
@@ -29,9 +48,9 @@ namespace chineseDuck.Bot.UnitTests
             Assert.IsTrue(wordsResult.SuccessfulWords[0].Pronunciation == "míng|bai");
             Assert.IsTrue(wordsResult.SuccessfulWords[0].Translation == "понимать");
 
-            stringsToImport = new[] { "你有病吗?你有药吗?;- ты больной? (шутл.) - а есть лекарство?" };
+            stringsToImport = new[] { "你有病吗?你有药吗?;;- ты больной? (шутл.) - а есть лекарство?;好吧" };
 
-            wordsResult = prov.ImportWords(stringsToImport, false);
+            wordsResult = prov.ImportWords(stringsToImport);
 
             Assert.IsNotNull(wordsResult);
             Assert.IsTrue(wordsResult.FailedWords.Length == 0);
@@ -39,9 +58,36 @@ namespace chineseDuck.Bot.UnitTests
             Assert.IsTrue(wordsResult.SuccessfulWords[0].OriginalWord == "你有病吗?你有药吗?");
             //Assert.IsTrue(wordsResult.SuccessfulWords[0].PinyinWord == "míng|bai");
             Assert.IsTrue(wordsResult.SuccessfulWords[0].Translation == "- ты больной? (шутл.) - а есть лекарство?");
-            
+            Assert.IsTrue(wordsResult.SuccessfulWords[0].Usage == "好吧");
+
             var result = prov.GetOrderedSyllables(wordsResult.SuccessfulWords[0]);
             Assert.AreEqual("yào", result[7].Pinyin);
+        }
+
+        [Test]
+        public void BulkImportFromCsv()
+        {
+            var colorProv = new ClassicSyllableColorProvider();
+            var pinyinProv = new Pinyin4NetConverter();
+            var toStrConv = new ClassicSyllablesToStringConverter();
+            var wordParseProvider = new PinyinChineseWordParseProvider(colorProv, pinyinProv, toStrConv);
+
+            var currentFolder = Directory.GetCurrentDirectory();
+            var csvFolder = Path.Combine(currentFolder, "csv");
+            var files = Directory.GetFiles(csvFolder).Where(a => a.EndsWith(".csv"));
+
+            foreach (var file in files)
+            {
+                var lines = File.ReadAllLines(file);
+                var wordsResult = wordParseProvider.ImportWords(lines);
+                Assert.IsNotNull(wordsResult);
+
+                Console.WriteLine(wordsResult.SuccessfulWords.Length + " " + Path.GetFileName(file));
+
+                var lastIndex = lines.Length - 1;
+                Assert.AreEqual(string.IsNullOrEmpty(lines[lastIndex]) ? lastIndex : lines.Length,
+                    wordsResult.SuccessfulWords.Length);
+            }
         }
 
         [Test]
@@ -99,8 +145,7 @@ namespace chineseDuck.Bot.UnitTests
                 {
                     OriginalWord = "晚饭晚饭晚饭晚饭晚饭晚饭晚饭晚饭晚饭晚饭",
                     Pronunciation = "wǎn|fàn|wǎn|fàn|wǎn|fàn|wǎn|fàn|wǎn|fàn|wǎn|fàn|wǎn|fàn|wǎn|fàn|wǎn|fàn|wǎn|fàn",
-                    Translation = "ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин",
-                    Usage = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+                    Translation = "ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин ужин"
                 }
             };
 

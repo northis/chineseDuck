@@ -10,6 +10,9 @@ yarn-error.log
 bin/
 obj/
 logs/
+data/
+ssl/
+backup/
 
 # Editor directories and files
 .idea
@@ -20,3 +23,7 @@ logs/
 apiKeys.js
 keys.js
 appsettings.json
+db.js
+docker-compose.prod.yml
+websrv.conf
+.env

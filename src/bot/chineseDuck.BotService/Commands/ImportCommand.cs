@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Text;
 using chineseDuck.BotService.Commands.Common;
@@ -9,6 +8,8 @@ using chineseDuck.BotService.Commands.Enums;
 using ChineseDuck.Bot.Enums;
 using ChineseDuck.Bot.Interfaces;
 using ChineseDuck.Bot.Interfaces.Data;
+using ChineseDuck.Bot.ObjectModels;
+using ChineseDuck.Bot.Rest.Model;
 using ChineseDuck.BotService.MainExecution;
 
 namespace chineseDuck.BotService.Commands
@@ -18,7 +19,6 @@ namespace chineseDuck.BotService.Commands
         public const uint MaxImportRowLength = 200;
         public const char SeparatorChar = ';';
         public const char SeparatorChar1 = '；';
-        public const uint UsePinyinModeColumnsCount = 3;
         public const uint DefaultModeColumnsCount = 2;
         private readonly IFlashCardGenerator _flashCardGenerator;
         private readonly uint _maxImportFileSize;
@@ -32,6 +32,16 @@ namespace chineseDuck.BotService.Commands
             _repository = repository;
             _flashCardGenerator = flashCardGenerator;
             _maxImportFileSize = maxImportFileSize;
+        }
+
+        public bool ValidateArray(string[] wordStrings)
+        {
+            var firstWord = wordStrings.FirstOrDefault();
+            if (firstWord == null)
+                return false;
+
+            var columnsCount = firstWord.Split(SeparatorChar, SeparatorChar1).Length;
+            return columnsCount >= DefaultModeColumnsCount;
         }
 
         public override string GetCommandIconUnicode()
@@ -49,25 +59,10 @@ namespace chineseDuck.BotService.Commands
             return ECommands.Import;
         }
 
-        public bool? GetUsePinyin(string[] wordStrings)
-        {
-            var firstWord = wordStrings.FirstOrDefault();
-
-            if (firstWord == null)
-                return null;
-
-            var columnsCount = firstWord.Split(SeparatorChar, SeparatorChar1).Length;
-
-            if (columnsCount != UsePinyinModeColumnsCount && columnsCount != DefaultModeColumnsCount)
-                return null;
-
-            return columnsCount == UsePinyinModeColumnsCount;
-        }
-
         public override AnswerItem Reply(MessageItem mItem)
         {
             var loadFileMessage =
-                $"Please give me a .csv file. Rows format are 'word{SeparatorChar}translation' or 'word{SeparatorChar}pinyin{SeparatorChar}translation'. Be accurate using pinyin, write a digit after every syllable. For example, use 'shi4' for 4th tone in 'shì' or 'le' for zero  tone in 'le'{Environment.NewLine}The word processing may take some time, please wait until the import will be completed. File couldn't be larger than {_maxImportFileSize} bytes";
+                $"Please give me a .csv file. Rows format is 'word{SeparatorChar}translation{SeparatorChar}usage'. Usage is an optional part.{Environment.NewLine}Examples:{Environment.NewLine}什么{SeparatorChar1}What?{SeparatorChar1}这是什么？{Environment.NewLine}电脑{SeparatorChar1}computer{Environment.NewLine}The word processing may take some time, please wait until the import will be completed. File couldn't be larger than {_maxImportFileSize} bytes";
             
             if (mItem.Stream == null)
             {
@@ -85,10 +80,8 @@ namespace chineseDuck.BotService.Commands
                         $"File couldn't be larger than {_maxImportFileSize} bytes.{Environment.NewLine}{loadFileMessage}"
                 };
             }
-            
-            var str = Encoding.UTF8.GetString(mItem.Stream.ToArray());
-            var lines = str.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
-            
+
+            var lines = BytesToLines(mItem.Stream.ToArray());
             var result = SaveAnswerItem(lines, mItem.UserId);
 
             if (result == null)
@@ -102,8 +95,15 @@ namespace chineseDuck.BotService.Commands
             return result;
         }
 
+        protected string[] BytesToLines(byte[] input)
+        {
+            var str = Encoding.UTF8.GetString(input);
+            return str.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
         internal void UploadFiles(IWord word)
         {
+            Console.WriteLine("Generate flashcard for " + word.OriginalWord);
             var imageResult = _flashCardGenerator.Generate(word, ELearnMode.FullView);
             var fileId = _repository.AddFile(imageResult.ImageBody);
             word.CardAll = imageResult.ToWordFile(fileId);
@@ -121,34 +121,13 @@ namespace chineseDuck.BotService.Commands
             word.CardTranslation = imageResult.ToWordFile(fileId);
         }
 
-        protected AnswerItem SaveAnswerItem(string[] wordStrings, long userId)
+        protected ImportWordResult UploadWords(ImportWordResult importedResult, long userId)
         {
-            var usePinyin = GetUsePinyin(wordStrings);
-
-            var answer = new AnswerItem
-            {
-                Message = GetCommandIconUnicode()
-            };
-
-            if (usePinyin == null)
-                return answer;
-
-            var maxStringLength = wordStrings.Select(a => a.Length).Max();
-
-            if (maxStringLength > MaxImportRowLength)
-            {
-                answer.Message += $"String length must be less than {MaxImportRowLength}";
-                return answer;
-            }
-
-            var result = _parseProvider.ImportWords(wordStrings, usePinyin.Value);
-
-            if (result == null)
-                return answer;
-
             var badWords = new List<string>();
-            var goodWords = new List<IWord>();
-            foreach (var word in result.SuccessfulWords)
+            var goodWords = new List<Word>();
+
+            foreach (var word in importedResult.SuccessfulWords)
+            {
                 try
                 {
                     UploadFiles(word);
@@ -161,16 +140,48 @@ namespace chineseDuck.BotService.Commands
                     Trace.WriteLine(ex);
                     badWords.Add(ex.Message);
                 }
+            }
 
-            badWords.AddRange(result.FailedWords);
+            badWords.AddRange(importedResult.FailedWords);
+            return new ImportWordResult(goodWords.ToArray(), badWords.ToArray());
+        }
 
-            if (goodWords.Any())
+        protected AnswerItem SaveAnswerItem(string[] wordStrings, long userId)
+        {
+            var answer = new AnswerItem
+            {
+                Message = GetCommandIconUnicode()
+            };
+
+            if (!ValidateArray(wordStrings))
+                return answer;
+
+            var maxStringLength = wordStrings.Select(a => a.Length).Max();
+
+            if (maxStringLength > MaxImportRowLength)
+            {
+                answer.Message += $"String length must be less than {MaxImportRowLength}";
+                return answer;
+            }
+
+            var result = _parseProvider.ImportWords(wordStrings);
+
+            if (result == null)
+                return answer;
+
+            var uploadedResult = UploadWords(result, userId);
+
+            if (uploadedResult.SuccessfulWords.Any())
+            {
                 answer.Message +=
-                    $"These words have been added ({goodWords.Count}): {Environment.NewLine} {string.Join(Environment.NewLine, goodWords.Select(a => a.OriginalWord))}{Environment.NewLine}";
+                    $"These words have been added ({uploadedResult.SuccessfulWords.Length}): {Environment.NewLine} {string.Join(Environment.NewLine, uploadedResult.SuccessfulWords.Select(a => a.OriginalWord))}{Environment.NewLine}";
+            }
 
-            if (badWords.Any())
+            if (uploadedResult.FailedWords.Any())
+            {
                 answer.Message +=
-                    $"These words have some parse troubles ({badWords.Count}): {Environment.NewLine} {string.Join(Environment.NewLine, badWords)}";
+                    $"These words have some parse troubles ({uploadedResult.FailedWords.Length}): {Environment.NewLine} {string.Join(Environment.NewLine, uploadedResult.FailedWords)}";
+            }
 
             return answer;
         }

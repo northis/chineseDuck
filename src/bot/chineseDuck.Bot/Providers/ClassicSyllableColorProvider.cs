@@ -12,9 +12,8 @@ namespace YellowDuck.LearnChinese.Providers
         private short GetSyllableNumber(string latinSyllableNumber)
         {
             var numberOnly = Regex.Match(latinSyllableNumber, "[0-9]");
-            short syllableNumber;
 
-            if (!numberOnly.Success || !short.TryParse(numberOnly.Value, out syllableNumber))
+            if (!numberOnly.Success || !short.TryParse(numberOnly.Value, out var syllableNumber))
                 throw new Exception("The tone is wrong, try again");
 
             return syllableNumber;

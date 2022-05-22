@@ -21,6 +21,22 @@ const updateWordCount = async folderId => {
     );
   }
 };
+export const deleteFiles = async fileIdsToDelete => {
+  for (const fileId of fileIdsToDelete) {
+    const wordsCount = await mh.word.findOne({
+      $or: [
+        { "full.id": fileId },
+        { "trans.id": fileId },
+        { "pron.id": fileId },
+        { "orig.id": fileId }
+      ]
+    });
+
+    if (!isNullOrUndefined(wordsCount)) continue;
+
+    await mh.wordFile.deleteOne({ _id: fileId });
+  }
+};
 
 /**
  * Operations on /word
@@ -72,10 +88,36 @@ export const main = {
         lastModified: Date.now()
       };
 
-      if (!isNullOrUndefined(newWord.full)) updatedWord.full = newWord.full;
-      if (!isNullOrUndefined(newWord.trans)) updatedWord.trans = newWord.trans;
-      if (!isNullOrUndefined(newWord.pron)) updatedWord.pron = newWord.pron;
-      if (!isNullOrUndefined(newWord.orig)) updatedWord.orig = newWord.orig;
+      const toDeleteIds = [];
+
+      if (
+        !isNullOrUndefined(newWord.full) &&
+        newWord.full.id != newWord.full.id
+      ) {
+        toDeleteIds.push(updatedWord.full.id);
+        updatedWord.full = newWord.full;
+      }
+      if (
+        !isNullOrUndefined(newWord.trans) &&
+        newWord.trans.id != newWord.trans.id
+      ) {
+        toDeleteIds.push(updatedWord.trans.id);
+        updatedWord.trans = newWord.trans;
+      }
+      if (
+        !isNullOrUndefined(newWord.pron) &&
+        newWord.pron.id != newWord.pron.id
+      ) {
+        toDeleteIds.push(updatedWord.pron.id);
+        updatedWord.pron = newWord.pron;
+      }
+      if (
+        !isNullOrUndefined(newWord.orig) &&
+        newWord.orig.id != newWord.orig.id
+      ) {
+        toDeleteIds.push(updatedWord.orig.id);
+        updatedWord.orig = newWord.orig;
+      }
 
       if (!isNullOrUndefined(newWord.score)) updatedWord.score = newWord.score;
 
@@ -88,6 +130,7 @@ export const main = {
         return errors.e404(res, "We have not such word");
       }
       await updateWordCount(wordDb.folder_id);
+      await deleteFiles(toDeleteIds);
 
       return res.status(200).send(wordDb);
     } catch (error) {
@@ -126,6 +169,14 @@ export const wordId = {
     let delRes = await mh.word.findByIdAndRemove({ _id: wordId });
     await updateWordCount(word.folder_id);
 
+    const toDeleteIds = [
+      word.full.id,
+      word.trans.id,
+      word.pron.id,
+      word.orig.id
+    ];
+
+    await deleteFiles(toDeleteIds);
     return res.status(200).send(delRes);
   }
 };

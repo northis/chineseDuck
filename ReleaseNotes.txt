@@ -1,0 +1,22 @@
+Release notes:
+ver.0.7.5 (24 november 2019)
+=========================
+[+] New domain
+[+] New deploy schema
+
+ver.0.7.0 (29 october 2019)
+=========================
+[+] HSK 1-6 pre-installed folder for English and Russian languages
+[+] Usage property support
+
+ver.0.6.1.0 (22 october 2019)
+=========================
+[+] pre-installed folders
+
+ver.0.5.0.0 (31 march 2019)
+=========================
+[*] beta is ready
+
+ver.0.0.1.0 (01 may 2017)
+=========================
+[+] first version

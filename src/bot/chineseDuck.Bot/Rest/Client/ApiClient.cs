@@ -7,22 +7,19 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using RestSharp;
 
-namespace ChineseDuck.Bot.Rest.Client
-{
+namespace ChineseDuck.Bot.Rest.Client {
     /// <summary>
     /// API client is mainly responsible for making the HTTP call to the API backend.
     /// </summary>
-    public class ApiClient
-    {
+    public class ApiClient {
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiClient" /> class.
         /// </summary>
         /// <param name="basePath">The base path.</param>
-        public ApiClient(string basePath="https://chineseduck.site/api/v1")
-        {
+        public ApiClient (string basePath) {
             BasePath = basePath;
-            RestClient = new RestClient(BasePath){FollowRedirects = false};
-            DefaultHeaders = new Dictionary<string, string>();
+            RestClient = new RestClient (BasePath) { FollowRedirects = false };
+            DefaultHeaders = new Dictionary<string, string> ();
         }
 
         /// <summary>
@@ -35,7 +32,7 @@ namespace ChineseDuck.Bot.Rest.Client
         /// </summary>
         /// <value>The base path</value>
         public string BasePath { get; set; }
-    
+
         /// <summary>
         /// Gets or sets the RestClient.
         /// </summary>
@@ -58,18 +55,18 @@ namespace ChineseDuck.Bot.Rest.Client
         public IRestResponse CallApi(string path, Method method, string postBody = null, bool useAuthenticate = true)
         {
             var request = new RestRequest(path, method);
-   
+
             // add default header, if any
-            foreach(var defaultHeader in DefaultHeaders)
+            foreach (var defaultHeader in DefaultHeaders)
                 request.AddHeader(defaultHeader.Key, defaultHeader.Value);
 
             if (postBody != null)
                 request.AddParameter("application/json", postBody, ParameterType.RequestBody);
-            
+
             var res = RestClient.Execute(request);
 
             if (useAuthenticate && (res.StatusCode == HttpStatusCode.Unauthorized ||
-                                     res.StatusCode == HttpStatusCode.Forbidden))
+                                    res.StatusCode == HttpStatusCode.Forbidden))
             {
                 if (OnAuthenticationRequest != null)
                 {
@@ -80,27 +77,6 @@ namespace ChineseDuck.Bot.Rest.Client
 
             return res;
         }
-    
-        /// <summary>
-        /// If parameter is DateTime, output in a formatted string (default ISO 8601), customizable with Configuration.DateTime.
-        /// If parameter is a list of string, join the list with ",".
-        /// Otherwise just return the string.
-        /// </summary>
-        /// <param name="obj">The parameter (header, path, query, form).</param>
-        /// <returns>Formatted string.</returns>
-        public string ParameterToString(object obj)
-        {
-            if (obj is DateTime time)
-                // Return a formatted date string - Can be customized with Configuration.DateTimeFormat
-                // Defaults to an ISO 8601, using the known as a Round-trip date/time pattern ("o")
-                // https://msdn.microsoft.com/en-us/library/az4se3k1(v=vs.110).aspx#Anchor_8
-                // For example: 2009-06-15T13:45:30.0000000
-                return time.ToString (Configuration.DateTimeFormat);
-
-            if (obj is List<string> list)
-                return string.Join(",", list.ToArray());
-            return Convert.ToString (obj);
-        }
 
         /// <summary>
         /// Deserialize the JSON string into proper object of type T.
@@ -110,7 +86,7 @@ namespace ChineseDuck.Bot.Rest.Client
         /// <returns>Object representation of the JSON string.</returns>
         public T Deserialize<T>(IRestResponse response)
         {
-            return (T)Deserialize(response.Content, typeof(T), response.Headers);
+            return (T) Deserialize(response.Content, typeof(T), response.Headers);
         }
 
         /// <summary>
@@ -120,7 +96,7 @@ namespace ChineseDuck.Bot.Rest.Client
         /// <param name="type">Object type.</param>
         /// <param name="headers">HTTP headers.</param>
         /// <returns>Object representation of the JSON string.</returns>
-        public object Deserialize(string content, Type type, IList<Parameter> headers=null)
+        public object Deserialize(string content, Type type, IList<Parameter> headers = null)
         {
             if (type == typeof(object))
             {
@@ -141,20 +117,21 @@ namespace ChineseDuck.Bot.Rest.Client
                     if (match.Success)
                         fileName = filePath + match.Value.Replace("\"", "").Replace("'", "");
                 }
+
                 File.WriteAllText(fileName, content);
                 return new FileStream(fileName, FileMode.Open);
             }
 
             if (type.Name.StartsWith("System.Nullable`1[[System.DateTime")) // return a datetime object
             {
-                return DateTime.Parse(content,  null, System.Globalization.DateTimeStyles.RoundtripKind);
+                return DateTime.Parse(content, null, System.Globalization.DateTimeStyles.RoundtripKind);
             }
 
             if (type == typeof(string) || type.Name.StartsWith("System.Nullable")) // return primitive type
             {
-                return ConvertType(content, type); 
+                return ConvertType(content, type);
             }
-    
+
             // at this point, it must be a model (json)
             try
             {
@@ -165,7 +142,7 @@ namespace ChineseDuck.Bot.Rest.Client
                 throw new ApiException(500, e.Message);
             }
         }
-    
+
         /// <summary>
         /// Serialize an object into JSON string.
         /// </summary>
@@ -182,14 +159,15 @@ namespace ChineseDuck.Bot.Rest.Client
                 throw new ApiException(500, e.Message);
             }
         }
-    
+
         /// <summary>
         /// Dynamically cast the object into target type.
         /// </summary>
         /// <param name="fromObject">Object to be cast</param>
         /// <param name="toObject">Target type</param>
         /// <returns>Cast object</returns>
-        public static object ConvertType(object fromObject, Type toObject) {
+        public static object ConvertType(object fromObject, Type toObject)
+        {
             return Convert.ChangeType(fromObject, toObject);
         }
 
@@ -198,10 +176,11 @@ namespace ChineseDuck.Bot.Rest.Client
         /// </summary>
         /// <param name="response">The response</param>
         /// <param name="callerMethod">The calling method.</param>
-        public void CheckResponse(IRestResponse response, [CallerMemberName]string callerMethod = null)
+        public void CheckResponse(IRestResponse response, [CallerMemberName] string callerMethod = null)
         {
-            if ((int)response.StatusCode >= 400)
-                throw new ApiException((int)response.StatusCode, $"Error calling {callerMethod}: {response.Content}", response.Content);
+            if ((int) response.StatusCode >= 400)
+                throw new ApiException((int) response.StatusCode, $"Error calling {callerMethod}: {response.Content}",
+                    response.Content);
             if (response.StatusCode == 0 && response.StatusCode != HttpStatusCode.Found)
                 throw new ApiException((int) response.StatusCode,
                     $"Error calling  {callerMethod}: {response.ErrorMessage}", response.ErrorMessage);

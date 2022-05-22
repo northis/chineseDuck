@@ -1,9 +1,7 @@
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using chineseDuck.Bot.Security;
-using ChineseDuck.Bot.Extensions;
 using ChineseDuck.Bot.Interfaces.Data;
 using ChineseDuck.Bot.Rest.Client;
 using ChineseDuck.Bot.Rest.Model;

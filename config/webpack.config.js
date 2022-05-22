@@ -235,7 +235,7 @@ const clientConfig = {
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
     alias: {
-      vue: "vue/dist/vue.js"
+      vue: isDebug ? "vue/dist/vue.js" : "vue/dist/vue.min.js"
     }
   },
 
@@ -262,6 +262,11 @@ const clientConfig = {
       template: "src/client/beforeStart/unsupported.html"
     }),
     new CopyWebpackPlugin([
+      {
+        from: "**/*.csv",
+        to: "./hsk/",
+        context: "./src/shared/hsk/"
+      },
       { from: "./src/client/assets/favicon", to: "./favicon/" },
       { from: "./src/client/assets/favicon/favicon.ico", to: "./favicon.ico" },
       {

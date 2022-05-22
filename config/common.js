@@ -23,7 +23,7 @@ let keys = {
 
 if (getMode() !== ModeEnum.Test) {
   try {
-    keys = require("../keys.js").Keys;
+    keys = require("./keys.js").Keys;
   } catch (error) {
     console.error(error);
   }
@@ -57,16 +57,10 @@ export function shuffle(a) {
 }
 
 export function getFooterMarkupLine() {
-  return `<p>${pkg.description} - ${
-    pkg.version
-  } | <a href=https://t.me/DeathWhinny>Contact me</a> | <a href=https://t.me/DeathWhinny>GitHub</a> | <a href=/api/docs>Api</a></p>`;
+  return `<p>${pkg.description} - ${pkg.version} | <a href=https://t.me/DeathWhinny>Contact me</a> | <a href=${pkg.homepage}>GitHub</a> | <a href=/api/docs>Api</a></p>`;
 }
 export function getFooterMarkup() {
-  return `<p>${pkg.description} - ${
-    pkg.version
-  }</p> <p><a href=https://t.me/DeathWhinny>Contact me</a> | <a href=${
-    pkg.homepage
-  }>GitHub</a> | <a href=/api/docs>Api</a></p>`;
+  return `<p>${pkg.description} - ${pkg.version}</p> <p><a href=https://t.me/DeathWhinny>Contact me</a> | <a href=${pkg.homepage}>GitHub</a> | <a href=/api/docs>Api</a></p>`;
 }
 
 export const DebugKeys = {
@@ -84,6 +78,7 @@ export let Settings = {
   port: 3000,
   sessionsPass: keys.sessionsPass,
   answersCount: 4,
+  serverUserId: 1,
   apiPrefix: "/api/v1/",
   docsPrefix: "/api/docs/",
   getLocalApiAddress: () =>

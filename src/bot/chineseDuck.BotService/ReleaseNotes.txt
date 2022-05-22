@@ -1,9 +1,0 @@
-Release notes:
-
-ver.0.5.0.0 (31 march 2019)
-=========================
-[*] beta is ready
-
-ver.0.0.1.0 (01 may 2017)
-=========================
-[+] first version

@@ -13,7 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="..\..\..\config\appsettings.json" Link="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\..\package.json" Link="package.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\..\ReleaseNotes.txt" Link="ReleaseNotes.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -33,7 +39,47 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="ReleaseNotes.txt">
+    <Folder Include="Hsk\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\shared\hsk\en_HSK_1.csv" Link="Hsk\en_HSK_1.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\en_HSK_2.csv" Link="Hsk\en_HSK_2.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\en_HSK_3.csv" Link="Hsk\en_HSK_3.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\en_HSK_4.csv" Link="Hsk\en_HSK_4.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\en_HSK_5.csv" Link="Hsk\en_HSK_5.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\en_HSK_6.csv" Link="Hsk\en_HSK_6.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\ru_Extra.csv" Link="Hsk\ru_Extra.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\ru_HSK_1.csv" Link="Hsk\ru_HSK_1.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\ru_HSK_2.csv" Link="Hsk\ru_HSK_2.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\ru_HSK_3.csv" Link="Hsk\ru_HSK_3.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\ru_HSK_4.csv" Link="Hsk\ru_HSK_4.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\ru_HSK_5.csv" Link="Hsk\ru_HSK_5.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\shared\hsk\ru_HSK_6.csv" Link="Hsk\ru_HSK_6.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

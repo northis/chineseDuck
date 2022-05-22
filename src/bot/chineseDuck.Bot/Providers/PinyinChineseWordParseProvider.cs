@@ -1,5 +1,4 @@
 using ChineseDuck.Bot.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -32,10 +31,10 @@ namespace ChineseDuck.Bot.Providers
         public const char ImportSeparator1 = ';';
         public const char ImportSeparator2 = '；';
         public const char ReplaceSeparator = ',';
+        public const char Er = '儿';
 
-        public const string PinyinExludeRegexPattern = "[^a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]";
-        public const string PinyinNumIncludeRegexPattern = "^[a-z0-4]+$";
-        public const string PinyinNumExludeRegexPattern = "[^a-z]";
+        public const string PinyinExcludeRegexPattern = "[^a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]";
+        public const string PinyinNumIncludeRegexPattern = "^[a-z0-4]+[0-4]+$";
 
         private readonly ISyllableColorProvider _syllableColorProvider;
         private readonly IChinesePinyinConverter _chinesePinyinConverter;
@@ -50,12 +49,6 @@ namespace ChineseDuck.Bot.Providers
             return new Syllable(charWord, pinyinWithMark,
                 _syllableColorProvider.GetSyllableColor(charWord,
                     _chinesePinyinConverter.ToSyllableNumberTone(pinyinWithMark)));
-        }
-
-        private Syllable GetSyllableNumber(char charWord, string pinyinWithNum)
-        {
-            return new Syllable(charWord, pinyinWithNum,
-                _syllableColorProvider.GetSyllableColor(charWord, pinyinWithNum));
         }
 
         public Syllable[] GetOrderedSyllables(string word)
@@ -104,11 +97,11 @@ namespace ChineseDuck.Bot.Providers
         }
 
         /// <summary>
-        ///     Строит верный слог для иероглифа и латинского представления слога
+        /// Builds correct syllable for the chinese character and its latin representation
         /// </summary>
-        /// <param name="chineseChar">Китайский иероглиф, например, 电</param>
-        /// <param name="pinyinWithNumber">Представление в латинском алфавите с тоном цифрой, например, dian4</param>
-        /// <returns>Верный слог, содержащий латинское представление с тоном сверху, например, diàn</returns>
+        /// <param name="chineseChar">Chinese character, ex. 电</param>
+        /// <param name="pinyinWithNumber">Pinyin with in number-style, ex. dian4</param>
+        /// <returns>Syllable with tone-style, ex. diàn</returns>
         public Syllable BuildSyllable(char chineseChar, string pinyinWithNumber)
         {
             var pinyinStringArray = _chinesePinyinConverter.Convert(chineseChar, EToneType.Number);
@@ -125,139 +118,65 @@ namespace ChineseDuck.Bot.Providers
         }
 
         /// <summary>
-        ///     Формат для импорта слов: Иероглиф[ImportSeparator]Пининь[ImportSeparator]Перевод, либо в случае usePinyin=false
-        ///     Иероглиф[ImportSeparator]Перевод.
-        ///     Например, 电;diàn;электричество (usePinyin=true, ImportSeparator=";")
-        ///     Например, 电;электричество (usePinyin=false, ImportSeparator=";")
-        ///     Например, 电;dian4;электричество (usePinyin=true, ImportSeparator=";")
+        /// Imports and parses the words.
+        /// Example: 电;diàn;electricity
+        ///          电;;electricity;usage
+        ///          电;dian4;electricity;usage
         /// </summary>
-        /// <param name="rawWords">Массив строк для импорта</param>
-        /// <param name="usePinyin">Флаг, использовать ли пининь из импортируемых строк</param>
-        /// <returns>Результат из распознанных и нераспознанных слов</returns>
-        public ImportWordResult ImportWords(string[] rawWords, bool usePinyin)
+        /// <param name="rawWords">Array of words to parse</param>
+        /// <returns>Parsed strings</returns>
+        public ImportWordResult ImportWords(string[] rawWords)
         {
             var goodWords = new List<Word>();
             var badWords = new List<string>();
-
+            
             foreach (var word in rawWords)
             {
-                var arrayToParse = word.Split(new[] {ImportSeparator1, ImportSeparator2},
-                    StringSplitOptions.RemoveEmptyEntries);
+                var arrayToParse = word.Split(new[] {ImportSeparator1, ImportSeparator2});
                 if (arrayToParse.Length < 2)
                 {
                     badWords.Add(word);
                     continue;
                 }
 
+                var usePinyin = !string.IsNullOrEmpty(arrayToParse[1]);
                 var mainWord = arrayToParse[0];
 
-                var translationIndex = usePinyin ? 2 : 1;
-                var translationNative = string.Join(ImportSeparator1.ToString(), arrayToParse.Skip(translationIndex));
+                var translationIndex = 2;
+                var usageIndex = translationIndex+1;
+                var translationNative = arrayToParse[translationIndex];
+
+                var usage = string.Empty;
+                if (arrayToParse.Length > usageIndex)
+                    usage = string.Join(ImportSeparator1, arrayToParse.Skip(usageIndex));
 
                 var syllables = GetOrderedSyllables(mainWord, EToneType.Mark);
+                if (syllables.Length > MaxSyllablesToParse)
+                {
+                    badWords.Add(word + $" (String is too long. Max syllables count is {MaxSyllablesToParse}.)");
+                    continue;
+                }
 
                 var separatedSyllables = _syllablesToStringConverter.Join(syllables.Select(a => a.Pinyin));
-
-                var solidSyllables = separatedSyllables.Replace(_syllablesToStringConverter.GetSeparator(),
+                var solidSyllables = separatedSyllables.Replace(
+                    _syllablesToStringConverter.GetSeparator(),
                     string.Empty);
 
                 if (usePinyin)
                 {
-                    var pinyinStr = arrayToParse[1].ToLower();
+                    var loopItem = new ImportWordLoopItem(arrayToParse, goodWords, syllables, solidSyllables, mainWord,
+                        word, translationNative, separatedSyllables, badWords, usage);
 
-                    var pinyin = Regex.Replace(pinyinStr, PinyinExludeRegexPattern, string.Empty);
-
-                    if (pinyin.Contains(solidSyllables))
+                    var wordPinyin = ParsePinyin(loopItem);
+                    if (wordPinyin == null)
                     {
-                        goodWords.Add(new Word
-                        {
-                            OriginalWord = mainWord,
-                            Pronunciation = separatedSyllables,
-                            Translation = translationNative,
-                            SyllablesCount = syllables.Length
-                        });
-                    }
-                    else if (syllables.Length > MaxSyllablesToParse)
-                    {
-                        badWords.Add(word +
-                                     $" (String is too long. Max syllables count is {MaxSyllablesToParse}.)");
+                        badWords.Add(word + " (the pinyin is not quite suit for these chinese characters, pinyin will be generated automatically)");
                     }
                     else
                     {
-                        var useNum = IsNumbersInPinyinUsed(pinyinStr);
-                        var leftPinyin = useNum ? pinyinStr : pinyin;
-                        var successFlag = false;
-
-
-                        var importedSyllables = new List<Syllable>();
-
-                        foreach (var syllable in syllables.Reverse())
-                        {
-                            successFlag = false;
-                            var chineseChar = syllable.ChineseChar;
-
-                            foreach (var pinyinOption in _chinesePinyinConverter.Convert(chineseChar,
-                                useNum ? EToneType.Number : EToneType.Mark))
-                            {
-                                var numFreePinyinOption = Regex.Replace(pinyinOption, PinyinExludeRegexPattern,
-                                    string.Empty);
-
-                                var allMarkTones = _chinesePinyinConverter.ToSyllablesAllTones(numFreePinyinOption);
-
-                                var allTones = useNum
-                                    ? _chinesePinyinConverter.ToSyllablesNumberAllTones(pinyinOption)
-                                    : allMarkTones;
-
-                                var tonesToLoop = allTones.Where(a => a != null).ToArray();
-
-                                for (var i = 0; i < tonesToLoop.Length; i++)
-                                {
-                                    var tone = tonesToLoop[i];
-
-                                    if (leftPinyin.EndsWith(tone))
-                                    {
-                                        leftPinyin = leftPinyin.Remove(leftPinyin.Length - tone.Length,
-                                            tone.Length);
-
-                                        successFlag = true;
-
-                                        if (useNum)
-                                        {
-                                            var markTone = allMarkTones[i];
-
-                                            syllable.Pinyin = markTone;
-                                            syllable.Color =
-                                                _syllableColorProvider.GetSyllableColor(syllable.ChineseChar, tone);
-                                        }
-
-                                        importedSyllables.Insert(0,
-                                            useNum ? syllable : GetSyllable(syllable.ChineseChar, tone));
-                                        break;
-                                    }
-                                }
-
-                                if (successFlag)
-                                    break;
-                            }
-
-                            if (!successFlag)
-                                break;
-                        }
-
-                        if (successFlag)
-                            goodWords.Add(new Word
-                            {
-                                OriginalWord = mainWord,
-                                Pronunciation =
-                                    _syllablesToStringConverter.Join(importedSyllables.Select(a => a.Pinyin)),
-                                Translation = translationNative.Replace(ImportSeparator1, ReplaceSeparator)
-                                    .Replace(ImportSeparator2, ReplaceSeparator),
-                                SyllablesCount = importedSyllables.Count
-                            });
-                        else
-                            badWords.Add(word + " (the pinyin is not quite suit for these chinese characters.)");
+                        goodWords.Add(wordPinyin);
+                        continue;
                     }
-                    continue;
                 }
 
                 goodWords.Add(new Word
@@ -265,11 +184,103 @@ namespace ChineseDuck.Bot.Providers
                     OriginalWord = mainWord,
                     Pronunciation = separatedSyllables,
                     Translation = translationNative,
-                    SyllablesCount = syllables.Length
+                    SyllablesCount = syllables.Length,
+                    Usage = usage
                 });
             }
 
             return new ImportWordResult(goodWords.ToArray(), badWords.ToArray());
+        }
+
+        private Word ParsePinyin(ImportWordLoopItem item)
+        {
+            var pinyinStr = item.ArrayToParse[1].ToLower();
+            var pinyin = Regex.Replace(pinyinStr, PinyinExcludeRegexPattern, string.Empty);
+
+            if (pinyin.Contains(item.SolidSyllables))
+            {
+                return new Word
+                {
+                    OriginalWord = item.MainWord,
+                    Pronunciation = item.SeparatedSyllables,
+                    Translation = item.TranslationNative,
+                    SyllablesCount = item.Syllables.Length,
+                    Usage = item.Usage
+                };
+            }
+
+            var useNum = IsNumbersInPinyinUsed(pinyinStr);
+            var leftPinyin = useNum ? pinyinStr : pinyin;
+            var successFlag = false;
+
+            var importedSyllables = new List<Syllable>();
+
+            foreach (var syllable in item.Syllables.Reverse())
+            {
+                successFlag = false;
+                var chineseChar = syllable.ChineseChar;
+
+                foreach (var pinyinOption in _chinesePinyinConverter.Convert(chineseChar,
+                    useNum ? EToneType.Number : EToneType.Mark))
+                {
+                    var numFreePinyinOption = Regex.Replace(pinyinOption, PinyinExcludeRegexPattern,
+                        string.Empty);
+
+                    var allMarkTones = _chinesePinyinConverter.ToSyllablesAllTones(numFreePinyinOption);
+
+                    var allTones = useNum
+                        ? _chinesePinyinConverter.ToSyllablesNumberAllTones(pinyinOption)
+                        : allMarkTones;
+
+                    var tonesToLoop = allTones.Where(a => a != null).ToArray();
+                    for (var i = 0; i < tonesToLoop.Length; i++)
+                    {
+                        var tone = tonesToLoop[i];
+                        if (!leftPinyin.EndsWith(tone))
+                            continue;
+
+                        leftPinyin = leftPinyin.Remove(leftPinyin.Length - tone.Length,
+                            tone.Length);
+
+                        successFlag = true;
+
+                        if (useNum)
+                        {
+                            var markTone = allMarkTones[i];
+
+                            syllable.Pinyin = markTone;
+                            syllable.Color =
+                                _syllableColorProvider.GetSyllableColor(syllable.ChineseChar, tone);
+                        }
+
+                        importedSyllables.Insert(0,
+                            useNum ? syllable : GetSyllable(syllable.ChineseChar, tone));
+                        break;
+                    }
+
+                    if (successFlag)
+                        break;
+                }
+
+                if (!successFlag)
+                    break;
+            }
+
+            if (successFlag)
+            {
+                return new Word
+                {
+                    OriginalWord = item.MainWord,
+                    Pronunciation =
+                        _syllablesToStringConverter.Join(importedSyllables.Select(a => a.Pinyin)),
+                    Translation = item.TranslationNative.Replace(ImportSeparator1, ReplaceSeparator)
+                        .Replace(ImportSeparator2, ReplaceSeparator),
+                    SyllablesCount = importedSyllables.Count,
+                    Usage = item.Usage
+                };
+            }
+
+            return null;
         }
 
         private Syllable[] GetOrderedSyllables(string word, EToneType format)
@@ -292,5 +303,35 @@ namespace ChineseDuck.Bot.Providers
         }
 
         #endregion
+
+        private class ImportWordLoopItem
+        {
+            public ImportWordLoopItem(string[] arrayToParse, List<Word> goodWords, Syllable[] syllables,
+                string solidSyllables, string mainWord, string rawWord, string translationNative,
+                string separatedSyllables, List<string> badWords, string usage)
+            {
+                ArrayToParse = arrayToParse;
+                GoodWords = goodWords;
+                Syllables = syllables;
+                SolidSyllables = solidSyllables;
+                MainWord = mainWord;
+                RawWord = rawWord;
+                TranslationNative = translationNative;
+                SeparatedSyllables = separatedSyllables;
+                BadWords = badWords;
+                Usage = usage;
+            }
+
+            public string[] ArrayToParse { get; }
+            public string SolidSyllables { get; }
+            public string MainWord { get; }
+            private string RawWord { get; }
+            public string TranslationNative { get; }
+            public string SeparatedSyllables { get; }
+            public Syllable[] Syllables { get; }
+            public string Usage { get; }
+            private List<Word> GoodWords { get; }
+            private List<string> BadWords { get; }
+        }
     }
 }

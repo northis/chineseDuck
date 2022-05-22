@@ -42,7 +42,8 @@ namespace chineseDuck.BotService.Commands
                 {
                     var user = _repository.GetUser(mItem.ChatId);
                     var folders = _repository.GetUserFolders(mItem.ChatId);
-                    var currentFolder = folders.First(a => a.Id == user.CurrentFolderId);
+                    var currentFolder = folders.FirstOrDefault(a => a.Id == user.CurrentFolderId) ??
+                                        folders.First(a => a.Id == 0);
 
                     var answerItem = new AnswerItem
                     {

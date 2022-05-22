@@ -6,6 +6,7 @@
           <div class="input-group">
             <input type="text"
                    class="form-control"
+                   v-model="SearchText"
                    placeholder="Find words...">
           </div>
         </div>
@@ -88,7 +89,7 @@
                                class="list-group marginagble">
 
           <div class="list-group-item flex-column align-items-start d-flex w-100 justify-content-between"
-               v-for="word in words"
+               v-for="word in filteredWords"
                :key="word._id">
             <div class="container nopadding"
                  :width="word.full.width"
@@ -108,6 +109,7 @@
                     </label>
                   </div>
                   <div class="p-2">{{scoreToString(word.score)}}</div>
+                  <div class="p-2">{{word.usage}}</div>
                 </div>
                 <div class="col">
                   <img :src="getFileIdPath(word.full.id)"
@@ -129,14 +131,16 @@ import * as I from "../types/interfaces";
 import { State } from "vuex-class";
 import * as ST from "../store/types";
 import Component from "vue-class-component";
-import { Emit } from "vue-property-decorator";
+import { Provide, Emit } from "vue-property-decorator";
 import { getStoreAccessors } from "vuex-typescript";
 import word from "../store/word";
+import * as JsSearch from "js-search";
 import VirtualScrollList from "./framework/VirtualScrollList.vue";
 import { isNullOrUndefined } from "util";
 import { route, routes } from "../services/routeService";
 import { scoreToString } from "../services/convertService";
 import folder from "../store/folder";
+import { Tokenizer } from "../services/Tokenizer";
 
 @Component({
   components: {
@@ -144,8 +148,19 @@ import folder from "../store/folder";
   }
 })
 export default class Word extends Vue {
+  constructor() {
+    super();
+    this.search = new JsSearch.Search("_id");
+    this.search.indexStrategy = new JsSearch.AllSubstringsIndexStrategy();
+    this.search.tokenizer = new Tokenizer();
+    this.search.addIndex("pronunciation");
+    this.search.addIndex("translation");
+    this.search.addIndex("originalWord");
+  }
   @State word: I.IWordState;
   @State folder: I.IFolderState;
+  search: JsSearch.Search;
+  @Provide() SearchText = "";
 
   counter = 0;
 
@@ -169,7 +184,11 @@ export default class Word extends Vue {
     const idFolder = this.currentFolderId;
     this.store.commit(word.mutations.setFolder)(this.$store, idFolder);
     this.folderStore.dispatch(folder.actions.fetchFolders)(this.$store);
-    this.store.dispatch(word.actions.fetchWords)(this.$store, idFolder);
+    this.store
+      .dispatch(word.actions.fetchWords)(this.$store, idFolder)
+      .then(a => {
+        this.search.addDocuments(this.words);
+      });
   }
   destroyed() {
     window.removeEventListener("resize", this.resize);
@@ -206,6 +225,11 @@ export default class Word extends Vue {
   }
   get folders() {
     return this.folderStore.read(folder.getters.getFolders)(this.$store);
+  }
+  get filteredWords() {
+    return this.SearchText == ""
+      ? this.words
+      : this.search.search(this.SearchText);
   }
   get currentFolderId() {
     return +this.$route.params.id;
