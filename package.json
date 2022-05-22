@@ -92,7 +92,7 @@
     "mocha": "^6.2.2",
     "moment": "^2.29.3",
     "mongodb-memory-server": "^2.7.0",
-    "node-sass": "^4.9.3",
+    "node-sass": "^7.0.0",
     "openapi-schema-to-json-schema": "^2.2.0",
     "postcss-loader": "^2.1.6",
     "precss": "^3.1.2",
