@@ -18,7 +18,7 @@ namespace ChineseDuck.Bot.Rest.Client
         /// Initializes a new instance of the <see cref="ApiClient" /> class.
         /// </summary>
         /// <param name="basePath">The base path.</param>
-        public ApiClient(string basePath="https://chineseduck.online/api/v1")
+        public ApiClient(string basePath="https://chineseduck.site/api/v1")
         {
             BasePath = basePath;
             RestClient = new RestClient(BasePath){FollowRedirects = false};

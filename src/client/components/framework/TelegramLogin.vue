@@ -1,7 +1,7 @@
 <template>
   <vue-telegram-login mode="redirect"
                       telegram-login="ChineseDuckBot"
-                      redirect-url="https://chineseduck.online/api/v1/user/login" />
+                      redirect-url="https://chineseduck.site/api/v1/user/login" />
 </template>
 
 <script>

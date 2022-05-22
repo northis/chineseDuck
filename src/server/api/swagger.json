@@ -2,14 +2,14 @@
   "openapi": "3.0.0",
   "servers": [
     {
-      "url": "https://chineseduck.online/api/v1/"
+      "url": "https://chineseduck.site/api/v1/"
     }
   ],
   "info": {
     "description": "Chinese Duck Bot Api",
     "version": "1.2",
     "title": "Chinese Duck Bot Api",
-    "termsOfService": "https://chineseduck.online/terms/",
+    "termsOfService": "https://chineseduck.site/terms/",
     "contact": {
       "email": "north@live.ru"
     },
