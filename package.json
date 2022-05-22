@@ -116,7 +116,7 @@
     "webpack-bundle-analyzer": "^3.3.2",
     "webpack-cli": "^2.1.5",
     "webpack-dev-server": "^3.11.3",
-    "webpack-hot-middleware": "^2.24.2",
+    "webpack-hot-middleware": "^2.25.1",
     "webpack-merge": "^4.1.4",
     "webpack-node-externals": "^1.7.2",
     "why-is-node-running": "^2.0.3",
