@@ -114,7 +114,7 @@
     "vuex-typescript": "^3.0.2",
     "webpack": "^4.20.2",
     "webpack-bundle-analyzer": "^3.3.2",
-    "webpack-cli": "^2.1.5",
+    "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^3.11.3",
     "webpack-hot-middleware": "^2.25.1",
     "webpack-merge": "^4.1.4",
