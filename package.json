@@ -89,7 +89,7 @@
     "less": "^3.8.1",
     "less-loader": "^4.1.0",
     "mini-css-extract-plugin": "^0.4.3",
-    "mocha": "^6.2.2",
+    "mocha": "^6.2.3",
     "moment": "^2.29.3",
     "mongodb-memory-server": "^2.7.0",
     "node-sass": "^4.9.3",
